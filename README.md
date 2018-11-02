@@ -14,6 +14,8 @@ Docs for Chart.js: http://www.chartjs.org/docs/latest/
   <li> Clone the Caliber-v3-Reports repository to your local machine. </li>
   <li> Create a Force.com project in the same directory that your cloned repository is located in. </li>
   <li> The Force.com project name MUST be: Caliber-v3-Reports (Use your Developer Edition org's credentials to create the project)</li>
+  <li> Choose Initial Project Contents: Select <b>NONE</b></li>
+  <li> Error might be thrown, just check to make sure that it was created correctly. </li>
   <li> Open git bash in your project's directory and create your branch. </li>
   <ol>
     <li> git branch <i>branch_name</i> </li>
