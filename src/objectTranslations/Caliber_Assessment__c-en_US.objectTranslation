@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Caliber Assessment</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Caliber Assessments</value>
+    </caseValues>
+    <fields>
+        <label><!-- Assessment Category --></label>
+        <name>Assessment_Category__c</name>
+        <relationshipLabel><!-- Caliber Assessments --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Assessment Title --></label>
+        <name>Assessment_Title__c</name>
+    </fields>
+    <fields>
+        <label><!-- Assessment Type --></label>
+        <name>Assessment_Type__c</name>
+        <picklistValues>
+            <masterLabel>Exam</masterLabel>
+            <translation><!-- Exam --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Other</masterLabel>
+            <translation><!-- Other --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Presentation</masterLabel>
+            <translation><!-- Presentation --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Project</masterLabel>
+            <translation><!-- Project --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Verbal</masterLabel>
+            <translation><!-- Verbal --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Max Points --></label>
+        <name>Max_Points__c</name>
+    </fields>
+    <fields>
+        <label><!-- Training Id --></label>
+        <name>Training_Id__c</name>
+        <relationshipLabel><!-- Caliber Assessments --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Week Number --></label>
+        <name>Week_Number__c</name>
+    </fields>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>

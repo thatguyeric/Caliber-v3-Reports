@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Training Role</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Training Roles</value>
+    </caseValues>
+    <fields>
+        <label><!-- EXT_Training_Role_ID --></label>
+        <name>EXT_Training_Role_ID__c</name>
+    </fields>
+    <fields>
+        <label><!-- Name --></label>
+        <name>Name__c</name>
+        <relationshipLabel><!-- Training Roles --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Role --></label>
+        <name>Role__c</name>
+        <picklistValues>
+            <masterLabel>Co-Trainer</masterLabel>
+            <translation><!-- Co-Trainer --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>QC</masterLabel>
+            <translation><!-- QC --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Trainer</masterLabel>
+            <translation><!-- Trainer --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>VP</masterLabel>
+            <translation><!-- VP --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Training --></label>
+        <name>Training__c</name>
+        <relationshipLabel><!-- Training Roles --></relationshipLabel>
+    </fields>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>

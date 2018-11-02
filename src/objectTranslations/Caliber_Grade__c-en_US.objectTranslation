@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Caliber Grade</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Caliber Grades</value>
+    </caseValues>
+    <fields>
+        <label><!-- Caliber Assessment --></label>
+        <name>Caliber_Assessment__c</name>
+        <relationshipLabel><!-- Caliber Grades --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Contact --></label>
+        <name>Contact__c</name>
+        <relationshipLabel><!-- Caliber Grades --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Last Modified At --></label>
+        <name>Last_Modified_At__c</name>
+    </fields>
+    <fields>
+        <label><!-- Score --></label>
+        <name>Score__c</name>
+    </fields>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>

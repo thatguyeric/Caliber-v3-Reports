@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Training Room</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Training Rooms</value>
+    </caseValues>
+    <fields>
+        <label><!-- A/V Availability --></label>
+        <name>AVAvailability__c</name>
+        <picklistValues>
+            <masterLabel>No</masterLabel>
+            <translation><!-- No --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Upon Request</masterLabel>
+            <translation><!-- Upon Request --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Yes</masterLabel>
+            <translation><!-- Yes --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Active --></label>
+        <name>Active__c</name>
+    </fields>
+    <fields>
+        <label><!-- Floor --></label>
+        <name>OfficeSuite__c</name>
+    </fields>
+    <fields>
+        <label><!-- Room Capacity --></label>
+        <name>RoomCapacity__c</name>
+    </fields>
+    <fields>
+        <label><!-- Training Location --></label>
+        <name>TrainingLocationName__c</name>
+    </fields>
+    <fields>
+        <label><!-- Training Location ID --></label>
+        <name>TrainingLocation__c</name>
+        <relationshipLabel><!-- Training Rooms --></relationshipLabel>
+    </fields>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>
