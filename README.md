@@ -24,3 +24,5 @@ Docs for Chart.js: http://www.chartjs.org/docs/latest/
   </ol>
 </ol>
   
+Make sure all changes are made in your branch.  <br/>
+To update your org with changes made in your Force.com IDE, right click <i>Caliber-v3-Reports folder > Force.com > Deploy to Server</i>
