@@ -1,12 +1,14 @@
 public class ReportsController {
 	
     @AuraEnabled
-    public static List<Caliber_Grade__c> getCumulativeScore(Integer year, ID batchID, Integer week, ID traineeID){
-        List<Caliber_Grade__c> gradeList = new List<Caliber_Grade__c>();        
+    public static Map<Id, Decimal> getCumulativeScore(Integer year, ID batchID, Integer week, ID traineeID){
+        List<Caliber_Grade__c> gradeList = getBatchGradesByWeek(batchID, week);
         
-        return gradeList;
-    }//end of barChart()
-
+        // Calculate method will return a map of Contact ID and Avg week grade 
+        Map<Id, Decimal> grades = new Map<Id, Decimal>();
+        return grades;
+        
+    }//end of getCumulativeScore()
     
     public static List<Training__c> getBatchesByYear(Integer year){
         Date startOfYear = date.newInstance(year, 1, 1);
@@ -18,17 +20,13 @@ public class ReportsController {
         system.debug(batchList);
         return batchList;
     }
-    
+
     public static List<Caliber_Grade__c> getBatchGradesByWeek(ID batchID, Integer week){
-        List<Caliber_Assessment__c> assessmentList = [SELECT Id 
+        List<Caliber_Assessment__c> assessmentList = [SELECT Id
                                                       FROM Caliber_Assessment__c WHERE Training_Id__c = : batchID];
-        
         List<Caliber_Grade__c> gList = [SELECT Id, Name, Contact__c, Score__c 
                                         FROM Caliber_Grade__c
                                         WHERE Caliber_Assessment__c IN : assessmentList];
-        
-        // call on calculate class 
-        
         return gList;
     }
     
