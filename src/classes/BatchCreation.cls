@@ -6,8 +6,8 @@ public class BatchCreation {
     
     public static List<String> firstNames = new List<String>{'Donald', 'Mickey', 'Daisy', 'Goofy', 'Minnie', 'Dan', 'Oliver', 'Barry', 'Felicity', 'Iris', 
         'Kaitlin', 'Cisco', 'John', 'Nora', 'Iobard', 'Matthew', 'Jessica', 'Foggy', 'Karen', 'Luke'};
-            public static List<String> lastNames = new List<String>{'Duck', 'Mouse', 'Duck', 'Goofy', 'Mouse', 'Pickles', 'Queen', 'Allen', 'Smoak', 'West-Allen', 
-                'Snow', 'Ramone', 'Diggle', 'Allen', 'Thon', 'Murdock', 'Jones', 'Nelson', 'Paige', 'Cage'};
+            public static List<String> lastNames = new List<String>{'Mouse', 'Duck', 'Goofy', 'Mouse', 'Pickles', 'Queen', 'Allen', 'Smoak', 'West-Allen', 
+                'Snow', 'Ramone', 'Diggle', 'Allen', 'Thon', 'Murdock', 'Jones', 'Nelson', 'Paige', 'Cage', 'Duck'};
                     
                     public static void createData(){
                         //Creates 20 associates
@@ -25,14 +25,14 @@ public class BatchCreation {
                         //create Training_Track
                         Training_Track__c track = new Training_Track__c();
                         track.Active__c = true;
-                        track.ShortName__c = 'Salesforce';
-                        track.Name = 'Salesforce';
+                        track.ShortName__c = 'Java';
+                        track.Name = 'Java';
                         insert track; 
                         
                         //Create batch
                         Training__c batch = new Training__c();
-                        batch.StartDate__c = Date.parse('09/10/2018');
-                        batch.EndDate__c = Date.parse('11/16/2018');
+                        batch.StartDate__c = Date.parse('12/10/2018');
+                        batch.EndDate__c = Date.parse('02/16/2019');
                         batch.Status__c = 'In Progress';
                         batch.Trainer__c = trainerId;
                         batch.TrainingTrack__c = track.Id;
@@ -40,7 +40,7 @@ public class BatchCreation {
                         
                         //Create Training Assignments
                         List<Training_Assignment__c> taList = new List<Training_Assignment__c>();
-                        for(Integer i = 0; i < 20; i++){
+                        for(Integer i = 20; i < 40; i++){
                             Training_Assignment__c ta = new Training_Assignment__c();
                             ta.Contact__c = associates[i].Id;
                             ta.Training__c = batch.Id;
@@ -57,7 +57,7 @@ public class BatchCreation {
     public static void createAssessmentAndGrades(Id trainingId, List<Contact> associates){
         //create categories for assessments
         List<Caliber_Category__c> cats = new List<Caliber_Category__c>();
-        List<String> catNames = new List<String>{'SF Security', 'SF Data Model', 'Sales Cloud', 'Apex', 'Visualforce'};
+        List<String> catNames = new List<String>{'SQL', 'Data Model', 'JavaScript', 'HTML', 'CSS'};
             for(Integer i = 0; i < 5; i++){
                 Caliber_Category__c cat = new Caliber_Category__c();
                 cat.Active__c = true;
