@@ -1,12 +1,12 @@
 <aura:component controller="reportsPageHeaderController">
-    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="init" action="{!c.doInitYears}" value="{!this}"/>
     
-    <!--todo: get all years that have a batch -->
     <aura:attribute name="allYears" type="Integer[]"/>
     <aura:attribute name="yearLabel" type="Integer" default="2018"/>
     <!-- todo: get all batches -->
     <aura:attribute name="allBatches" type="Training__c[]"/>
-    <aura:attribute name="batchLabel" type="Training__c"/>
+    <aura:attribute name="allBatchLabels" type="String[]"/>
+    <aura:attribute name="batchLabel" type="String" default="None"/>
     <!-- todo: get all weeks for current batch -->
     <aura:attribute name="allWeekLabels" type="String[]"/>
     <aura:attribute name="weekLabel" type="String"/>
@@ -26,17 +26,17 @@
         </div>
         <div>
             <ui:menu>
-                <ui:menuTriggerLink aura:id="batches" label="{!v.batchLabel.Trainer__c.Name}"/>
+                <ui:menuTriggerLink aura:id="batches" label="{!v.batchLabel}"/>
                 <ui:menuList class="actionMenu" aura:id="actionMenu">
-                    <aura:iteration items="{!v.allBatches}" var="batch">
-                        <ui:actionMenuItem aura:id="item2" label="{!batch.trainer__c.Name}" click="{!c.updateBatchLabel}"/>
+                    <aura:iteration items="{!v.allBatchLabels}" var="batch">
+                        <ui:actionMenuItem aura:id="item2" label="{!batch}" click="{!c.updateBatchLabel}"/>
                     </aura:iteration>
                 </ui:menuList>
             </ui:menu>
         </div>
         <div>
             <ui:menu>
-                <ui:menuTriggerLink aura:id="week" label="{!v.yearLabel}"/>
+                <ui:menuTriggerLink aura:id="week" label="{!v.weekLabel}"/>
                 <ui:menuList class="actionMenu" aura:id="actionMenu">
                     <ui:actionMenuItem aura:id="item2" label="2019" click="{!c.updateYearLabel}"/>
                     <ui:actionMenuItem aura:id="item3" label="2018" click="{!c.updateYearLabel}"/>
@@ -46,7 +46,7 @@
         </div>
         <div>
             <ui:menu>
-                <ui:menuTriggerLink aura:id="trainee" label="{!v.yearLabel}"/>
+                <ui:menuTriggerLink aura:id="trainee" label="{!v.currentTrainee}"/>
                 <ui:menuList class="actionMenu" aura:id="actionMenu">
                     <ui:actionMenuItem aura:id="item2" label="2019" click="{!c.updateYearLabel}"/>
                     <ui:actionMenuItem aura:id="item3" label="2018" click="{!c.updateYearLabel}"/>
