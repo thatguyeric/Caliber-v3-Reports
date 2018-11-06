@@ -1,4 +1,4 @@
-<aura:component controller="reportsPageHeaderController">
+<aura:component controller="ReportsController">
     <aura:handler name="init" action="{!c.doInitYears}" value="{!this}"/>
     
     <aura:attribute name="allYears" type="Integer[]"/>
