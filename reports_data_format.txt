@@ -1,5 +1,5 @@
 Cumulative Scores Bar Chart:
-// All Weeks & All Trainees
+// All Weeks & All Trainees (Overall)
 {
     data : [{
             name : String,
@@ -17,7 +17,7 @@ Cumulative Scores Bar Chart:
 }
 
 Batch QC Report Table:
-// All Weeks & All Trainees
+// All Weeks & All Trainees (Overall)
 {
     numOfWeeks : Integer,
     data : [{
@@ -27,7 +27,7 @@ Batch QC Report Table:
 }
 
 Technical Skills Radar Chart:
-// All Weeks & All Trainees
+// All Weeks & All Trainees (Overall)
 // All Weeks & Single Trainee
 // Single Week & Single Trainee
 {
@@ -48,7 +48,7 @@ Technical Skills Radar Chart:
 }
 
 Weekly Progress Line Chart:
-// All Weeks & All Trainees
+// All Weeks & All Trainees (Overall)
 {
     batch : [{
         week : Integer,
@@ -90,6 +90,28 @@ Assessment Breakdown Bar Chart:
     }]
 }
 
+Quality Audit Donut Chart:
+// Single Week & All Trainees
+{
+    superstar : Integer,
+    good : Integer,
+    average : Integer,
+    poor : Integer
+}
+
+Quality Audit Report - Week Table:
+// Single Week & All Trainees
+{
+    categories : String[],
+    data : [{
+        name : String,
+        feedback : String,
+        notes : String
+    }], 
+    overall : String,
+    notes : String
+}
+
 Overall Feedback Table:
 // All Weeks & Single Trainee
 {
@@ -101,16 +123,6 @@ Overall Feedback Table:
         trainerFeedback : String
     }]    
 }
-
-Quality Audit Donut Chart:
-// Single Week & All Trainees
-{
-    superstar : Integer,
-    good : Integer,
-    average : Integer,
-    poor : Integer
-}
-
 Feedback for the Week Table:
 // Single Week & All Trainees
 {
@@ -129,17 +141,4 @@ Feedback for the Week Table:
     trainerFeedback : String,
     qualityAudit : String,
     QCfeedback : String
-}
-
-Quality Audit Report - Week Table:
-// Single Week & All Trainees
-{
-    categories : String[],
-    data : [{
-        name : String,
-        feedback : String,
-        notes : String
-    }], 
-    overall : String,
-    notes : String
 }
