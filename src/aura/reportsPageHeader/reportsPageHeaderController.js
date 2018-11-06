@@ -14,22 +14,13 @@
         });
         $A.enqueueAction(action);
         
-        var action2 = component.get("c.getBatchesByYear");
-        var yearParam = component.get("v.yearLabel");
-        action2.setParams({"year" : yearParam});
-        action2.setCallback(this, function(response){
-            var state = response.getState();
-            if (state === "SUCCESS"){
-                component.set("v.allBatches", response.getReturnValue());
-                helper.buildBatchStrings(component);
-            }
-        });
-        $A.enqueueAction(action2);
+        helper.changeBatchesForYear(component);
     },
     
 	updateYearLabel : function(component, event, helper) {
 		var menuItemLabel = event.getSource().get("v.label"); 
         component.set("v.yearLabel", menuItemLabel);
+        helper.changeBatchesForYear(component);
 	},
     
     updateBatchLabel : function(component, event, helper) {
@@ -43,7 +34,6 @@
 	},
     
     updateTraineeLabel : function(component, event, helper) {
-    	var menuItemLabel = event.getSource().get("v.label");
-        component.set("v.currentTrainee", menuItemLabel);
+        helper.getSelectedTrainee(component, event);
 	}
  })

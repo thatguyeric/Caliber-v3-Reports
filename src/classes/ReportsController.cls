@@ -14,7 +14,7 @@ public class ReportsController {
     public static List<Training__c> getBatchesByYear(Decimal year){
         Date startOfYear = date.newInstance((Integer)year, 1, 1);
         Date endOfYear = date.newInstance((Integer)year, 12, 31);
-        List<Training__c> batchList =  [SELECT Id, Trainer__c, TrainingTrack__c, startDate__c
+        List<Training__c> batchList =  [SELECT Id, Trainer__c, TrainingTrack__c, startDate__c, Caliber_Number_of_Weeks__c
                                         FROM Training__c
                                         WHERE (startDate__c >= : startOfYear AND startDate__c <= : endOfYear) 
                                         OR (endDate__c >= : startOfYear AND endDate__c <= : endOfYear)];
@@ -59,6 +59,43 @@ public class ReportsController {
             }
         }
         return batchStrings;
+    }
+    
+    public static Decimal getWeeksInBatch(Training__c batch){
+        return batch.Caliber_Number_of_Weeks__c;
+    }
+    
+    @AuraEnabled
+    public static List<String> batchWeeksStrings(Training__c batch){
+        Decimal weeksInBatch = ReportsController.getWeeksInBatch(batch);
+        List<String> weekStrings = new List<String>();
+        for (Integer i = 1; i <= (Integer)weeksInBatch; i++){
+            weekStrings.add('Week ' + i);
+        }
+        if (weeksInBatch == 0){
+            weekStrings.add('No Weeks');
+        }
+        return weekStrings;
+    }
+    
+    @AuraEnabled
+    public static List<Contact> batchTrainees(Training__c batch){
+        List<Training_Assignment__c> assignments = [select id, Contact__c from Training_Assignment__c where training__c = :batch.id];
+        List<Id> traineeContactIds = new List<Id>();
+        for (Training_Assignment__c assignment : assignments){
+            traineeContactIds.add(assignment.contact__c);
+        }
+        return [select id, name from Contact where id in :traineeContactIds];
+    }
+    
+    @AuraEnabled
+    public static Contact getSelectedTrainee(List<Contact> allTrainees, String traineeName){
+        for (Contact trainee : allTrainees){
+            if (trainee.Name == traineeName){
+                return trainee;
+            }
+        }
+        return null;
     }
     
 }//end of ReportsController class
