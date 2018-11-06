@@ -1,0 +1,144 @@
+Cumulative Scores Bar Chart:
+// benchmark only exists for all weeks.
+{
+    data : [{
+            name : String,
+            grade : Decimal
+    }],
+    benchmark : Decimal
+}
+
+Batch QC Report Table:
+
+{
+    numOfWeeks : Integer,
+    data : [{
+        name : String,
+        qcGrades : Integer[]
+    }]
+}
+
+Technical Skills Radar Chart:
+
+{
+    overall : [{
+        name : String,
+        categories : [{
+            category : String,
+            grade : Decimal
+        }]
+    }],
+    trainee : [{
+        name : String,
+        categories : [{
+            category : String,
+            grade : Decimal
+        }]
+    }]
+}
+
+Weekly Progress Line Chart:
+// trainee key does not exist for overall.
+{
+    trainee : [{
+        week : Integer,
+        grade : Decimal
+    }], 
+    batch : [{
+        week : Integer,
+        grade : Decimal
+    }]
+}
+
+// Filtered by Trainee
+
+Assessment Breakdown Bar Chart: 
+// filter by trainee or week 
+// trainee only exists in filter by trainee
+
+{
+    batch : [{
+        type : String,
+        grade : Decimal
+    }],
+    trainee : [{
+        type : String,
+        grade : Decimal
+    }]
+}
+
+Overall Feedback Table:
+
+{
+    data :[{
+        week : Integer,
+        category : String,
+        qualityAudit : String,
+        QCfeedback : String,
+        trainerFeedback : String
+    }]    
+}
+
+// Filtered by Week
+
+Quality Audit Donut Chart:
+
+{
+    superstar : Integer,
+    good : Integer,
+    average : Integer,
+    poor : Integer
+}
+
+Feedback for the Week Table:
+
+{
+    categories : String[],
+    assessments : String[],
+    data : [{
+        name : String,
+        grades : Decimal[]
+    }],
+    notes : String
+}
+
+Quality Audit Report - Week Table:
+
+{
+    categories : String[],
+    data : [{
+        name : String,
+        feedback : String,
+        notes : String
+    }], 
+    overall : String,
+    notes : String
+}
+
+
+// Filter by Trainee and Week
+
+Feedback for the Week Table:
+
+{
+    categories : String[],
+    trainerFeedback : String,
+    qualityAudit : String,
+    QCfeedback : String
+}
+
+
+JSON format to send to client:
+
+{
+    cumulativeScoresBar : {...},
+    batchQCTable : {...},
+    techSkillsRadar : {...},
+    weeklyProgressLine : {...},
+    assessmentBreakdownBar : {...},
+    overallFeedbackTable : {...},
+    qualityAuditDonut : {...},
+    feedbackForWeekTable : {...},
+    qualityAuditWeekTable : {...},
+    feedbackForTraineeWeekTable : {...}
+}
