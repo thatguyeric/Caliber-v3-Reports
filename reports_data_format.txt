@@ -142,3 +142,62 @@ Feedback for the Week Table:
     qualityAudit : String,
     QCfeedback : String
 }
+
+Apex method naming scheme:
+
+    // Cumulative Score Bar Charts
+
+        getBatchOverallCumulativeScoresBar(Id batchID)
+
+        getBatchSingleWeekAllTraineesCumulativeScoresBar(Id batchID, Integer week)
+
+
+    // Overall QC Table
+
+        getBatchOverallQCTable(Id batchID)
+
+    
+    // Technical Skills Radar Charts
+
+        getBatchOverallTechSkillsRadar(Id batchID)
+
+        getBatchAllWeeksSingleTraineeTechSkillsRadar(Id batchID, Id traineeID)
+        
+        getBatchSingleWeekSingleTraineeTechSkillsRadar(Id batchID, Id traineeID, Integer week)
+
+    
+    // Weekly Progress Line Charts
+    
+        getBatchOverallWeeklyProgressLine(Id batchID)
+
+        getBatchAllWeeksSingleTraineeWeeklyProgressLine(Id batchID, Id traineeID)
+
+        getBatchSingleWeekSingleTraineeWeeklyProgressLine(Id batchID, Id traineeID, Integer week)
+
+
+    // Assessment Breakdown Bar Charts
+
+        getBatchSingleWeekAllTraineesAssessmentBreakdownBar(Id batchID, Integer week)
+
+        getBatchAllWeeksSingleTraineeAssessmentBreakdownBar(Id batchID, Id traineeID)
+
+        getBatchSingleWeekSingleTraineeAssessmentBreakdownBar(Id batchID, Id traineeID, Integer week)
+
+    
+    // Quality Audit Donut Chart
+    
+        getBatchSingleWeekAllTraineesQualityAuditDonut(Id batchID, Integer week)
+
+
+    // Quality Audit Table
+
+        getBatchSingleWeekAllTraineesQualityAuditTable(Id batchID, Integer week)
+    
+    
+    // Feedback Tables
+        
+        getBatchSingleWeekAllTraineesFeedbackTable(Id batchID, Integer week)
+
+        getBatchSingleWeekSingleTraineeFeedbackTable(Id batchID, Id traineeID, Integer week)
+        
+        getBatchAllWeeksSingleTraineeFeedbackTable(Id batchID, Id traineeID)
