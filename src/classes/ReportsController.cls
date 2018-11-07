@@ -91,12 +91,13 @@ public class ReportsController {
     @AuraEnabled
     public static String getBatchOverallCumulativeScoresBar(Id batchID){
         Map<String, Object> dataToSend = new Map<String, Object>();
-        List<Id> traineeIDs = new List<Id>();
+        List<Id> traineeIds = new List<Id>();
         Map<String, Object> traineeMap = null;
         List<Map<String, Object>> gradesToCalculate = new List<Map<String, Object>>();
         List<Decimal> scores = new List<Decimal>();
         List<Decimal> maxPoints = new List<Decimal>();
         String fullName;
+        
         
         // get trainees that are a part of current batch
         for (Training_Assignment__c t : [SELECT Contact__c FROM Training_Assignment__c WHERE Training__c = : batchID]){
@@ -226,20 +227,43 @@ public class ReportsController {
     
     @AuraEnabled
     public static String getBatchOverallWeeklyProgressLine(Id batchID){
+        Training__c batch = [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
         Map<String, Object> dataToSend = new Map<String, Object>();
-        List<Id> traineeIDs = new List<Id>();
-        
-        // get trainees that are a part of current batch
-        for (Training_Assignment__c t : [SELECT Contact__c FROM Training_Assignment__c WHERE Training__c = : batchID]){
-            traineeIDs.add(t.Contact__c);
-        }
+        Map<String, Object> weekMap = null;
+        List<Map<String, Object>> gradesToCalculate = new List<Map<String, Object>>();
+        List<Decimal> scores = new List<Decimal>();
+        List<Decimal> maxPoints = new List<Decimal>();
+        String fullName;
         
         // get all grades associated with each trainee
         List<Caliber_Grade__c> gradesList = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
-                                             Score__c, Caliber_Assessment__r.Max_Points__c 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
                                              FROM Caliber_Grade__c
-                                             WHERE Contact__c IN : traineeIDs];
+                                             WHERE Caliber_Assessment__r.Training_Id__c = :batch.id];
         
-        return 'todo';
+        for (Integer weekNum; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
+            scores.clear();
+            maxPoints.clear();
+            for (Caliber_Grade__c g : gradesList){
+                if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
+                    scores.add(g.Score__c);
+                    maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
+                }
+            }
+            weekMap = new Map<String, Object>();
+            weekMap.put('score', scores);	
+            weekMap.put('maxPoints', maxPoints);
+            gradesToCalculate.add(weekMap);
+        }
+        
+        // calculate grades from gradesToCalculate list
+        // should return List<Map<String, Object>>
+        List<Map<String, Object>> data = null;
+        
+        dataToSend.put('weeks', data);
+        system.debug(JSON.serialize(dataToSend));
+        
+        return JSON.serialize(dataToSend);
     }
 }//end of ReportsController class
