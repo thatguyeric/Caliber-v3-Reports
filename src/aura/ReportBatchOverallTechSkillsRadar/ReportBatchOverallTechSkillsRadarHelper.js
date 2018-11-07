@@ -84,6 +84,7 @@
         // format batch data for chart.js
         var batchDataset = helper.getChartJSDataset(batchData, categoryIndexMap);
         //TODO: set batch color
+        //window._ChartJSDatasetColors.put(batchDataset, 'radar', 0);
         chartData.datasets.push(batchDataset);
         
         // format trainee data for chart.js for shown trainees

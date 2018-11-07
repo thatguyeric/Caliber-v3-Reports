@@ -2,7 +2,10 @@
     <!-- for testing -->
     <aura:handler name="init" value="{!this}" action="{!c.test}"/>
     <!-- include external JavaScript libraries -->
-    <ltng:require scripts="{!$Resource.chartjs}"
+    <ltng:require scripts="{!join(',',
+                           $Resource.chartjs,
+                           $Resource.ReportUtilityJS
+                           )}"
                   afterScriptsLoaded="{!c.renderChart}"/>
     <!-- Set visibility of chart in the controller based on filters -->
     <aura:attribute name="isVisible" type="Boolean" default="false"/>

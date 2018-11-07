@@ -37,14 +37,14 @@ Technical Skills Radar Chart:
     batch : [{
         name : String,
         categories : [{
-            category : String,
+            name : String,
             grade : Decimal
         }]
     }],
     trainee : [{
         name : String,
         categories : [{
-            category : String,
+            name : String,
             grade : Decimal
         }]
     }]
