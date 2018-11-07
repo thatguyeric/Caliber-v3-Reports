@@ -13,3 +13,7 @@ Returns:
     'name' : String,
     'grade' : Decimal
 }]
+
+
+Finding tech skills (category) scores for trainees:
+
