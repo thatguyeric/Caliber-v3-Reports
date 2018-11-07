@@ -10,6 +10,7 @@ public class ReportsController {
         
     }//end of getCumulativeScore()
     
+    //return all batches starting or ending in a specific year
     @AuraEnabled
     public static List<Training__c> getBatchesByYear(Decimal year){
         Date startOfYear = date.newInstance((Integer)year, 1, 1);
@@ -31,6 +32,7 @@ public class ReportsController {
         return gList;
     }
     
+    //return list of years that have batches starting in them
     @AuraEnabled
     public static List<Integer> GetAllYearsWithBatches(){
         List<AggregateResult> trainings = [select count(Id), CALENDAR_YEAR(StartDate__c) from Training__c group by CALENDAR_YEAR(StartDate__c)];
@@ -60,11 +62,12 @@ public class ReportsController {
         }
         return batchStrings;
     }
-    
+    //return the number of weeks in a batch
     public static Decimal getWeeksInBatch(Training__c batch){
         return batch.Caliber_Number_of_Weeks__c;
     }
     
+    //return strings for each week in a batch
     @AuraEnabled
     public static List<String> batchWeeksStrings(Training__c batch){
         Decimal weeksInBatch = ReportsController.getWeeksInBatch(batch);
@@ -72,12 +75,9 @@ public class ReportsController {
         for (Integer i = 1; i <= (Integer)weeksInBatch; i++){
             weekStrings.add('Week ' + i);
         }
-        if (weeksInBatch == 0){
-            weekStrings.add('No Weeks');
-        }
         return weekStrings;
     }
-    
+    //return all trainees in a batch
     @AuraEnabled
     public static List<Contact> batchTrainees(Training__c batch){
         List<Training_Assignment__c> assignments = [select id, Contact__c from Training_Assignment__c where training__c = :batch.id];
@@ -87,12 +87,22 @@ public class ReportsController {
         }
         return [select id, name from Contact where id in :traineeContactIds];
     }
-    
+    //return the selected trainee's info
     @AuraEnabled
     public static Contact getSelectedTrainee(List<Contact> allTrainees, String traineeName){
         for (Contact trainee : allTrainees){
             if (trainee.Name == traineeName){
                 return trainee;
+            }
+        }
+        return null;
+    }
+    //return the batch info for selected batch
+    @AuraEnabled
+    public static Training__c getSelectedBatch(List<Training__c> batches, String batchName){
+        for (Training__c batch : batches){
+            if (batchName.contains(batch.StartDate__c.format())){
+                return batch;
             }
         }
         return null;

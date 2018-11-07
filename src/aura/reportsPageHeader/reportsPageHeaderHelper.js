@@ -1,11 +1,14 @@
 ({
+    //updates the batches for a year when a new year is chosen
+    //defaults to all weeks and all trainees for first batch
     changeBatchesForYear : function(component){
-        var action2 = component.get("c.getBatchesByYear");
+        var actionChangeBatches = component.get("c.getBatchesByYear");
         var yearParam = component.get("v.yearLabel");
-        action2.setParams({"year" : yearParam});
-        action2.setCallback(this, function(response){
+        actionChangeBatches.setParams({"year" : yearParam});
+        actionChangeBatches.setCallback(this, function(response){
             var state = response.getState();
             if (state === "SUCCESS"){
+                //set batch attributes in component
                 component.set("v.allBatches", response.getReturnValue());
                 component.set("v.currentBatch", response.getReturnValue()[0]);
                 this.buildBatchStrings(component);
@@ -13,63 +16,81 @@
                 this.getTraineesForBatch(component);
             }
         });
-        $A.enqueueAction(action2);
+        $A.enqueueAction(actionChangeBatches);
     },
-    
+    //build strings for the batches to represent them in UI
 	buildBatchStrings : function(component) {
-		var action3 = component.get("c.buildBatchStrings");
+		var actionBuildBatchString = component.get("c.buildBatchStrings");
         var trainingsParam = component.get("v.allBatches");       
-        action3.setParams({"trainings" : trainingsParam});
-        action3.setCallback(this, function(response){
+        actionBuildBatchString.setParams({"trainings" : trainingsParam});
+        actionBuildBatchString.setCallback(this, function(response){
             var state = response.getState();
             if (state === "SUCCESS"){
                 component.set("v.allBatchLabels", response.getReturnValue());
                 component.set("v.batchLabel", response.getReturnValue()[0]);
             }
         });
-        $A.enqueueAction(action3);
+        $A.enqueueAction(actionBuildBatchString);
 	},
-    
+    //get all available weeks for selected batch
+    //default to all weeks
     getWeeksForBatch : function(component){
-    	var action4 = component.get("c.batchWeeksStrings");
+    	var actionGetBatchWeeks = component.get("c.batchWeeksStrings");
         var trainingParam = component.get("v.currentBatch");       
-        action4.setParams({"batch" : trainingParam});
-        action4.setCallback(this, function(response){
+        actionGetBatchWeeks.setParams({"batch" : trainingParam});
+        actionGetBatchWeeks.setCallback(this, function(response){
             var state = response.getState();
             if (state === "SUCCESS"){
                 component.set("v.allWeekLabels", response.getReturnValue());
-                component.set("v.weekLabel", response.getReturnValue()[0]);
+                component.set("v.weekLabel", "Week (All)");
             }
         });
-        $A.enqueueAction(action4);
+        $A.enqueueAction(actionGetBatchWeeks);
 	},
-    
+    //get all trainees for selected batch
+    //default to all trainees
     getTraineesForBatch : function(component){
-        var action5 = component.get("c.batchTrainees");
+        var actionGetBatchTrainees = component.get("c.batchTrainees");
         var trainingParam = component.get("v.currentBatch");       
-        action5.setParams({"batch" : trainingParam});
-        action5.setCallback(this, function(response){
+        actionGetBatchTrainees.setParams({"batch" : trainingParam});
+        actionGetBatchTrainees.setCallback(this, function(response){
             var state = response.getState();
             if (state === "SUCCESS"){
                 component.set("v.allTrainees", response.getReturnValue());
-                component.set("v.currentTrainee", response.getReturnValue()[0]);
+                component.set("v.currentTraineeName", "Trainee")
             }
         });
-        $A.enqueueAction(action5);
+        $A.enqueueAction(actionGetBatchTrainees);
     },
-    
+    //pull data for trainee selected from UI
     getSelectedTrainee : function(component, event){
-        var action6 = component.get("c.getSelectedTrainee");
+        var actionGetTrainee = component.get("c.getSelectedTrainee");
         var trainingParam = component.get("v.allTrainees"); 
         var menuItemLabel = event.getSource().get("v.label");
-        action6.setParams({"allTrainees" : trainingParam, "traineeName" : menuItemLabel});
-        action6.setCallback(this, function(response){
+        actionGetTrainee.setParams({"allTrainees" : trainingParam, "traineeName" : menuItemLabel});
+        actionGetTrainee.setCallback(this, function(response){
             var state = response.getState();
             if (state === "SUCCESS"){
                 component.set("v.currentTrainee", response.getReturnValue());
+                component.set("v.currentTraineeName", response.getReturnValue().Name);
             }
         });
-        $A.enqueueAction(action6);
+        $A.enqueueAction(actionGetTrainee);
+    },
+    //set the newly chosen batch and get the weeks and trainees associated with it
+    setCurrentBatch : function(component){
+        var actionSetBatch = component.get("c.getSelectedBatch")
+        var currentBatchLabel = component.get("v.batchLabel");
+        var allBatches = component.get("v.allBatches");
+        actionSetBatch.setParams({"batches" : allBatches, "batchName" : currentBatchLabel});
+        actionSetBatch.setCallback(this, function(response){
+            var state = response.getState();
+            if (state === "SUCCESS"){
+                component.set("v.currentBatch", response.getReturnValue());
+                this.getWeeksForBatch(component);
+        		this.getTraineesForBatch(component);
+            }
+        });
+        $A.enqueueAction(actionSetBatch);
     }
-    
 })
