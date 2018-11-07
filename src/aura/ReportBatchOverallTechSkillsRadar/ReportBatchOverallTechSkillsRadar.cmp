@@ -1,0 +1,31 @@
+<aura:component controller="ReportsController">
+    <!-- for testing -->
+    <aura:handler name="init" value="{!this}" action="{!c.test}"/>
+    <!-- include external JavaScript libraries -->
+    <ltng:require scripts="{!$Resource.chartjs}"
+                  afterScriptsLoaded="{!c.renderChart}"/>
+    <!-- Set visibility of chart in the controller based on filters -->
+    <aura:attribute name="isVisible" type="Boolean" default="false"/>
+    <!-- config object for chart.js -->
+    <aura:attribute name="chartConfig" type="Object"/>
+    <!-- The data returned by the server -->
+    <aura:attribute name="serverResponseData" type="Object"/>
+    <!-- List of names of all trainees
+         Index is same as index in serverResponseData
+    -->
+    <aura:attribute name="allTrainees" type="String[]"/>
+    <!-- List of indexes shown trainees referencing index in serverResponseData trainee list -->
+    <aura:attribute name="shownTraineeIndexes" type="Integer[]"/>
+    <!-- Error message shown for server-related errors -->
+    <aura:attribute name="errorMsg" type="String"/>
+    <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>
+    <!-- for testing -->
+    <lightning:button label="Test" variant="brand" onclick="{!c.test}"/>
+    <!-- Report is only visible if filters apply to it -->
+    <aura:if isTrue="{!v.isVisible}">
+        <aura:if isTrue="{!not(empty(v.errorMsg))}">
+        	<div>{!v.errorMsg}</div>
+        </aura:if>
+        <canvas aura:id="chart"/>
+    </aura:if>
+</aura:component>
