@@ -94,12 +94,14 @@ public class ReportsController {
         List<Id> traineeIDs = new List<Id>();
         Map<String, Object> traineeMap = null;
         List<Map<String, Object>> gradesToCalculate = new List<Map<String, Object>>();
+        List<Map<String, Object>> benchmarkList = new List<Map<String, Object>>();
         List<Decimal> scores = new List<Decimal>();
         List<Decimal> maxPoints = new List<Decimal>();
         String fullName;
         
+        List<Training_Assignment__c> taList = [SELECT Contact__c, Training__r.TrainingTrack__c FROM Training_Assignment__c WHERE Training__c = : batchID];
         // get trainees that are a part of current batch
-        for (Training_Assignment__c t : [SELECT Contact__c FROM Training_Assignment__c WHERE Training__c = : batchID]){
+        for (Training_Assignment__c t : taList){
             traineeIDs.add(t.Contact__c);
         }
         
@@ -111,8 +113,8 @@ public class ReportsController {
         
         // get all scores and maxpoints for each trainee, map them and put them into a list to calculate grades
         for (Id tID : traineeIDs){
-            scores.clear();
-            maxPoints.clear();
+            scores = new List<Decimal>();
+            maxPoints = new List<Decimal>();
             for (Caliber_Grade__c g : gradesList){
                 if (g.Contact__c == tID){
                     fullName = g.Contact__r.LastName + ', ' + g.Contact__r.FirstName;
@@ -127,27 +129,38 @@ public class ReportsController {
             gradesToCalculate.add(traineeMap);
         }
         
+        // get all caliber grades of current training track to calculate benchmark 
+        Id trainingTrackID = taList[0].Training__r.TrainingTrack__c;
+        List<Caliber_Grade__c> trainingTrackList = [SELECT Score__c, Caliber_Assessment__r.Max_Points__c 
+                                                    FROM Caliber_Grade__c
+                                                    WHERE Caliber_Assessment__r.Training_Id__r.TrainingTrack__c = : trainingTrackID ];
         
-        for (Map<String, Object> m : gradesToCalculate){
-            system.debug(m);
+        // map all scores and max_points to calculate benchmark
+        scores = new List<Decimal>();
+        maxPoints = new List<Decimal>();
+        for (Caliber_Grade__c g : trainingTrackList){
+            scores.add(g.Score__c);
+            maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
         }
+        traineeMap = new Map<String, Object>();
+        traineeMap.put('score', scores);	
+        traineeMap.put('maxPoints', maxPoints);
+        benchmarkList.add(traineeMap);
         
         // calculate grades from gradesToCalculate list
-        // should return List<Map<String, Object>>
-        List<Map<String, Object>> data = null;
+        List<Map<String, Object>> data = ReportCalculations.traineeAverage(gradesToCalculate);
+        
         // calculate benchmark 
-        // should return single decimal 
-        Decimal benchmark = 0;
+        Decimal benchmark = ReportCalculations.benchmark(benchmarkList);
         
         // add to map to return to javaScript controller
         dataToSend.put('trainee', data);
         dataToSend.put('benchmark', benchmark);
-        system.debug(JSON.serialize(dataToSend));
         
         return JSON.serialize(dataToSend);
     }
     
-	// tested and working.
+    // tested and working.
     @AuraEnabled
     public static String getBatchOverallQCTable(Id batchID){
         Map<String, Object> dataToSend = new Map<String, Object>();
@@ -180,8 +193,8 @@ public class ReportsController {
         
         // seperate trainee notes/grades 
         for (Training_Assignment__c t : traineeList){
-            traineeGrades.clear();
-            traineeNotes.clear();
+            traineeGrades = new List<String>();
+            traineeNotes = new List<String>();
             for (Caliber_Note__c n : qcList){
                 if (n.Contact__c == t.Contact__c && n.Note_Type__c == 'QC Trainee'){
                     traineeGrades.add(n.QC_Status__c);
@@ -216,11 +229,56 @@ public class ReportsController {
     
     @AuraEnabled
     public static String getBatchOverallTechSkillsRadar(Id batchID){
-        // query caliber_grade__c > caliber_assessment__r.assessment_category__r.Name, 
-        // caliber_assessment__r.max_points__c, caliber_assessment__r.training__Id__c, 
-        // score__c, Contact__c
+        List<Caliber_Grade__c> allData = [SELECT Id, Score__c, Contact__c, Caliber_Assessment__r.Assessment_Category__r.Name,
+                                          Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__r.Trainer__r.Name, 
+                                          Caliber_Assessment__r.Training_Id__r.StartDate__c
+                                          FROM Caliber_Grade__c WHERE Caliber_Assessment__r.Training_Id__c = : batchID];
+        
+        List<Map<String, Object>> gradesToCalculate = new List<Map<String, Object>>();
+        Map<String, Object> categoryGrades = null;
+        List<Decimal> scores = null;
+        List<Decimal> maxPoints = null;
+        
+        // get all categories, put into set
+        Set<String> categoryList = new Set<String>();
+        for (Caliber_Grade__c g : allData){
+            categoryList.add(g.Caliber_Assessment__r.Assessment_Category__r.Name);
+        }
+        
+        // for each category get all scores and max_points, put into map to calculate
+        for (String cat : categoryList){
+            scores = new List<Decimal>();
+            maxPoints = new List<Decimal>();
+        	for (Caliber_Grade__c g : allData){
+                if (g.Caliber_Assessment__r.Assessment_Category__r.Name == cat){
+                    scores.add(g.Score__c);
+                    maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
+                }
+            }
+            categoryGrades = new Map<String, Object>();
+            categoryGrades.put('name', cat);
+            categoryGrades.put('score', scores);
+            categoryGrades.put('maxPoints', maxPoints);
+            gradesToCalculate.add(categoryGrades);
+        }
+        
+        // calculate the batch's category average
+        List<Map<String, Object>> categories = ReportCalculations.categoryAverage(gradesToCalculate);
+        
+        // get batch name
+		
+        String name = allData[0].Caliber_Assessment__r.Training_Id__r.Trainer__r.Name + ' - ' + allData[0].Caliber_Assessment__r.Training_Id__r.StartDate__c.format();
+        
+        // add name and category to batch map        
+        Map<String, Object> batch = new Map<String, Object>();
+        batch.put('categories', categories);
+        batch.put('name', name);
+        system.debug(batch);
+        
+        // do the same for the trainee
+		
        	
-
         return 'todo';
     }
+    
 }//end of ReportsController class

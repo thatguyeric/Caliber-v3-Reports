@@ -16,11 +16,25 @@ Returns:
 
 Finding Benchmark:
 
-Takes: [{
+Takes: 
+[{
     'score' : Decimal,
     'maxPoints' : Decimal
 }]
 
+Returns: Decimal
+
 Finding tech skills (category) scores for trainees:
 
 Takes:
+[{
+    'category' : String,
+    'score' : Decimal[],
+    'maxPoints' : Decimal[]
+}]
+
+Returns:
+[{
+    category : String,
+    grade : Decimal
+}]

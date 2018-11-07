@@ -34,17 +34,17 @@ Technical Skills Radar Chart:
 // All Weeks & Single Trainee
 // Single Week & Single Trainee
 {
-    batch : [{
+    batch : {
         name : String,
         categories : [{
-            category : String,
+            name : String,
             grade : Decimal
         }]
-    }],
+    },
     trainee : [{
         name : String,
         categories : [{
-            category : String,
+            name : String,
             grade : Decimal
         }]
     }]
