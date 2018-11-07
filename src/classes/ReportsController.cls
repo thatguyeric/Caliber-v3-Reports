@@ -223,4 +223,23 @@ public class ReportsController {
 
         return 'todo';
     }
+    
+    @AuraEnabled
+    public static String getBatchOverallWeeklyProgressLine(Id batchID){
+        Map<String, Object> dataToSend = new Map<String, Object>();
+        List<Id> traineeIDs = new List<Id>();
+        
+        // get trainees that are a part of current batch
+        for (Training_Assignment__c t : [SELECT Contact__c FROM Training_Assignment__c WHERE Training__c = : batchID]){
+            traineeIDs.add(t.Contact__c);
+        }
+        
+        // get all grades associated with each trainee
+        List<Caliber_Grade__c> gradesList = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c 
+                                             FROM Caliber_Grade__c
+                                             WHERE Contact__c IN : traineeIDs];
+        
+        return 'todo';
+    }
 }//end of ReportsController class
