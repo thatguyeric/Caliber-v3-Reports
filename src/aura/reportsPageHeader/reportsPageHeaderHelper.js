@@ -57,7 +57,9 @@
             var state = response.getState();
             if (state === "SUCCESS"){
                 component.set("v.allTrainees", response.getReturnValue());
-                component.set("v.currentTraineeName", "Trainee")
+                component.set("v.currentTraineeName", "Trainee");
+                component.set("v.currentTrainee", null);
+                this.fireReportFilterChange(component);
             }
         });
         $A.enqueueAction(actionGetBatchTrainees);
@@ -73,6 +75,7 @@
             if (state === "SUCCESS"){
                 component.set("v.currentTrainee", response.getReturnValue());
                 component.set("v.currentTraineeName", response.getReturnValue().Name);
+            	this.fireReportFilterChange(component);
             }
         });
         $A.enqueueAction(actionGetTrainee);
@@ -92,5 +95,24 @@
             }
         });
         $A.enqueueAction(actionSetBatch);
+    },
+    
+    //fires event when any aspect of the report filter changes
+    //if all weeks or all trainees is selected passes in -1 for them
+    //if batch is null passes in -1
+    fireReportFilterChange : function(component){
+        var reportFilterEvent = component.getEvent("reportFilterChange");
+        var batch = component.get("v.currentBatch");
+        var batchId = batch == null ? null : batch.Id;
+        var allWeeks = component.get("v.allWeekLabels");
+        var week = allWeeks.indexOf(component.get("v.weekLabel"));
+        week = week == -1 ? null : week+1;
+        var trainee = component.get("v.currentTrainee");
+        var traineeId = trainee == null ? null : trainee.Id;
+        console.log("batch id: " + batchId);
+        console.log("week: " + week);
+        console.log("trainee id: " + traineeId);
+        reportFilterEvent.setParams({"batchId" : batchId, "week" : week, "traineeId" : traineeId});
+        reportFilterEvent.fire();
     }
 })

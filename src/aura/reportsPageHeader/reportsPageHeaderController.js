@@ -22,11 +22,13 @@
     	var menuItemLabel = event.getSource().get("v.label"); 
         component.set("v.batchLabel", menuItemLabel);
         helper.setCurrentBatch(component);
+        helper.fireReportFilterChange(component);
 	},
     //update week label when user chooses a week
     updateWeekLabel : function(component, event, helper) {
     	var menuItemLabel = event.getSource().get("v.label"); 
         component.set("v.weekLabel", menuItemLabel);
+        helper.fireReportFilterChange(component);
 	},
     //update trainee label when user chooses a trainee
     updateTraineeLabel : function(component, event, helper) {
@@ -35,9 +37,12 @@
     //update trainee label for all trainees
     updateAllTraineeLabel : function(component, event, helper){
         component.set("v.currentTraineeName", "Trainee");
+        component.set("v.currentTrainee", null);
+        helper.fireReportFilterChange(component);
     },
     //update week label for all weeks
     updateAllWeeks : function(component, event, helper){
         component.set("v.weekLabel", "Week (All)");
+        helper.fireReportFilterChange(component);
     }
  })

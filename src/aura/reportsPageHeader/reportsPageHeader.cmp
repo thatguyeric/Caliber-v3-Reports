@@ -1,5 +1,7 @@
 <aura:component controller="ReportsController">
     <aura:handler name="init" action="{!c.doInitYears}" value="{!this}"/>
+    <aura:registerEvent name="reportFilterChange" type="c:ReportFilterChange"/>
+    
     <!-- values for chosen year and all years with batches -->
     <aura:attribute name="allYears" type="Integer[]"/>
     <aura:attribute name="yearLabel" type="Integer" default="2018"/>
@@ -17,7 +19,7 @@
     <aura:attribute name="currentTraineeName" type="String" default="Trainee"/>
     <div>
         <div>
-            <!-- year menu item -->
+            <!-- year menu -->
             <ui:menu>
                 <ui:menuTriggerLink aura:id="year" label="{!v.yearLabel}"/>
                 <ui:menuList class="actionMenu" aura:id="actionMenu">
@@ -28,6 +30,7 @@
             </ui:menu>
         </div>
         <div>
+            <!-- batch menu -->
             <ui:menu>
                 <ui:menuTriggerLink aura:id="batches" label="{!v.batchLabel}"/>
                 <ui:menuList class="actionMenu" aura:id="actionMenu">
@@ -38,6 +41,7 @@
             </ui:menu>
         </div>
         <div>
+            <!-- weeks menu -->
             <ui:menu>
                 <ui:menuTriggerLink aura:id="week" label="{!v.weekLabel}"/>
                 <ui:menuList class="actionMenu" aura:id="actionMenu">
@@ -49,6 +53,7 @@
             </ui:menu>
         </div>
         <div>
+            <!-- trainee menu -->
             <ui:menu>
                 <ui:menuTriggerLink aura:id="trainee" label="{!v.currentTraineeName}"/>
                 <ui:menuList class="actionMenu" aura:id="actionMenu">
