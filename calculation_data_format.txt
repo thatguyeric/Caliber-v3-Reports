@@ -1,0 +1,19 @@
+
+Finding average overall score for trainees:
+
+Takes:
+[{
+    'name' : String,
+    'score' : Decimal[],
+    'maxPoints' : Decimal[]
+}];
+
+Returns: 
+[{
+    'name' : String,
+    'grade' : Decimal
+}]
+
+
+Finding tech skills (category) scores for trainees:
+
