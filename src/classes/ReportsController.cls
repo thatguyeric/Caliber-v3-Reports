@@ -13,6 +13,7 @@ public class ReportsController {
     }
     
     //return list of years that have batches starting in them
+    //todo: replace aggregate result with list that gets converted to set?
     @AuraEnabled
     public static List<Integer> GetAllYearsWithBatches(){
         List<AggregateResult> trainings = [select count(Id), CALENDAR_YEAR(StartDate__c) from Training__c group by CALENDAR_YEAR(StartDate__c)];
@@ -241,8 +242,8 @@ public class ReportsController {
                                              Caliber_Assessment__r.Week_Number__c
                                              FROM Caliber_Grade__c
                                              WHERE Caliber_Assessment__r.Training_Id__c = :batch.id];
-        
-        for (Integer weekNum; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
+        system.debug(batch.Caliber_Number_of_Weeks__c);
+        for (Integer weekNum = 0; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
             scores.clear();
             maxPoints.clear();
             for (Caliber_Grade__c g : gradesList){
@@ -261,8 +262,7 @@ public class ReportsController {
         // should return List<Map<String, Object>>
         List<Map<String, Object>> data = null;
         
-        dataToSend.put('weeks', data);
-        system.debug(JSON.serialize(dataToSend));
+        dataToSend.put('week', data);
         
         return JSON.serialize(dataToSend);
     }
