@@ -41,7 +41,7 @@ Technical Skills Radar Chart:
             grade : Decimal
         }]
     },
-    trainee : [{
+    trainees : [{
         name : String,
         categories : [{
             name : String,
@@ -62,7 +62,7 @@ Weekly Progress Line Chart:
 // All Weeks & Single Trainee
 // Single Week & Single Trainee
 {
-    trainee : [{
+    trainees : [{
         week : Integer,
         grade : Decimal
     }], 
@@ -87,7 +87,7 @@ Assessment Breakdown Bar Chart:
         type : String,
         grade : Decimal
     }],
-    trainee : [{
+    trainees : [{
         type : String,
         grade : Decimal
     }]

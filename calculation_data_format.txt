@@ -28,13 +28,13 @@ Finding tech skills (category) scores for trainees:
 
 Takes:
 [{
-    'category' : String,
+    'name' : String,
     'score' : Decimal[],
     'maxPoints' : Decimal[]
 }]
 
 Returns:
 [{
-    category : String,
+    name : String,
     grade : Decimal
 }]
