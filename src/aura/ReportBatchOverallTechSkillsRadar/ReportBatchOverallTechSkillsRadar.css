@@ -1,3 +1,12 @@
+.THIS.hidden {
+    display: none;
+}
+
+.THIS.report-content-container {
+    display: flex;
+    flex-direction: column;
+}
+
 .THIS.panel-header, .THIS .panel-header {
     background-color: #F26925;
 }

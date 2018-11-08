@@ -1,5 +1,7 @@
 ({
 	doServerRequest : function(component, helper, batchId, week, traineeId) {
+        // invalidate the current data
+        component.set('v.serverResponseData', null);
         // setup server request
         // set the method to call on the server based on filters
         var serverMethod;
@@ -45,7 +47,6 @@
                 }
                 // save the data for later use
                 component.set('v.serverResponseData', data);
-                helper.createChart(component, helper, data);
             } else if (state === 'INCOMPLETE') {
                 component.set('v.errorMsg', 'Error communicating with server.');
             } else if (state === 'ERROR') {
@@ -62,7 +63,12 @@
         // send the request
         $A.enqueueAction(action);
 	},
-    createChart : function(component, helper, serverResponseData) {
+    createChart : function(component, helper) {
+        var serverResponseData = component.get('v.serverResponseData');
+        if (!serverResponseData) {
+            console.log('ReportBatchOverallTechSkillsRadar.createChart: serverResponseData missing');
+            return;
+        }
         helper.populateTraineeList(component, serverResponseData);
         
         var batchData = serverResponseData.batch;
@@ -84,8 +90,7 @@
         chartData.datasets = [];
         // format batch data for chart.js
         var batchDataset = helper.getChartJSDataset(batchData, categoryIndexMap);
-        //TODO: set batch color
-        _CaliberReportChartJSDatasetColors.put(batchDataset, 'radar', 0);
+        helper.addColorsToChartJSDataset(batchDataset, 0);
         chartData.datasets.push(batchDataset);
         
         // format trainee data for chart.js for shown trainees
@@ -93,8 +98,7 @@
         shownTraineesValue.forEach(function(indexString) {
             var index = Number.parseInt(indexString);
             var traineeDataset = helper.getChartJSDataset(traineesData[index], categoryIndexMap);
-        	//TODO: set color for first few trainees, if they exist
-        	_CaliberReportChartJSDatasetColors.put(traineeDataset, 'radar', nextColorIndex);
+        	helper.addColorsToChartJSDataset(traineeDataset, nextColorIndex);
             nextColorIndex += 1;
             chartData.datasets.push(traineeDataset);
         });
@@ -146,13 +150,48 @@
         // return the dataset
         return dataset;
     },
-    /* for testing only */
-    test : function(component, helper) {
-        // set to true when not testing
-        if (false) {
-            return;
+    addColorsToChartJSDataset : function(chartJSDataset, colorIndex) {
+        var colors = [
+            {r: 114, g: 164, b: 194}, /* Revature Secondary Color Blue */
+            {r: 252, g: 180, b: 20}, /* Revature Secondary Color Yellow */
+            {r: 71, g: 76, b: 85} /* Revature Primary Color Dark Grey */
+        ];
+        
+        // color alpha values
+        var backgroundColorAlpha = 0.5;
+        var borderColorAlpha = 1.0;
+        var hoverColorAlpha = 0.3;
+        
+        function colorToString(rgb, alpha) {
+            return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha;
         }
+        
+        function getRandomColorValue() {
+            return Math.floor(Math.random() * 256);
+        }
+        
+        if (colorIndex >= colors.length) {
+            // add a new color
+            colors.push({
+                r: getRandomColorValue(),
+                g: getRandomColorValue(),
+                b: getRandomColorValue()
+            });
+        }
+        
+        chartJSDataset.backgroundColor = colorToString(colors[colorIndex], backgroundColorAlpha);
+        chartJSDataset.pointBackgroundColor = colorToString(colors[colorIndex], backgroundColorAlpha);
+        chartJSDataset.borderColor = colorToString(colors[colorIndex], borderColorAlpha);
+        chartJSDataset.pointHoverBackgroundColor = colorToString(colors[colorIndex], hoverColorAlpha);
+        chartJSDataset.pointHoverBorderColor = colorToString(colors[colorIndex], hoverColorAlpha);
+        chartJSDataset.pointBorderColor = '#FFF';
+        // radar chart should only use fill for batch overall, which we assume to use color index 0
+        chartJSDataset.fill = colorIndex === 0;
+	},
+    /* for testing only */
+    testServerRequest : function(component, helper) {
         component.set('v.errorMsg', null);
+        component.set('v.serverResponseData', null);
         
         // create test data
         var testNumTrainees = 5;
@@ -195,6 +234,5 @@
         
         // save the data for later use
         component.set('v.serverResponseData', data);
-        helper.createChart(component, helper, data);
     }
 })

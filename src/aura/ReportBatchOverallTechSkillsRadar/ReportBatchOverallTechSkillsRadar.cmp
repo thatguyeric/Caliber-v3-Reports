@@ -1,54 +1,48 @@
 <aura:component controller="ReportsController">
-    <!-- include external JavaScript libraries -->
-    <ltng:require scripts="{!join(',',
-                           $Resource.ReportUtilityJS,
-                           $Resource.chartjs
-                           )}"
-                  afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
+    <!-- init is for testing, remove when done testing -->
+    <aura:handler name="init" value="{!this}" action="{!c.test}"/>
+    <!-- Hack to make the chart load on init -->
+    <aura:attribute name="isChartNeedRender" type="Boolean" default="false"/>
     <aura:handler name="render" value="{!this}" action="{!c.handleRender}"/>
+    <!-- include external JavaScript libraries -->
+    <ltng:require scripts="{!$Resource.chartjs}"
+                  afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
+    <aura:handler name="change" value="{!v.serverResponseData}" action="{!c.handleServerResponseDataChange}"/>
     <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>
     <!-- used to make sure everything is loaded before updating chart -->
     <aura:attribute name="isScriptsLoaded" type="Boolean" default="false"/>
-    <aura:attribute name="isReportNeedUpdate" type="Boolean" default="false"/>
-    <!-- Set visibility of chart in the controller based on filters -->
-    <aura:attribute name="isVisible" type="Boolean" default="false"/>
     <!-- The data returned by the server -->
     <aura:attribute name="serverResponseData" type="Object"/>
     <!-- List of all trainees as { label: String, value: Integer } -->
     <aura:attribute name="shownTraineesOptions" type="List"/>
     <!-- List of indexes shown trainees referencing index in serverResponseData trainee list -->
     <aura:attribute name="shownTraineesValue" type="List"/>
-    <!-- Error message shown for server-related errors -->
+    <!-- Error message shown for any errors -->
     <aura:attribute name="errorMsg" type="String"/>
-    <!-- for testing -->
-    <lightning:button label="Test" variant="brand" onclick="{!c.test}"/>
+    <aura:if isTrue="{!not(empty(v.errorMsg))}">
+        <div>{!v.errorMsg}</div>
+    </aura:if>
     <!-- Report is only visible if filters apply to it -->
-    <aura:if isTrue="{!v.isVisible}">
-        <aura:if isTrue="{!not(empty(v.errorMsg))}">
-        	<div>{!v.errorMsg}</div>
-        </aura:if>
-        <!-- Use a lightning utility icon -->
-        <!-- use either utility:people or utility:user -->
+    <lightning:layout aura:id="reportContentContainer" class="report-content-container">
         <lightning:layout class="panel-header">
-        	<lightning:buttonIcon class="trainee-button"
-                                  iconClass="trainee-button-icon"
-                                  iconName="utility:people"
-                                  variant="bare"/>
+            <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
+                <!-- Use a lightning utility icon -->
+                <!-- use either utility:people or utility:user -->
+                <lightning:buttonIcon class="trainee-button"
+                                      iconClass="trainee-button-icon"
+                                      iconName="utility:people"
+                                      variant="bare"/>
+            </aura:if>
         </lightning:layout>
         <lightning:layout>
-        	<!--<aura:iteration items="{!v.allTrainees}" var="trainee">
-                <lightning:layoutItem>
-                    <lightning:input type="checkbox"
-                                     label="{!trainee.name}"
-                                     name="{!'trainee' + trainee.index}"/>
-                </lightning:layoutItem>
-            </aura:iteration>-->
-            <lightning:checkboxGroup name="Shown Trainees"
-                                     label="Trainees"
-                                     options="{!v.shownTraineesOptions}"
-                                     value="{!v.shownTraineesValue}"
-                                     onchange="{!c.updateShownTraineeIndexesList}"/>
+            <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
+                <lightning:checkboxGroup name="Shown Trainees"
+                                         label="Trainees"
+                                         options="{!v.shownTraineesOptions}"
+                                         value="{!v.shownTraineesValue}"
+                                         onchange="{!c.updateShownTraineeIndexesList}"/>
+            </aura:if>
         </lightning:layout>
         <canvas aura:id="chart"/>
-    </aura:if>
+    </lightning:layout>
 </aura:component>
