@@ -26,15 +26,18 @@ Returns: Decimal
 
 Finding tech skills (category) scores for trainees:
 
+Finding Average grade for batch for each week
+
+each map represents a week's grades
+
 Takes:
 [{
-    'name' : String,
-    'score' : Decimal[],
-    'maxPoints' : Decimal[]
+	'score' : Decimal[],
+	'maxPoints' : Decimal[]
 }]
 
 Returns:
 [{
-    name : String,
-    grade : Decimal
+	'week' : Integer,
+	'grade' : Decimal
 }]
