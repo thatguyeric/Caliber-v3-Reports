@@ -189,12 +189,12 @@
         chartJSDataset.fill = colorIndex === 0;
 	},
     /* for testing only */
-    testServerRequest : function(component, helper) {
+    testServerRequest : function(component, helper, useSingleTrainee) {
         component.set('v.errorMsg', null);
         component.set('v.serverResponseData', null);
         
         // create test data
-        var testNumTrainees = 5;
+        var testNumTrainees = 10;
         var testNumCategories = 5;
         var data = {
             batch: {
@@ -209,18 +209,21 @@
             testCategorySums.push(0);
         }
         for (var i = 0; i < testNumTrainees; i++) {
-            data.trainee.push({
+            var currentTrainee = {
                 name : 'Test Trainee ' + i,
                 categories : []
-            });
+            };
             for (var j = 0; j < testNumCategories; j++) {
                 // grade is random number from 60 to 90
                 var testGrade = Math.floor(Math.random() * 30 + 60);
-                data.trainee[i].categories.push({
+                currentTrainee.categories.push({
                     name : 'Test Cat ' + j,
                     grade : testGrade
                 });
                 testCategorySums[j] += testGrade;
+            }
+            if (!useSingleTrainee || useSingleTrainee && data.trainee.length == 0) {
+                data.trainee.push(currentTrainee);
             }
         }
         for (var i = 0; i < testNumCategories; i++) {
@@ -232,7 +235,11 @@
             });
         }
         
-        // save the data for later use
+        if (useSingleTrainee) {
+            component.set('v.shownTraineesValue', ['0']);
+        } else {
+            component.set('v.shownTraineesValue', []);
+        }
         component.set('v.serverResponseData', data);
     }
 })
