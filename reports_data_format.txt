@@ -22,8 +22,10 @@ Batch QC Report Table:
     numOfWeeks : Integer,
     trainees : [{
         name : String,
-        grades : String[],
-        notes : String[]
+        weeklyData : [{
+        	grade : String,
+        	note : Strings
+        }]
     }],
     batchNotes : String[],
     batchGrades : String[]

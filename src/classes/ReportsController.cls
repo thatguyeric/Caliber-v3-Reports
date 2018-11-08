@@ -168,8 +168,10 @@ public class ReportsController {
         List<Id> traineeIDs = new List<Id>();
         List<Map<String, Object>> traineeData = new List<Map<String, Object>>();
         String fullName;
-        List<String> traineeGrades = new List<String>();
-        List<String> traineeNotes = new List<String>();
+        List<Map<String, String>> weeklyData = new List<Map<String, String>>();
+        Map<String, String> weeklyDataMap = null;
+        String traineeGrade;
+        String traineeNote;
         List<String> batchNotes = new List<String>();
         List<String> batchGrades = new List<String>();
         
@@ -193,19 +195,24 @@ public class ReportsController {
         
         // seperate trainee notes/grades 
         for (Training_Assignment__c t : traineeList){
-            traineeGrades = new List<String>();
-            traineeNotes = new List<String>();
-            for (Caliber_Note__c n : qcList){
-                if (n.Contact__c == t.Contact__c && n.Note_Type__c == 'QC Trainee'){
-                    traineeGrades.add(n.QC_Status__c);
-                    traineeNotes.add(n.Note_Content__c);
+            weeklyData = new List<Map<String, String>>();
+            for (integer i = 1; i < numOfWeeks+1; i++){
+                for (Caliber_Note__c n : qcList){
+                    if (n.Contact__c == t.Contact__c && n.Note_Type__c == 'QC Trainee' && n.Week_Number__c == i){
+                        traineeGrade = n.QC_Status__c;
+                        traineeNote = n.Note_Content__c;
+                    }
                 }
+                weeklyDataMap = new Map<String, String>();
+                weeklyDataMap.put('grade', traineeGrade);
+                weeklyDataMap.put('note', traineeNote);
+                weeklyData.add(weeklyDataMap);
             }
+            
             traineeMap = new Map<String, Object>();
             fullName = t.Contact__r.LastName + ', ' + t.Contact__r.FirstName;
             traineeMap.put('name', fullName);
-            traineeMap.put('grades', traineeGrades);	
-            traineeMap.put('notes', traineeNotes);
+            traineeMap.put('weeklyData', weeklyData);
             traineeData.add(traineeMap);
         }
         
@@ -219,10 +226,10 @@ public class ReportsController {
         
         // add to map to return to javaScript controller
         dataToSend.put('numOfWeeks', numOfWeeks);
-        dataToSend.put('trainee', traineeData);
+        dataToSend.put('trainees', traineeData);
         dataToSend.put('batchGrades', batchGrades);
         dataToSend.put('batchNotes', batchNotes);
-        
+        system.debug(dataToSend);
         return JSON.serialize(dataToSend);
     }
     
@@ -285,7 +292,7 @@ public class ReportsController {
         List<Map<String, Object>> traineeCatList = null;
         String traineeName;
         List<Id> tList = new List<Id>(traineeIDs);
-
+        
         // for each trainee we want their score and max_points of each category
         for (Id t : tList){
             for (String cat : categoryList){
@@ -307,7 +314,7 @@ public class ReportsController {
                 traineeCatMap.put('maxPoints', maxPoints);
                 traineeGradesToCalculate.add(traineeCatMap);
             }
-        
+            
             // calculate the trainee's category average
             traineeCatList = ReportCalculations.average(traineeGradesToCalculate);
             traineeMap = new Map<String, Object>();
