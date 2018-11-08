@@ -1,27 +1,25 @@
 <aura:component controller="ReportsController">
-    <!-- for testing -->
-    <aura:handler name="init" value="{!this}" action="{!c.test}"/>
     <!-- include external JavaScript libraries -->
     <ltng:require scripts="{!join(',',
-                           $Resource.chartjs,
-                           $Resource.ReportUtilityJS
+                           $Resource.ReportUtilityJS,
+                           $Resource.chartjs
                            )}"
-                  afterScriptsLoaded="{!c.renderChart}"/>
+                  afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
+    <aura:handler name="render" value="{!this}" action="{!c.handleRender}"/>
+    <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>
+    <!-- used to make sure everything is loaded before updating chart -->
+    <aura:attribute name="isScriptsLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="isReportNeedUpdate" type="Boolean" default="false"/>
     <!-- Set visibility of chart in the controller based on filters -->
     <aura:attribute name="isVisible" type="Boolean" default="false"/>
-    <!-- config object for chart.js -->
-    <aura:attribute name="chartConfig" type="Object"/>
     <!-- The data returned by the server -->
     <aura:attribute name="serverResponseData" type="Object"/>
-    <!-- List of names of all trainees
-         Index is same as index in serverResponseData
-    -->
-    <aura:attribute name="allTrainees" type="String[]"/>
+    <!-- List of all trainees as { label: String, value: Integer } -->
+    <aura:attribute name="shownTraineesOptions" type="List"/>
     <!-- List of indexes shown trainees referencing index in serverResponseData trainee list -->
-    <aura:attribute name="shownTraineeIndexes" type="Integer[]"/>
+    <aura:attribute name="shownTraineesValue" type="List"/>
     <!-- Error message shown for server-related errors -->
     <aura:attribute name="errorMsg" type="String"/>
-    <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>
     <!-- for testing -->
     <lightning:button label="Test" variant="brand" onclick="{!c.test}"/>
     <!-- Report is only visible if filters apply to it -->
@@ -29,6 +27,28 @@
         <aura:if isTrue="{!not(empty(v.errorMsg))}">
         	<div>{!v.errorMsg}</div>
         </aura:if>
+        <!-- Use a lightning utility icon -->
+        <!-- use either utility:people or utility:user -->
+        <lightning:layout class="panel-header">
+        	<lightning:buttonIcon class="trainee-button"
+                                  iconClass="trainee-button-icon"
+                                  iconName="utility:people"
+                                  variant="bare"/>
+        </lightning:layout>
+        <lightning:layout>
+        	<!--<aura:iteration items="{!v.allTrainees}" var="trainee">
+                <lightning:layoutItem>
+                    <lightning:input type="checkbox"
+                                     label="{!trainee.name}"
+                                     name="{!'trainee' + trainee.index}"/>
+                </lightning:layoutItem>
+            </aura:iteration>-->
+            <lightning:checkboxGroup name="Shown Trainees"
+                                     label="Trainees"
+                                     options="{!v.shownTraineesOptions}"
+                                     value="{!v.shownTraineesValue}"
+                                     onchange="{!c.updateShownTraineeIndexesList}"/>
+        </lightning:layout>
         <canvas aura:id="chart"/>
     </aura:if>
 </aura:component>

@@ -39,14 +39,13 @@
                 var data = response.getReturnValue();
                 // if only one trainee, set them as shown, reset it otherwise
                 if (traineeId) {
-                    component.set('v.shownTraineeIndexes', [0]);
+                    component.set('v.shownTraineesValue', ['0']);
                 } else {
-                    component.set('v.shownTraineeIndexes', []);
+                    component.set('v.shownTraineesValue', []);
                 }
                 // save the data for later use
-                component.set('v.serverResponseData', data)
-                helper.populateTraineeList(component, data);
-                helper.createChartConfig(component, helper, data);
+                component.set('v.serverResponseData', data);
+                helper.createChart(component, helper, data);
             } else if (state === 'INCOMPLETE') {
                 component.set('v.errorMsg', 'Error communicating with server.');
             } else if (state === 'ERROR') {
@@ -63,10 +62,12 @@
         // send the request
         $A.enqueueAction(action);
 	},
-    createChartConfig : function(component, helper, serverResponseData) {
-        var batchData = serverResponseData.batch[0];
-        var traineeData = serverResponseData.trainee;
-        var shownTraineeIndexes = component.get('v.shownTraineeIndexes');
+    createChart : function(component, helper, serverResponseData) {
+        helper.populateTraineeList(component, serverResponseData);
+        
+        var batchData = serverResponseData.batch;
+        var traineesData = serverResponseData.trainee;
+        var shownTraineesValue = component.get('v.shownTraineesValue');
         
         // get chart data
         var chartData = {};
@@ -84,48 +85,48 @@
         // format batch data for chart.js
         var batchDataset = helper.getChartJSDataset(batchData, categoryIndexMap);
         //TODO: set batch color
-        //window._ChartJSDatasetColors.put(batchDataset, 'radar', 0);
+        _CaliberReportChartJSDatasetColors.put(batchDataset, 'radar', 0);
         chartData.datasets.push(batchDataset);
         
         // format trainee data for chart.js for shown trainees
-        shownTraineeIndexes.forEach(function(index) {
-            var singleTraineeData = traineeData[index];
-            var singleTraineeDataset = helper.getChartJSDataset(singleTraineeData, categoryIndexMap);
+        var nextColorIndex = 1;
+        shownTraineesValue.forEach(function(indexString) {
+            var index = Number.parseInt(indexString);
+            var traineeDataset = helper.getChartJSDataset(traineesData[index], categoryIndexMap);
         	//TODO: set color for first few trainees, if they exist
-            chartData.datasets.push(singleTraineeDataset);
+        	_CaliberReportChartJSDatasetColors.put(traineeDataset, 'radar', nextColorIndex);
+            nextColorIndex += 1;
+            chartData.datasets.push(traineeDataset);
         });
         
         var chartConfig = {
             type: 'radar',
-            data: chartData
+            data: chartData,
+            options: {
+                scale: {
+                    ticks: {
+                        min: 0,
+                        max: 100
+                    }
+                }
+            }
         };
         
-        // can only render chart if page is done loading
-        // use ltng:require afterScriptsLoaded to render first time
-        // if chartConfig is defined, then page must be done loading
-        if (component.get('v.chartConfig')) {
-            helper.renderChart(component);
-        }
-        
-        component.set('v.chartConfig', chartConfig);
-    },
-    renderChart : function(component) {
-        var chartConfig = component.get('v.chartConfig');
-        if (chartConfig) {
-            var element = component.find('chart').getElement();
-            var chartContext = element.getContext('2d');
-            var chart = new Chart(chartContext, chartConfig);
-        }
+        var element = component.find('chart').getElement();
+        var chartContext = element.getContext('2d');
+        var chart = new Chart(chartContext, chartConfig);
     },
     populateTraineeList : function(component, serverResponseData) {
         var traineeData = serverResponseData['trainee'];
-        var allTrainees = [];
-        // the order of trainees must be the same in server response data and allTrainees list
-        traineeData.forEach(function(trainee) {
-            var name = trainee['name'];
-            allTrainees.push(name);
-        });
-        component.set('v.allTrainees', allTrainees);
+        var shownTraineesOptions = [];
+        for (var i = 0; i < traineeData.length; i++) {
+            var trainee = traineeData[i];
+            shownTraineesOptions.push({
+                label : trainee['name'],
+                value: '' + i
+            });
+        }
+        component.set('v.shownTraineesOptions', shownTraineesOptions);
     },
     getChartJSDataset : function(serverDataSingle, categoryIndexMap) {
         // create object to return
@@ -151,72 +152,49 @@
         if (false) {
             return;
         }
-        // begin test code
-        component.set('v.isVisible', true);
         component.set('v.errorMsg', null);
+        
+        // create test data
+        var testNumTrainees = 5;
+        var testNumCategories = 5;
         var data = {
-            batch: [{
+            batch: {
                 name: 'Test Batch Name',
-                categories: [{
-                    name : 'Test Cat 1',
-            		grade : 85.0
-                }, {
-                    name : 'Test Cat 2',
-            		grade : 75.0
-                }, {
-                    name : 'Test Cat 3',
-            		grade : 75.0
-                }, {
-                    name : 'Test Cat 4',
-            		grade : 75.0
-                }, {
-                    name : 'Test Cat 5',
-            		grade : 75.0
-                }]
-            }],
-            trainee: [{
-                name: 'Test Trainee 1',
-                categories: [{
-                    name : 'Test Cat 1',
-            		grade : 90.0
-                }, {
-                    name : 'Test Cat 2',
-            		grade : 80.0
-                }, {
-                    name : 'Test Cat 3',
-            		grade : 75.0
-                }, {
-                    name : 'Test Cat 4',
-            		grade : 75.0
-                }, {
-                    name : 'Test Cat 5',
-            		grade : 75.0
-                }]
-            }, {
-                name: 'Test Trainee 2',
-                categories: [{
-                    name : 'Test Cat 1',
-            		grade : 80.0
-                }, {
-                    name : 'Test Cat 2',
-            		grade : 70.0
-                }, {
-                    name : 'Test Cat 3',
-            		grade : 75.0
-                }, {
-                    name : 'Test Cat 4',
-            		grade : 75.0
-                }, {
-                    name : 'Test Cat 5',
-            		grade : 75.0
-                }]
-            }]
+                categories: []
+            },
+            trainee: []
         };
-        // if only one trainee, set them as shown, reset it otherwise
-        component.set('v.shownTraineeIndexes', [1]);
+        var testCategorySums = [];
+        // fill sums array with 0
+        for (var i = 0; i < testNumCategories; i++) {
+            testCategorySums.push(0);
+        }
+        for (var i = 0; i < testNumTrainees; i++) {
+            data.trainee.push({
+                name : 'Test Trainee ' + i,
+                categories : []
+            });
+            for (var j = 0; j < testNumCategories; j++) {
+                // grade is random number from 60 to 90
+                var testGrade = Math.floor(Math.random() * 30 + 60);
+                data.trainee[i].categories.push({
+                    name : 'Test Cat ' + j,
+                    grade : testGrade
+                });
+                testCategorySums[j] += testGrade;
+            }
+        }
+        for (var i = 0; i < testNumCategories; i++) {
+            // average of trainee grades
+            var testGrade = testCategorySums[i] / testNumTrainees;
+            data.batch.categories.push({
+                name : 'Test Cat ' + i,
+                grade : testGrade
+            });
+        }
+        
         // save the data for later use
-        component.set('v.serverResponseData', data)
-        helper.populateTraineeList(component, data);
-        helper.createChartConfig(component, helper, data);
+        component.set('v.serverResponseData', data);
+        helper.createChart(component, helper, data);
     }
 })

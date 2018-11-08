@@ -1,0 +1,10 @@
+.THIS.panel-header, .THIS .panel-header {
+    background-color: #F26925;
+}
+
+.THIS.trainee-button-icon, .THIS .trainee-button-icon {
+    color: #FFFFFF;
+    width: 1.8rem;
+    height: 1.8rem;
+    margin: 20%;
+}
