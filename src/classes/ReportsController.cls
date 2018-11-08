@@ -148,7 +148,7 @@ public class ReportsController {
         benchmarkList.add(traineeMap);
         
         // calculate grades from gradesToCalculate list
-        List<Map<String, Object>> data = ReportCalculations.traineeAverage(gradesToCalculate);
+        List<Map<String, Object>> data = ReportCalculations.average(gradesToCalculate);
         
         // calculate benchmark 
         Decimal benchmark = ReportCalculations.benchmark(benchmarkList);
@@ -222,63 +222,102 @@ public class ReportsController {
         dataToSend.put('trainee', traineeData);
         dataToSend.put('batchGrades', batchGrades);
         dataToSend.put('batchNotes', batchNotes);
-        system.debug(JSON.serialize(dataToSend));
         
         return JSON.serialize(dataToSend);
     }
     
     @AuraEnabled
     public static String getBatchOverallTechSkillsRadar(Id batchID){
-        List<Caliber_Grade__c> allData = [SELECT Id, Score__c, Contact__c, Caliber_Assessment__r.Assessment_Category__r.Name,
+        List<Caliber_Grade__c> allData = [SELECT Id, Score__c, Caliber_Assessment__r.Assessment_Category__r.Name,
                                           Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__r.Trainer__r.Name, 
-                                          Caliber_Assessment__r.Training_Id__r.StartDate__c
+                                          Caliber_Assessment__r.Training_Id__r.StartDate__c, Contact__r.FirstName, Contact__r.LastName
                                           FROM Caliber_Grade__c WHERE Caliber_Assessment__r.Training_Id__c = : batchID];
         
-        List<Map<String, Object>> gradesToCalculate = new List<Map<String, Object>>();
-        Map<String, Object> categoryGrades = null;
+        List<Map<String, Object>> batchGradesToCalculate = new List<Map<String, Object>>();
+        Map<String, Object> batchCategoryGrades = null;
         List<Decimal> scores = null;
         List<Decimal> maxPoints = null;
+        Map<String, Object> dataToSend = new Map<String, Object>();
+        Set<Id> traineeIDs = new Set<Id>();
         
         // get all categories, put into set
         Set<String> categoryList = new Set<String>();
         for (Caliber_Grade__c g : allData){
             categoryList.add(g.Caliber_Assessment__r.Assessment_Category__r.Name);
+            traineeIDs.add(g.Contact__c);
         }
         
         // for each category get all scores and max_points, put into map to calculate
         for (String cat : categoryList){
             scores = new List<Decimal>();
             maxPoints = new List<Decimal>();
-        	for (Caliber_Grade__c g : allData){
+            for (Caliber_Grade__c g : allData){
                 if (g.Caliber_Assessment__r.Assessment_Category__r.Name == cat){
                     scores.add(g.Score__c);
                     maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
                 }
             }
-            categoryGrades = new Map<String, Object>();
-            categoryGrades.put('name', cat);
-            categoryGrades.put('score', scores);
-            categoryGrades.put('maxPoints', maxPoints);
-            gradesToCalculate.add(categoryGrades);
+            batchCategoryGrades = new Map<String, Object>();
+            batchCategoryGrades.put('name', cat);
+            batchCategoryGrades.put('score', scores);
+            batchCategoryGrades.put('maxPoints', maxPoints);
+            batchGradesToCalculate.add(batchCategoryGrades);
         }
         
         // calculate the batch's category average
-        List<Map<String, Object>> categories = ReportCalculations.categoryAverage(gradesToCalculate);
+        List<Map<String, Object>> categories = ReportCalculations.average(batchGradesToCalculate);
         
         // get batch name
-		
         String name = allData[0].Caliber_Assessment__r.Training_Id__r.Trainer__r.Name + ' - ' + allData[0].Caliber_Assessment__r.Training_Id__r.StartDate__c.format();
         
         // add name and category to batch map        
         Map<String, Object> batch = new Map<String, Object>();
-        batch.put('categories', categories);
+        batch.put('categories', categories); // categories goes here
         batch.put('name', name);
-        system.debug(batch);
         
-        // do the same for the trainee
-		
-       	
-        return 'todo';
+        dataToSend.put('batch', batch);
+        
+        // do the same for each trainee
+        Map<String, Object> traineeCatMap = null;
+        Map<String, Object> traineeMap = null;
+        List<Map<String, Object>> traineeGradesToCalculate = new List<Map<String, Object>>();
+        List<Map<String, Object>> traineeList = new List<Map<String, Object>>();
+        List<Map<String, Object>> traineeCatList = null;
+        String traineeName;
+        List<Id> tList = new List<Id>(traineeIDs);
+
+        // for each trainee we want their score and max_points of each category
+        for (Id t : tList){
+            for (String cat : categoryList){
+                scores = new List<Decimal>();
+                maxPoints = new List<Decimal>();
+                system.debug('category: ' + cat);
+                for (Caliber_Grade__c g : allData){
+                    if (t == g.Contact__c){
+                        if (g.Caliber_Assessment__r.Assessment_Category__r.Name == cat){
+                            traineeName = g.Contact__r.LastName + ', ' + g.Contact__r.FirstName;
+                            scores.add(g.Score__c);
+                            maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
+                        }
+                    }
+                }
+                traineeCatMap = new Map<String, Object>();
+                traineeCatMap.put('name', cat);
+                traineeCatMap.put('score', scores);
+                traineeCatMap.put('maxPoints', maxPoints);
+                traineeGradesToCalculate.add(traineeCatMap);
+            }
+        
+            // calculate the trainee's category average
+            traineeCatList = ReportCalculations.average(traineeGradesToCalculate);
+            traineeMap = new Map<String, Object>();
+            traineeMap.put('name', traineeName);
+            traineeMap.put('categories', traineeCatList); // traineeCatList goes here
+            traineeList.add(traineeMap); 
+        }
+        
+        dataToSend.put('trainees', traineeList);
+        return JSON.serialize(dataToSend);
     }
     
 }//end of ReportsController class
