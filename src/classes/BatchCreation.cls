@@ -1,7 +1,7 @@
 public class BatchCreation {
     
     /* Set the trainerId to a user Id for a user that will be considered a trainer */
-    public static Id trainerId = '005f4000003oF0W';
+    public static Id trainerId = '005f4000003KDxI';
     
     
     public static List<String> firstNames = new List<String>{'Donald', 'Mickey', 'Daisy', 'Goofy', 'Minnie', 'Dan', 'Oliver', 'Barry', 'Felicity', 'Iris', 

@@ -1,0 +1,44 @@
+<aura:component controller="AccountsController">
+        <aura:attribute name="accounts" type="List" />
+        <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+        <!-- Use a data table from the Lightning Design System: https://www.lightningdesignsystem.com/components/data-tables/ -->
+        <table class="slds-table slds-table_bordered slds-table_striped slds-table_cell-buffer slds-table_fixed-layout">
+          <thead>
+            <tr class="slds-text-heading_label">
+              <th scope="col"><div class="slds-truncate" title="ID">ID</div></th>
+              <th scope="col"><div class="slds-truncate" title="Name">Name</div></th>
+              <th scope="col"><div class="slds-truncate" title="Type">Type</div></th>
+              <th scope="col"><div class="slds-truncate" title="Number Of Employees">Number Of Employees</div></th>
+              <th scope="col"><div class="slds-truncate" title="Ticker Symbol">Ticker Symbol</div></th>
+              <th scope="col"><div class="slds-truncate" title="Phone">Phone</div></th>
+              <th scope="col"><div class="slds-truncate" title="Delete">Delete</div></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Use the Apex model and controller to fetch server side data -->
+            <aura:iteration items="{!v.accounts}" var="account">
+                <tr>
+                    <th scope="row"><div class="slds-truncate" title="{!account.Id}">{!account.Id}</div></th>
+                    <td><div class="slds-truncate" title="{!account.Name}">{!account.Name}</div></td>
+                    <td><div class="slds-truncate" title="{!account.Type}">{!account.Type}</div></td>
+                    <td><div class="slds-truncate" title="{!account.NumberOfEmployees}">{!account.NumberOfEmployees}</div></td>
+                    <td><div class="slds-truncate" title="{!account.TickerSymbol}">{!account.TickerSymbol}</div></td>
+                    <td><div class="slds-truncate" title="{!account.Phone}">{!account.Phone}</div></td>
+                    <td>
+                        <form class="account-form" onsubmit="{!c.deleteAccount}">
+                          <input type="hidden" value="{!account.Name}" class="account-name" />
+                          <!-- Use a Lightning Base Component To display an icon next to the label -->
+                          <lightning:button
+                            label="Delete"
+                            iconName="utility:delete"
+                            iconPosition="left"
+                            variant="destructive"
+                            type="submit"
+                          />
+                        </form>
+                    </td>
+                </tr>
+            </aura:iteration>
+          </tbody>
+        </table>
+      </aura:component>
