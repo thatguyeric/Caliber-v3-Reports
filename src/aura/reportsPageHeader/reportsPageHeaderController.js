@@ -1,4 +1,6 @@
 ({
+    //todo: update all batches based on year, all weeks based on batch
+    //all trainees based on batch
     
     //todo: split doInitYears into multiple init functions?
     //initialize years, batches, weeks, and trainees
@@ -28,7 +30,6 @@
             var state = response.getState();
             if (state === "SUCCESS"){
                 component.set("v.allBatches", response.getReturnValue());
-                component.set("v.currentBatch", response.getReturnValue()[0]);
                 helper.buildBatchStrings(component);
             }
         });
@@ -43,18 +44,15 @@
     updateBatchLabel : function(component, event, helper) {
     	var menuItemLabel = event.getSource().get("v.value"); 
         component.set("v.batchLabel", menuItemLabel);
-        helper.setCurrentBatch(component);
 	},
     
     updateWeekLabel : function(component, event, helper) {
     	var menuItemLabel = event.getSource().get("v.value");
         component.set("v.weekLabel", menuItemLabel);
-        helper.fireReportFilterChange(component);
 	},
     
     updateTraineeLabel : function(component, event, helper) {
-    	var menuItemLabel = event.getSource().get("v.value");
+    	var menuItemLabel = event.getSource().get("v.label");
         component.set("v.currentTrainee", menuItemLabel);
-        helper.getSelectedTrainee(component, event);
 	}
  })
