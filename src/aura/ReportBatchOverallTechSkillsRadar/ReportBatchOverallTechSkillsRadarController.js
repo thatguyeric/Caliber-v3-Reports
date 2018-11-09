@@ -43,9 +43,39 @@
         //TODO: remove when done testing
         helper.testServerRequest(component, helper);
     },
-    /* Update the chart when the selected trainees change */
-    updateShownTraineeIndexesList : function(component, event, helper) {
-        component.set('v.shownTraineesValue', event.getParam('value'));
+    openModal : function(component, event, helper) {
+        // open the modal for selecting trainees to show
+        $A.util.addClass(component.find('trainee-modal'), 'slds-fade-in-open');
+        $A.util.addClass(component.find('trainee-modal-backdrop'), 'slds-backdrop_open');
+        /* Set the checked values for the checkboxes.
+         * If the aura:iteration with lightning:input is replaced with
+         * lightning:checkboxGroup, then this code can be removed
+         */
+        var shownTraineesValue = component.get('v.shownTraineesValue');
+        component.find('trainee-checkbox').forEach(function(checkbox) {
+            var checkboxValue = checkbox.get('v.value');
+            if (shownTraineesValue.includes(checkboxValue)) {
+                checkbox.set('v.checked', true);
+            }
+        });
+    },
+    closeModal : function(component, event, helper) {
+        // close the modal for selecting trainees to show
+        $A.util.removeClass(component.find('trainee-modal'), 'slds-fade-in-open');
+        $A.util.removeClass(component.find('trainee-modal-backdrop'), 'slds-backdrop_open');
+        /* Update the list of selected trainees.
+         * If the aura:iteration with lightning:input is replaced with
+         * lightning:checkboxGroup, then this code needs to be modified to
+         * get the value list from lightning:checkboxGroup
+         */
+        var shownTraineesValue = [];
+        component.find('trainee-checkbox').forEach(function(checkbox) {
+            if (checkbox.get('v.checked')) {
+                shownTraineesValue.push(checkbox.get('v.value'));
+            }
+        });
+        component.set('v.shownTraineesValue', shownTraineesValue);
+        // update the chart
         helper.createChart(component, helper);
     },
     /* Used for testing */

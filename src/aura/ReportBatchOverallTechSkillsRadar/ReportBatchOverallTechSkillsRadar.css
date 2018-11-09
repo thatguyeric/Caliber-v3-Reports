@@ -3,11 +3,31 @@
 }
 
 .THIS .trainee-button {
-    float: right !important;
+    float: right;
 }
 
 .THIS .trainee-button-icon {
     color: #FFFFFF;
     width: 1.3rem;
     height: 1.3rem;
+}
+
+.THIS .slds-modal {
+    color: #474C55; /* Revature Primary Color Dark Grey */
+    border-color: #B9B9BA; /* Revature Secondary Color Light Grey */
+}
+
+.THIS .slds-modal__content {
+    padding: 15px;
+}
+
+.THIS .trainee-checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.THIS .trainee-checkbox-group * {
+    font-family: 'Futura-Std-Bold';
+    font-weight: bold;
+    font-size: 14px;
 }
