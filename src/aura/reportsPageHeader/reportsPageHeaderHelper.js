@@ -101,7 +101,8 @@
     //if all weeks or all trainees is selected passes in -1 for them
     //if batch is null passes in -1
     fireReportFilterChange : function(component){
-        var reportFilterEvent = component.getEvent("reportFilterChange");
+       // var reportFilterEvent = component.getEvent("reportFilterChange");
+        var reportFilterEvent = $A.get("e.c:ReportFilterChange");
         var batch = component.get("v.currentBatch");
         var batchId = batch == null ? null : batch.Id;
         var allWeeks = component.get("v.allWeekLabels");

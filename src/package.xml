@@ -4,22 +4,5 @@
         <members>*</members>
         <name>AuraDefinitionBundle</name>
     </types>
-    <types>
-        <members>*</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>Contact</members>
-        <members>*</members>
-        <name>CustomObject</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>StaticResource</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexTrigger</name>
-    </types>
     <version>38.0</version>
 </Package>
