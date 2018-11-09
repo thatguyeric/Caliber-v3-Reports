@@ -59,7 +59,7 @@
                 response.getReturnValue().forEach(function(element){
                     trainee = {
                         "label" : element.Name,
-                        "value" : element,
+                        "value" : element.Id,
                     }
                     trainees.push(trainee);
                 });
@@ -77,10 +77,14 @@
         var trainingParam = component.get("v.allTrainees");
         var trainingContacts = [];
         var menuItemLabel = event.getSource().get("v.value");
-        for (var i = 1; i < trainingParam.length; i++){
-            trainingContacts.push(trainingParam[i].value.Id);
-            if (trainingParam[i].value == menuItemLabel){
-                menuItemLabel = trainingParam[i].label;
+        if (menuItemLabel != null){
+            for (var i = 1; i < trainingParam.length; i++){
+                trainingContacts.push(trainingParam[i].value);
+                if (trainingParam[i].value == menuItemLabel.Id){
+                    if (menuItemLabel != null){
+                        menuItemLabel = trainingParam[i].label;
+                    }
+                }
             }
         }
         actionGetTrainee.setParams({"allTraineeIds" : trainingContacts, "traineeName" : menuItemLabel});
@@ -119,7 +123,6 @@
     //if all weeks or all trainees is selected passes in nan or null for them
     //if batch is null passes in null
     fireReportFilterChange : function(component){
-
         var reportFilterEvent = $A.get("e.c:ReportFilterChange");
         var batch = component.get("v.currentBatch");
         var batchId = batch == null ? null : batch.Id;
@@ -130,7 +133,7 @@
         week = week == -1 ? null : week;
         
         var trainee = component.get("v.currentTrainee");
-        var traineeId = trainee == null ? null : trainee.Id;
+        var traineeId = trainee == null ? null : trainee;
         console.log("batchId: " + batchId + " week: " + week + " traineeId: " + traineeId);
         reportFilterEvent.setParams({"batchId" : batchId, "week" : week, "traineeId" : traineeId});
         reportFilterEvent.fire();
