@@ -1,0 +1,66 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="ReportsController">
+    <ltng:require styles="{!join(',',
+                          $Resource.revStyling, $Resource.bootstrapCSS)}"
+                  scripts="{!join(',',
+                           $Resource.jQuery, $Resource.bootstrapJS)}"/>
+    <aura:attribute name="weekNums" type="String[]" />
+    <aura:attribute name="batch" type="List" />
+    <aura:attribute name="trainees" type="List"/>
+    <aura:handler event="c:ReportFilterChange" action="{!c.doInit}"/>
+    
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
+    <div class="container">
+        <table class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th scope="col" >
+                        <b>Trainee</b>
+                    </th>
+                    <aura:iteration items="{!v.weekNums}" var="week">
+                        <th style="text-align:center" scope="col">
+                            <b>{!week}</b>
+                        </th>
+                    </aura:iteration>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.trainees}" var="trainee">
+                    <tr>
+                        <th scope="row">
+                            {!trainee.name}
+                        </th>
+                        <!-- trainee grades -->
+                        <c:BatchOverallQCTableRow trainee="{!trainee}"/>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+            <tfoot>
+                <th>
+                    <b>Overall</b>
+                </th>
+                <aura:iteration items="{!v.batch}" var="batch">
+                    <th style="text-align:center">
+                        <a data-toggle="modal" data-target="{!'#' + batch.index + batch.note + '-note'}">{!batch.grade}</a>
+                    </th>
+                    <div class="modal fade" id="{!batch.index + batch.note + '-note'}" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalTitle">{!batch.grade}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- pull from master to get yupdated JSON response. Notes go in here. -->
+                                    {!batch.note}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aura:iteration>
+            </tfoot>
+        </table>
+    </div>
+    
+</aura:component>

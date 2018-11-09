@@ -119,6 +119,7 @@
     //if all weeks or all trainees is selected passes in nan or null for them
     //if batch is null passes in null
     fireReportFilterChange : function(component){
+
         var reportFilterEvent = $A.get("e.c:ReportFilterChange");
         var batch = component.get("v.currentBatch");
         var batchId = batch == null ? null : batch.Id;
