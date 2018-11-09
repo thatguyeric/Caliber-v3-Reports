@@ -94,32 +94,6 @@ public class BatchCreation {
         }
         insert grades;
         
-        List<Caliber_Note__c> qcList = new List<Caliber_Note__c>();
-        //iterate through weeks
-        for (Integer i = 1; i < 6; i++){
-            Caliber_Note__c b = new Caliber_Note__c();
-            b.Is_QC_Feedback__c = true;
-            b.Note_Type__c = 'QC Batch';
-            b.QC_Status__c = 'Good';
-            b.Training__c = trainingId;
-            b.Week_Number__c = i;
-            b.Note_Content__c = 'good job on week ' + i;
-            qcList.add(b);
-            //iterate through associates
-            for (Integer j = 0; j < 20; j++){
-                Caliber_Note__c n = new Caliber_Note__c();
-                n.Contact__c = associates[j].Id;
-                n.Is_QC_Feedback__c = true;
-                n.Note_Type__c = 'QC Trainee';
-                n.QC_Status__c = 'Good';
-                n.Training__c = trainingId;
-                n.Week_Number__c = i;
-                n.Note_Content__c = 'good job on week ' + i;
-                qcList.add(n);
-            }
-        }
-        insert qcList;
-        
     }//end of createAssessmentAndGrades
     
     
