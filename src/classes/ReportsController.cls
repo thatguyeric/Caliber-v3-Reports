@@ -200,11 +200,13 @@ public class ReportsController {
                     if (n.Contact__c == t.Contact__c && n.Note_Type__c == 'QC Trainee' && n.Week_Number__c == i){
                         traineeGrade = n.QC_Status__c;
                         traineeNote = n.Note_Content__c;
+                        break;
                     }
                 }
                 weeklyDataMap = new Map<String, String>();
                 weeklyDataMap.put('grade', traineeGrade);
                 weeklyDataMap.put('note', traineeNote);
+                weeklyDataMap.put('index', String.valueOf(i));
                 weeklyData.add(weeklyDataMap);
             }
             
@@ -216,18 +218,29 @@ public class ReportsController {
         }
         
         // seperate batch notes/grades
-        for (Caliber_Note__c n : qcList){
-            if (n.Note_Type__c == 'QC Batch'){
-                batchGrades.add(n.QC_Status__c);
-                batchNotes.add(n.Note_Content__c);
+        Map<String, Object> batchWeeklyData = null;
+        List<Map<String, Object>> batchWeekList = new List<Map<String, Object>>();
+        String grade;
+        String note;
+        for (integer i = 1; i <= numOfWeeks; i++){
+            for (Caliber_Note__c n : qcList){
+                if (n.Note_Type__c == 'QC Batch' && n.Week_Number__c == i){
+                    grade = n.QC_Status__c;
+                    note = n.Note_Content__c;
+                    break;
+                }
             }
+            batchWeeklyData = new Map<String, Object>();
+            batchWeeklyData.put('grade', grade);
+            batchWeeklyData.put('note', note);
+            batchWeeklyData.put('index', String.valueOf(i));
+            batchWeekList.add(batchWeeklyData);
         }
-        
         // add to map to return to javaScript controller
+        dataToSend.put('batchWeeklyData', batchWeekList);
         dataToSend.put('numOfWeeks', numOfWeeks);
         dataToSend.put('trainees', traineeData);
-        dataToSend.put('batchGrades', batchGrades);
-        dataToSend.put('batchNotes', batchNotes);
+        
         return JSON.serialize(dataToSend);
     }
     
@@ -353,7 +366,7 @@ public class ReportsController {
                 }
             }
             weekMap = new Map<String, Object>();
-            weekMap.put('score', scores);	
+            weekMap.put('score', scores);   
             weekMap.put('maxPoints', maxPoints);
             gradesToCalculate.add(weekMap);
         }

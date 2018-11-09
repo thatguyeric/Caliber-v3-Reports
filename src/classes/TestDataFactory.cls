@@ -94,7 +94,7 @@ public class TestDataFactory {
         
         List<Caliber_Note__c> qcList = new List<Caliber_Note__c>();
         //iterate through weeks
-        for (Integer i = 0; i < 5; i++){
+        for (Integer i = 1; i <= 5; i++){
             Caliber_Note__c b = new Caliber_Note__c();
             b.Is_QC_Feedback__c = true;
             b.Note_Type__c = 'QC Batch';
