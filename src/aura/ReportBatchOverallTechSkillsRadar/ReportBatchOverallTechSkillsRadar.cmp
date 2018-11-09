@@ -1,6 +1,4 @@
 <aura:component controller="ReportsController">
-    <!-- init is for testing, remove when done testing -->
-    <!--<aura:handler name="init" value="{!this}" action="{!c.test}"/>-->
     <!-- Hack to handle receiving the server response before chart.js is done loading.
    		If removing the hack, replace the change event handler with a call to
    		createChart in the server callback function.
@@ -33,6 +31,14 @@
     <aura:attribute name="serverResponseData" type="Object"
                     description="The serverResponseData attribute holds
                                  the data returned by the server"/>
+    <aura:attribute name="chartColors" type="Object[]"
+                    default="[
+                             {r: 114, g: 164, b: 194}, /* Revature Secondary Color Blue */
+                             {r: 252, g: 180, b: 20}, /* Revature Secondary Color Yellow */
+                             {r: 71, g: 76, b: 85} /* Revature Primary Color Dark Grey */
+                             ]"
+                    description="The chartColors attribute stores
+                                 the colors used for the chart"/>
     <!-- List of trainees -->
     <aura:attribute name="shownTraineesOptions" type="List"
                     description="The shownTraineesOptions attribute is a list of
@@ -52,8 +58,9 @@
         <div>{!v.errorMsg}</div>
     </aura:if>
     <!-- Report is only visible if filters apply to it -->
-    <lightning:layout aura:id="reportContentContainer" class="report-content-container">
-        <lightning:layout class="panel-header">
+    <div aura:id="reportPanel" class="report-panel">
+        <div class="panel-header">
+            <span class="panel-header-title">Technical Skills</span>
             <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
                 <!-- Use a lightning utility icon -->
                 <!-- use either utility:people or utility:user -->
@@ -61,11 +68,11 @@
                 <lightning:buttonIcon class="trainee-button"
                                       iconClass="trainee-button-icon"
                                       iconName="utility:people"
-                                      variant="bare"
+                                      variant="container"
                                       onclick=""/>
             </aura:if>
-        </lightning:layout>
-        <lightning:layout>
+        </div>
+        <div class="panel-body">
             <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
                 <lightning:checkboxGroup name="Shown Trainees"
                                          label="Trainees"
@@ -74,8 +81,12 @@
                                          onchange="{!c.updateShownTraineeIndexesList}"
                                          description="Used to choose which trainees to show/hide"/>
             </aura:if>
-        </lightning:layout>
-        <!-- chart.js puts the chart here -->
-        <canvas aura:id="chart"/>
-    </lightning:layout>
+            <!-- chart.js puts the chart here -->
+            <!-- chart.js uses the parent container for sizing and
+             the canvas must be the only element in its parent -->
+            <div class="chart-container">
+                <canvas aura:id="chart"/>
+            </div>
+        </div>
+    </div>
 </aura:component>

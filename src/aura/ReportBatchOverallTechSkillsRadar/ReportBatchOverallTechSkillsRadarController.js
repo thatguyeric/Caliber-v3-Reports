@@ -15,12 +15,13 @@
             batchId && !week && traineeId ||
             batchId && week && traineeId) {
             // make sure the report is visible
-            $A.util.removeClass(component.find('reportContentContainer'), 'hidden');
+            $A.util.removeClass(component.find('reportPanel'), 'hidden');
             // send a request to the server
-            helper.doServerRequest(component, helper, batchId, week, traineeId);
+            //helper.doServerRequest(component, helper, batchId, week, traineeId);
+            helper.testServerRequest(component, helper, traineeId ? true : false);
         } else {
             // hide the component since it is not used with the current filter
-            $A.util.addClass(component.find('reportContentContainer'), 'hidden');
+            $A.util.addClass(component.find('reportPanel'), 'hidden');
         }
 	},
     handleScriptsLoaded : function(component, event, helper) {
@@ -57,7 +58,7 @@
     },
     /* Used for testing */
     test : function(component, event, helper) {
-        $A.util.removeClass(component.find('reportContentContainer'), 'hidden');
+        $A.util.removeClass(component.find('reportPanel'), 'hidden');
         helper.testServerRequest(component, helper);
     }
 })

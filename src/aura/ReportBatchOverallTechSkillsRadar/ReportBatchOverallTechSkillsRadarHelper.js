@@ -99,7 +99,7 @@
         chartData.datasets = [];
         // format batch data for chart.js
         var batchDataset = helper.getChartJSDataset(batchData, categoryIndexMap);
-        helper.addColorsToChartJSDataset(batchDataset, 0);
+        helper.addColorsToChartJSDataset(component, batchDataset, 0);
         chartData.datasets.push(batchDataset);
         
         // format trainee data for chart.js for shown trainees
@@ -107,18 +107,24 @@
         shownTraineesValue.forEach(function(indexString) {
             var index = Number.parseInt(indexString);
             var traineeDataset = helper.getChartJSDataset(traineesData[index], categoryIndexMap);
-        	helper.addColorsToChartJSDataset(traineeDataset, nextColorIndex);
+        	helper.addColorsToChartJSDataset(component, traineeDataset, nextColorIndex);
             nextColorIndex += 1;
             chartData.datasets.push(traineeDataset);
         });
         
         /* create chart config
+         * use 1:1 aspect ratio
+         * show legend
          * make chart scale 0 to 100
          */
         var chartConfig = {
             type: 'radar',
             data: chartData,
             options: {
+                aspectRatio: 1,
+                legend: {
+                    display: true
+                },
                 scale: {
                     ticks: {
                         min: 0,
@@ -173,14 +179,10 @@
      * if colorIndex is outside the array,
      * then a random color will be added to the array
      */
-    addColorsToChartJSDataset : function(chartJSDataset, colorIndex) {
+    addColorsToChartJSDataset : function(component, chartJSDataset, colorIndex) {
         /* array of colors to use
          */
-        var colors = [
-            {r: 114, g: 164, b: 194}, /* Revature Secondary Color Blue */
-            {r: 252, g: 180, b: 20}, /* Revature Secondary Color Yellow */
-            {r: 71, g: 76, b: 85} /* Revature Primary Color Dark Grey */
-        ];
+        var colors = component.get('v.chartColors');
         
         // color alpha values
         var backgroundColorAlpha = 0.5;
@@ -200,13 +202,15 @@
             return Math.floor(Math.random() * 256);
         }
         
-        if (colorIndex >= colors.length) {
+        console.log(colors);
+        if (colorIndex < colors.length) {
             // add a new color if needed
             colors.push({
                 r: getRandomColorValue(),
                 g: getRandomColorValue(),
                 b: getRandomColorValue()
             });
+            component.set('v.chartColors', colors);
         }
         
         // add colors to chart.js dataset
