@@ -1,3 +1,3 @@
 <aura:application extends="force:slds">
-	<c:reportsPageHeader></c:reportsPageHeader>
+    <c:QCTableContainer/>
 </aura:application>
