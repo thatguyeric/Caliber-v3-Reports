@@ -1,24 +1,4 @@
 <aura:component controller="ReportsController">
-    <!-- Hack to handle receiving the server response before chart.js is done loading.
-   		If removing the hack, replace the change event handler with a call to
-   		createChart in the server callback function.
-	-->
-    <aura:attribute name="isChartNeedRender" type="Boolean" default="false"
-                    description="Used in a hack to handle receiving
-                                 the server response before chart.js is done loading.
-                                 The isChartNeedRender attribute indicates whether
-                                 to perform the hack or not."/>
-    <aura:handler name="render" value="{!this}" action="{!c.handleRender}"
-                  description="Used in a hack to handle receiving
-                               the server response before chart.js is done loading.
-                               The render system event handler is only used to
-                               create the chart as part of the hack"/>
-    <aura:handler name="change" value="{!v.serverResponseData}" action="{!c.handleServerResponseDataChange}"
-                  description="Use a change event on serverResponseData to allow for
-                               the hack used to work around receiving the response from
-                               the server before chart.js is done loading.
-                               If removing the hack, replace this with a call to
-                               createChart in the server callback function."/>
     <!-- include external JavaScript libraries -->
     <ltng:require scripts="{!$Resource.chartjs}"
                   afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
@@ -28,6 +8,10 @@
     <aura:attribute name="isScriptsLoaded" type="Boolean" default="false"
                     description="The isScriptsLoaded attribute is used to avoid
                                  creating the chart before chart.js is done loading"/>
+    <aura:attribute name="eventParamsReportFilterChange" type="Object"
+                    description="Stores the parameters of the ReportFilterChange
+                                 event if chart.js is not finished loading when
+                                 the event is received"/>
     <aura:attribute name="serverResponseData" type="Object"
                     description="The serverResponseData attribute holds
                                  the data returned by the server"/>

@@ -3,8 +3,6 @@
 }
 
 .THIS.report-panel {
-    width: 30vw;
-    margin-left: 20px;
     display: flex;
     flex-direction: column;
     border: 1px solid #B9B9BA;  /* Revature Secondary Color Light Grey */

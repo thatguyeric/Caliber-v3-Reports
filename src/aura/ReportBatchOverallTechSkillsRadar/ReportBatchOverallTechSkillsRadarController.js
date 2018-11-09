@@ -17,8 +17,16 @@
             // make sure the report is visible
             $A.util.removeClass(component.find('reportPanel'), 'hidden');
             // send a request to the server
-            //helper.doServerRequest(component, helper, batchId, week, traineeId);
-            helper.testServerRequest(component, helper, traineeId ? true : false);
+            // if scripts are not loaded yet, do server request after scripts are done loading
+            if (component.get('v.isScriptsLoaded')) {
+            	helper.doServerRequest(component, helper, batchId, week, traineeId);
+            } else {
+                component.set('v.eventParamsReportFilterChange', {
+                    batchId: batchId,
+                    week: week,
+                    traineeId: traineeId
+                });
+            }
         } else {
             // hide the component since it is not used with the current filter
             $A.util.addClass(component.find('reportPanel'), 'hidden');
@@ -26,29 +34,10 @@
 	},
     handleScriptsLoaded : function(component, event, helper) {
         component.set('v.isScriptsLoaded', true);
-    },
-    /* Used in a hack to handle receiving the
-     * server response before chart.js is done loading.
-     */
-    handleRender : function(component, event, helper) {
-        // render event will be fired after this method exits,
-        // so make sure to avoid an infinite loop
-        if (component.get('v.isScriptsLoaded') && component.get('v.isChartNeedRender')) {
-            console.log('ReportBatchOverallTechSkillsRadar: creating chart on render');
-            component.set('v.isChartNeedRender', false);
-            helper.createChart(component, helper);
-        }
-    },
-    /* Create the chart when the server response data is ready */
-    handleServerResponseDataChange : function(component, event, helper) {
-        // scripts might not be done loading yet
-        if (component.get('v.isScriptsLoaded')) {
-            helper.createChart(component, helper);
-        } else {
-            component.set('v.isChartNeedRender', true);
-            console.log('ReportBatchOverallTechSkillsRadar: ' +
-                        'received response from server before chart.js finished loading');
-            //component.set('v.errorMsg', 'Error creating chart. Set a filter to create chart.');
+        // do server request if chart.js was not done loading
+        var params = component.get('v.eventParamsReportFilterChange');
+        if (params) {
+            helper.doServerRequest(component, helper, params.batchId, params.week, params.traineeId);
         }
     },
     /* Update the chart when the selected trainees change */

@@ -1,6 +1,10 @@
 ({
     /* Send a request to the server for chart data */
 	doServerRequest : function(component, helper, batchId, week, traineeId) {
+        //TODO: remove when done testing
+        helper.testServerRequest(component, helper, traineeId ? true : false);
+        return;
+        
         // invalidate the current data
         component.set('v.serverResponseData', null);
         // clear error message
@@ -49,7 +53,7 @@
                 }
                 // save the data for later use
                 component.set('v.serverResponseData', data);
-                /* put createChart() here if removing hack for chart.js not being loaded yet */
+                helper.createChart(component, helper);
             } else if (state === 'INCOMPLETE') {
                 // notify the user
                 console.log('ReportBatchOverallTechSkillsRadar: Server state was INCOMPLETE');
@@ -202,7 +206,6 @@
             return Math.floor(Math.random() * 256);
         }
         
-        console.log(colors);
         if (colorIndex < colors.length) {
             // add a new color if needed
             colors.push({
@@ -287,5 +290,6 @@
         }
         // set test server response data
         component.set('v.serverResponseData', data);
+        helper.createChart(component, helper);
     }
 })
