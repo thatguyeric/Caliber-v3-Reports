@@ -13,6 +13,7 @@ public class ReportsController {
     }
     
     //return list of years that have batches starting in them
+    //todo: replace aggregate result with list that gets converted to set?
     @AuraEnabled
     public static List<Integer> GetAllYearsWithBatches(){
         List<AggregateResult> trainings = [select count(Id), CALENDAR_YEAR(StartDate__c) from Training__c group by CALENDAR_YEAR(StartDate__c)];
@@ -74,8 +75,7 @@ public class ReportsController {
         List<Contact> contacts = [select id, Name from Contact where id in :allTraineeIds];
         for (Contact contact : contacts){
             if (contact != null){
-                if (contact.Name == traineeName){
-                    system.debug(contact);
+                if (contact.Id == traineeName){
                     return contact;
                 }
             }
@@ -340,7 +340,7 @@ public class ReportsController {
         dataToSend.put('trainees', traineeList);
         return JSON.serialize(dataToSend);
     }
-    
+	
     @AuraEnabled
     public static String getBatchOverallWeeklyProgressLine(Id batchID){
         Training__c batch = [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
@@ -349,11 +349,13 @@ public class ReportsController {
         List<Map<String, Object>> calculatedGrades = new List<Map<String, Object>>();
         List<Decimal> scores = new List<Decimal>();
         
+        //get the list of all grades for the batch
         List<Caliber_Grade__c> gradesList = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
                                              Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
                                              Caliber_Assessment__r.Week_Number__c
                                              FROM Caliber_Grade__c
                                              WHERE Caliber_Assessment__r.Training_Id__c = :batch.id];
+        //average each weeks grades
         for (Integer weekNum = 0; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
             scores.clear();
             for (Caliber_Grade__c g : gradesList){
@@ -375,5 +377,4 @@ public class ReportsController {
         
         return JSON.serialize(calculatedGrades);
     }
-    
 }//end of ReportsController class

@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION">
+    <aura:attribute name="batchId" type="Id"/>
+    <aura:attribute name="week" type="Integer"/>
+    <aura:attribute name="traineeId" type="Id"/>
+</aura:event>
