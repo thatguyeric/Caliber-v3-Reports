@@ -133,7 +133,7 @@
         week = week == -1 ? null : week;
         
         var trainee = component.get("v.currentTrainee");
-        var traineeId = trainee == null ? null : trainee;
+        var traineeId = trainee == null ? null : trainee.Id;
         console.log("batchId: " + batchId + " week: " + week + " traineeId: " + traineeId);
         reportFilterEvent.setParams({"batchId" : batchId, "week" : week, "traineeId" : traineeId});
         reportFilterEvent.fire();
