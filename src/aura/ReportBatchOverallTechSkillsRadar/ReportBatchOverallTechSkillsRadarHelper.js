@@ -1,9 +1,12 @@
 ({
+    /* Send a request to the server for chart data */
 	doServerRequest : function(component, helper, batchId, week, traineeId) {
         // invalidate the current data
         component.set('v.serverResponseData', null);
+        // clear error message
+        component.set('v.errorMsg', null);
         // setup server request
-        // set the method to call on the server based on filters
+        // set the server method to call based on the filters
         var serverMethod;
         if (week && traineeId) {
             serverMethod = 'c.getBatchSingleWeekSingleTraineeTechSkillsRadar';
@@ -14,7 +17,7 @@
         }
 		var action = component.get(serverMethod);
         
-        // set parameters based on filters
+        // set parameters for the server method being called
         if (week && traineeId) {
             action.setParams({
                 batchID : batchId,
@@ -37,9 +40,8 @@
             // only render the chart if success
             var state = response.getState();
             if (state === 'SUCCESS') {
-                component.set('v.errorMsg', null);
                 var data = response.getReturnValue();
-                // if only one trainee, set them as shown, reset it otherwise
+                // if only one trainee, set them as shown, reset shown trainees otherwise
                 if (traineeId) {
                     component.set('v.shownTraineesValue', ['0']);
                 } else {
@@ -47,9 +49,13 @@
                 }
                 // save the data for later use
                 component.set('v.serverResponseData', data);
+                /* put createChart() here if removing hack for chart.js not being loaded yet */
             } else if (state === 'INCOMPLETE') {
+                // notify the user
+                console.log('ReportBatchOverallTechSkillsRadar: Server state was INCOMPLETE');
                 component.set('v.errorMsg', 'Error communicating with server.');
             } else if (state === 'ERROR') {
+                // notify the user of the error
                 var errors = response.getError();
                 var errorMsg = 'Unknown Error';
                 if (errors) {
@@ -57,6 +63,7 @@
                     	errorMsg = 'Error Message: ' + errors[0].message;
                     }
                 }
+                console.log('ReportBatchOverallTechSkillsRadar: Server returned error: ' + errorMsg);
                 component.set('v.errorMsg', errorMsg);
             }
         });
@@ -65,10 +72,12 @@
 	},
     createChart : function(component, helper) {
         var serverResponseData = component.get('v.serverResponseData');
+        // need server response data to continue
         if (!serverResponseData) {
             console.log('ReportBatchOverallTechSkillsRadar.createChart: serverResponseData missing');
             return;
         }
+        // populate the list of trainees available to select for the chart
         helper.populateTraineeList(component, serverResponseData);
         
         var batchData = serverResponseData.batch;
@@ -103,6 +112,9 @@
             chartData.datasets.push(traineeDataset);
         });
         
+        /* create chart config
+         * make chart scale 0 to 100
+         */
         var chartConfig = {
             type: 'radar',
             data: chartData,
@@ -116,10 +128,14 @@
             }
         };
         
+        // render the chart
         var element = component.find('chart').getElement();
-        var chartContext = element.getContext('2d');
-        var chart = new Chart(chartContext, chartConfig);
+        var chart = new Chart(element, chartConfig);
     },
+    /* populate the list of trainees available to select for the chart
+     * <lightning:checkboxGroup> wants a list of objects with the format
+     * {label: String, value: String}
+     */
     populateTraineeList : function(component, serverResponseData) {
         var traineeData = serverResponseData['trainee'];
         var shownTraineesOptions = [];
@@ -132,6 +148,7 @@
         }
         component.set('v.shownTraineesOptions', shownTraineesOptions);
     },
+    /* Get the chart.js dataset for a single trainee or the batch overall */
     getChartJSDataset : function(serverDataSingle, categoryIndexMap) {
         // create object to return
         var dataset = {};
@@ -150,7 +167,15 @@
         // return the dataset
         return dataset;
     },
+    /* Add colors to a chart.js dataset
+     * colorIndex is the index in the colors array
+     * use colorIndex === 0 for batch overall
+     * if colorIndex is outside the array,
+     * then a random color will be added to the array
+     */
     addColorsToChartJSDataset : function(chartJSDataset, colorIndex) {
+        /* array of colors to use
+         */
         var colors = [
             {r: 114, g: 164, b: 194}, /* Revature Secondary Color Blue */
             {r: 252, g: 180, b: 20}, /* Revature Secondary Color Yellow */
@@ -162,16 +187,21 @@
         var borderColorAlpha = 1.0;
         var hoverColorAlpha = 0.3;
         
+        /* convert objects in the colors array to the format for chart.js
+         * chart.js uses a default alpha value of 1.0 when it is not specified
+         * chart.js also supports hexadecimal and HSL notation
+         */
         function colorToString(rgb, alpha) {
             return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha;
         }
         
+        // get a random RGB color value
         function getRandomColorValue() {
             return Math.floor(Math.random() * 256);
         }
         
         if (colorIndex >= colors.length) {
-            // add a new color
+            // add a new color if needed
             colors.push({
                 r: getRandomColorValue(),
                 g: getRandomColorValue(),
@@ -179,6 +209,7 @@
             });
         }
         
+        // add colors to chart.js dataset
         chartJSDataset.backgroundColor = colorToString(colors[colorIndex], backgroundColorAlpha);
         chartJSDataset.pointBackgroundColor = colorToString(colors[colorIndex], backgroundColorAlpha);
         chartJSDataset.borderColor = colorToString(colors[colorIndex], borderColorAlpha);
@@ -190,8 +221,10 @@
 	},
     /* for testing only */
     testServerRequest : function(component, helper, useSingleTrainee) {
-        component.set('v.errorMsg', null);
+        // invalidate the current data
         component.set('v.serverResponseData', null);
+        // clear error message
+        component.set('v.errorMsg', null);
         
         // create test data
         var testNumTrainees = 10;
@@ -208,6 +241,7 @@
         for (var i = 0; i < testNumCategories; i++) {
             testCategorySums.push(0);
         }
+        // create trainee test data
         for (var i = 0; i < testNumTrainees; i++) {
             var currentTrainee = {
                 name : 'Test Trainee ' + i,
@@ -220,12 +254,18 @@
                     name : 'Test Cat ' + j,
                     grade : testGrade
                 });
+                /* always need to calculate sum for many trainees
+                 * to make batch overall not equal to the grades
+                 * when filtering by trainee
+                 */
                 testCategorySums[j] += testGrade;
             }
+            // only add one trainee to the chart if filtering by trainee
             if (!useSingleTrainee || useSingleTrainee && data.trainee.length == 0) {
                 data.trainee.push(currentTrainee);
             }
         }
+        // add batch overall to chart
         for (var i = 0; i < testNumCategories; i++) {
             // average of trainee grades
             var testGrade = testCategorySums[i] / testNumTrainees;
@@ -235,11 +275,13 @@
             });
         }
         
+        // if only one trainee, set them as shown, reset shown trainees otherwise
         if (useSingleTrainee) {
             component.set('v.shownTraineesValue', ['0']);
         } else {
             component.set('v.shownTraineesValue', []);
         }
+        // set test server response data
         component.set('v.serverResponseData', data);
     }
 })

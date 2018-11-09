@@ -1,24 +1,53 @@
 <aura:component controller="ReportsController">
     <!-- init is for testing, remove when done testing -->
-    <aura:handler name="init" value="{!this}" action="{!c.test}"/>
-    <!-- Hack to make the chart load on init -->
-    <aura:attribute name="isChartNeedRender" type="Boolean" default="false"/>
-    <aura:handler name="render" value="{!this}" action="{!c.handleRender}"/>
+    <!--<aura:handler name="init" value="{!this}" action="{!c.test}"/>-->
+    <!-- Hack to handle receiving the server response before chart.js is done loading.
+   		If removing the hack, replace the change event handler with a call to
+   		createChart in the server callback function.
+	-->
+    <aura:attribute name="isChartNeedRender" type="Boolean" default="false"
+                    description="Used in a hack to handle receiving
+                                 the server response before chart.js is done loading.
+                                 The isChartNeedRender attribute indicates whether
+                                 to perform the hack or not."/>
+    <aura:handler name="render" value="{!this}" action="{!c.handleRender}"
+                  description="Used in a hack to handle receiving
+                               the server response before chart.js is done loading.
+                               The render system event handler is only used to
+                               create the chart as part of the hack"/>
+    <aura:handler name="change" value="{!v.serverResponseData}" action="{!c.handleServerResponseDataChange}"
+                  description="Use a change event on serverResponseData to allow for
+                               the hack used to work around receiving the response from
+                               the server before chart.js is done loading.
+                               If removing the hack, replace this with a call to
+                               createChart in the server callback function."/>
     <!-- include external JavaScript libraries -->
     <ltng:require scripts="{!$Resource.chartjs}"
                   afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
-    <aura:handler name="change" value="{!v.serverResponseData}" action="{!c.handleServerResponseDataChange}"/>
-    <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>
-    <!-- used to make sure everything is loaded before updating chart -->
-    <aura:attribute name="isScriptsLoaded" type="Boolean" default="false"/>
-    <!-- The data returned by the server -->
-    <aura:attribute name="serverResponseData" type="Object"/>
-    <!-- List of all trainees as { label: String, value: Integer } -->
-    <aura:attribute name="shownTraineesOptions" type="List"/>
-    <!-- List of indexes shown trainees referencing index in serverResponseData trainee list -->
-    <aura:attribute name="shownTraineesValue" type="List"/>
-    <!-- Error message shown for any errors -->
-    <aura:attribute name="errorMsg" type="String"/>
+    <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"
+                  description="Handle the application event fired when
+                               the report filters change."/>
+    <aura:attribute name="isScriptsLoaded" type="Boolean" default="false"
+                    description="The isScriptsLoaded attribute is used to avoid
+                                 creating the chart before chart.js is done loading"/>
+    <aura:attribute name="serverResponseData" type="Object"
+                    description="The serverResponseData attribute holds
+                                 the data returned by the server"/>
+    <!-- List of trainees -->
+    <aura:attribute name="shownTraineesOptions" type="List"
+                    description="The shownTraineesOptions attribute is a list of
+                                 all trainee names with an index referencing the
+                                 index in the server response data.
+                                 Used to allow the user to select trainees to show.
+                                 It is in the format { label: String, value: Integer }"/>
+    <aura:attribute name="shownTraineesValue" type="List"
+                    description="The shownTraineesValue attribute is a list of
+                                 integers as an index referencing the
+                                 index in the server response data.
+                                 Used to store the trainees the user has selected to show."/>
+    <aura:attribute name="errorMsg" type="String"
+                    description="The errorMsg attribute stores error messages from the controller"/>
+    <!-- Hide error message element unless there is an error message -->
     <aura:if isTrue="{!not(empty(v.errorMsg))}">
         <div>{!v.errorMsg}</div>
     </aura:if>
@@ -28,10 +57,12 @@
             <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
                 <!-- Use a lightning utility icon -->
                 <!-- use either utility:people or utility:user -->
+                <!-- Button to show list of trainees to show/hide -->
                 <lightning:buttonIcon class="trainee-button"
                                       iconClass="trainee-button-icon"
                                       iconName="utility:people"
-                                      variant="bare"/>
+                                      variant="bare"
+                                      onclick=""/>
             </aura:if>
         </lightning:layout>
         <lightning:layout>
@@ -40,9 +71,11 @@
                                          label="Trainees"
                                          options="{!v.shownTraineesOptions}"
                                          value="{!v.shownTraineesValue}"
-                                         onchange="{!c.updateShownTraineeIndexesList}"/>
+                                         onchange="{!c.updateShownTraineeIndexesList}"
+                                         description="Used to choose which trainees to show/hide"/>
             </aura:if>
         </lightning:layout>
+        <!-- chart.js puts the chart here -->
         <canvas aura:id="chart"/>
     </lightning:layout>
 </aura:component>
