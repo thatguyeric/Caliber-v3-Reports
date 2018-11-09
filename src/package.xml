@@ -10,7 +10,6 @@
     </types>
     <types>
         <members>Contact</members>
-        <members>*</members>
         <name>CustomObject</name>
     </types>
     <types>
