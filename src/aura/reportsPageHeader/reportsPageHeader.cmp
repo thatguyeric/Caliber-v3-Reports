@@ -17,52 +17,10 @@
     <aura:attribute name="allTrainees" type="Contact[]"/>
     <aura:attribute name="currentTrainee" type="Contact"/>
     <aura:attribute name="currentTraineeName" type="String" default="Trainee"/>
-    <div>
-        <div>
-            <!-- year menu -->
-            <ui:menu>
-                <ui:menuTriggerLink aura:id="year" label="{!v.yearLabel}"/>
-                <ui:menuList class="actionMenu" aura:id="actionMenu">
-                    <aura:iteration items="{!v.allYears}" var="year">
-                        <ui:actionMenuItem aura:id="item" label="{!year}" click="{!c.updateYearLabel}"/>
-                    </aura:iteration>
-                </ui:menuList>
-            </ui:menu>
-        </div>
-        <div>
-            <!-- batch menu -->
-            <ui:menu>
-                <ui:menuTriggerLink aura:id="batches" label="{!v.batchLabel}"/>
-                <ui:menuList class="actionMenu" aura:id="actionMenu">
-                    <aura:iteration items="{!v.allBatchLabels}" var="batch">
-                        <ui:actionMenuItem aura:id="item2" label="{!batch}" click="{!c.updateBatchLabel}"/>
-                    </aura:iteration>
-                </ui:menuList>
-            </ui:menu>
-        </div>
-        <div>
-            <!-- weeks menu -->
-            <ui:menu>
-                <ui:menuTriggerLink aura:id="week" label="{!v.weekLabel}"/>
-                <ui:menuList class="actionMenu" aura:id="actionMenu">
-                    <ui:actionMenuItem aura:id="allWeeks" label="Week (All)" click="{!c.updateAllWeeks}"/>
-                    <aura:iteration items="{!v.allWeekLabels}" var="weekLabel">
-                    	<ui:actionMenuItem aura:id="item2" label="{!weekLabel}" click="{!c.updateWeekLabel}"/>
-                    </aura:iteration>
-                </ui:menuList>
-            </ui:menu>
-        </div>
-        <div>
-            <!-- trainee menu -->
-            <ui:menu>
-                <ui:menuTriggerLink aura:id="trainee" label="{!v.currentTraineeName}"/>
-                <ui:menuList class="actionMenu" aura:id="actionMenu">
-                    <ui:actionMenuItem aura:id="itemAllTrainees" label="All" click="{!c.updateAllTraineeLabel}"/>
-                    <aura:iteration items="{!v.allTrainees}" var="trainee">
-                    	<ui:actionMenuItem aura:id="item2" label="{!trainee.Name}" click="{!c.updateTraineeLabel}"/>
-                    </aura:iteration>
-                </ui:menuList>
-            </ui:menu>
-        </div>
-    </div>
+    
+    <lightning:comboBox name="yearBox" label="Choose a year" placeholder="{!v.yearLabel}" options="{! v.allYears }" onchange="{! c.updateYearLabel }"/>
+	<lightning:comboBox name="trainingBox" label="Choose a batch" placeholder="{!v.batchLabel}" options="{! v.allBatchLabels }" onchange="{! c.updateBatchLabel }"/>    
+	<lightning:comboBox name="weekBox" label="Choose a week" placeholder="{!v.weekLabel}" options="{! v.allWeekLabels }" onchange="{! c.updateWeekLabel }"/>    
+	<lightning:comboBox name="traineeBox" label="Choose a trainee" placeholder="{!v.currentTraineeName}" options="{! v.allTrainees }" onchange="{! c.updateTraineeLabel }"/>    
+
 </aura:component>

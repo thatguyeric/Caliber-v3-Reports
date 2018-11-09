@@ -1,33 +1,21 @@
 ({
-    //updates the batches for a year when a new year is chosen
-    //defaults to all weeks and all trainees for first batch
-    changeBatchesForYear : function(component){
-        var actionChangeBatches = component.get("c.getBatchesByYear");
-        var yearParam = component.get("v.yearLabel");
-        actionChangeBatches.setParams({"year" : yearParam});
-        actionChangeBatches.setCallback(this, function(response){
-            var state = response.getState();
-            if (state === "SUCCESS"){
-                //set batch attributes in component
-                component.set("v.allBatches", response.getReturnValue());
-                component.set("v.currentBatch", response.getReturnValue()[0]);
-                this.buildBatchStrings(component);
-                this.getWeeksForBatch(component);
-                this.getTraineesForBatch(component);
-            }
-        });
-        $A.enqueueAction(actionChangeBatches);
-    },
-    //build strings for the batches to represent them in UI
 	buildBatchStrings : function(component) {
-		var actionBuildBatchString = component.get("c.buildBatchStrings");
+		var action3 = component.get("c.buildBatchStrings");
         var trainingsParam = component.get("v.allBatches");       
-        actionBuildBatchString.setParams({"trainings" : trainingsParam});
-        actionBuildBatchString.setCallback(this, function(response){
+        action3.setParams({"trainings" : trainingsParam});
+        action3.setCallback(this, function(response){
             var state = response.getState();
+            var allBatches = [];
             if (state === "SUCCESS"){
-                component.set("v.allBatchLabels", response.getReturnValue());
-                component.set("v.batchLabel", response.getReturnValue()[0]);
+                response.getReturnValue().forEach(function(element){
+                    var batch = {
+                        "label" : element,
+                        "value" : element,
+                    }
+                    allBatches.push(batch);
+                });
+                component.set("v.allBatchLabels", allBatches);
+                component.set("v.batchLabel", allBatches[0].label);
             }
         });
         $A.enqueueAction(actionBuildBatchString);
@@ -40,8 +28,16 @@
         actionGetBatchWeeks.setParams({"batch" : trainingParam});
         actionGetBatchWeeks.setCallback(this, function(response){
             var state = response.getState();
+            var allWeeks = [];
             if (state === "SUCCESS"){
-                component.set("v.allWeekLabels", response.getReturnValue());
+                response.getReturnValue().forEach(function(element){
+                    var week = {
+                        "label" : element,
+                        "value" : element,
+                    }
+                    allWeeks.push(week);
+                });
+                component.set("v.allWeekLabels", allWeeks);
                 component.set("v.weekLabel", "Week (All)");
             }
         });
@@ -55,8 +51,18 @@
         actionGetBatchTrainees.setParams({"batch" : trainingParam});
         actionGetBatchTrainees.setCallback(this, function(response){
             var state = response.getState();
+            var trainees = [];
             if (state === "SUCCESS"){
-                component.set("v.allTrainees", response.getReturnValue());
+                var trainee = {"label":"Trainee", "value": null};
+                trainees.push(trainee);
+                response.getReturnValue().forEach(function(element){
+                    trainee = {
+                        "label" : element.Name,
+                        "value" : element.Id,
+                    }
+                    trainees.push(trainee);
+                });
+                component.set("v.allTrainees", trainees);
                 component.set("v.currentTraineeName", "Trainee");
                 component.set("v.currentTrainee", null);
                 this.fireReportFilterChange(component);
@@ -67,14 +73,25 @@
     //pull data for trainee selected from UI
     getSelectedTrainee : function(component, event){
         var actionGetTrainee = component.get("c.getSelectedTrainee");
-        var trainingParam = component.get("v.allTrainees"); 
-        var menuItemLabel = event.getSource().get("v.label");
-        actionGetTrainee.setParams({"allTrainees" : trainingParam, "traineeName" : menuItemLabel});
+        var trainingParam = component.get("v.allTrainees");
+        var trainingContacts = [];
+        var menuItemLabel = event.getSource().get("v.value");
+        for (var i = 0; i < trainingParam.length; i++){
+            trainingContacts.push(trainingParam[i].value);
+            if (trainingParam[i].value == menuItemLabel){
+                menuItemLabel = trainingParam[i].label;
+            }
+        }
+        actionGetTrainee.setParams({"allTraineeIds" : trainingContacts, "traineeName" : menuItemLabel});
         actionGetTrainee.setCallback(this, function(response){
             var state = response.getState();
             if (state === "SUCCESS"){
                 component.set("v.currentTrainee", response.getReturnValue());
-                component.set("v.currentTraineeName", response.getReturnValue().Name);
+                if (response.getReturnValue() != null){
+                	component.set("v.currentTraineeName", response.getReturnValue().Name);
+                }else{
+                    component.set("v.currentTraineeName", "Trainee");
+                }
             	this.fireReportFilterChange(component);
             }
         });
@@ -105,12 +122,14 @@
         var batch = component.get("v.currentBatch");
         var batchId = batch == null ? null : batch.Id;
         
-        var allWeeks = component.get("v.allWeekLabels");
-        var week = allWeeks.indexOf(component.get("v.weekLabel"));
-        week = week == -1 ? null : week+1;
+        var week = component.get("v.weekLabel");
+        var index = parseInt(week.substr(week.length - 1));
+        var week = index;
+        week = week == -1 ? null : week;
         
         var trainee = component.get("v.currentTrainee");
         var traineeId = trainee == null ? null : trainee.Id;
+        console.log("batchId: " + batchId + " week: " + week + " traineeId: " + traineeId);
         reportFilterEvent.setParams({"batchId" : batchId, "week" : week, "traineeId" : traineeId});
         reportFilterEvent.fire();
     }
