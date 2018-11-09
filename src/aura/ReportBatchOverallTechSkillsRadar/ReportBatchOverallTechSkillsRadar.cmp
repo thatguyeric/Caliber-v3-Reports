@@ -82,7 +82,7 @@
     </div>
     <div aura:id="trainee-modal-backdrop" class="slds-backdrop"></div>
     <!-- Report is only visible if filters apply to it -->
-    <div aura:id="reportPanel" class="report-panel">
+    <div aura:id="reportPanel" class="report-panel" style="width: 40vw; margin: 20px;">
         <div class="report-panel-header">
             <span class="report-panel-header-title">Technical Skills</span>
             <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
