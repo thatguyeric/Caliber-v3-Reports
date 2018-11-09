@@ -1,6 +1,7 @@
 <aura:component controller="ReportsController">
     <!-- include external JavaScript libraries -->
-    <ltng:require scripts="{!$Resource.chartjs}"
+    <ltng:require styles="{!$Resource.ReportPanelCSS}"
+                  scripts="{!$Resource.chartjs}"
                   afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
     <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"
                   description="Handle the application event fired when
@@ -43,8 +44,8 @@
     </aura:if>
     <!-- Report is only visible if filters apply to it -->
     <div aura:id="reportPanel" class="report-panel">
-        <div class="panel-header">
-            <span class="panel-header-title">Technical Skills</span>
+        <div class="report-panel-header">
+            <span class="report-panel-header-title">Technical Skills</span>
             <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
                 <!-- Use a lightning utility icon -->
                 <!-- use either utility:people or utility:user -->
@@ -56,14 +57,21 @@
                                       onclick=""/>
             </aura:if>
         </div>
-        <div class="panel-body">
-            <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
-                <lightning:checkboxGroup name="Shown Trainees"
-                                         label="Trainees"
+        <div class="slds-modal__container">
+        	<div class="slds-modal__header">
+            	Trainees
+            </div>
+            <div class="slds-modal__content">
+            	<lightning:checkboxGroup name="Shown Trainees"
                                          options="{!v.shownTraineesOptions}"
                                          value="{!v.shownTraineesValue}"
                                          onchange="{!c.updateShownTraineeIndexesList}"
                                          description="Used to choose which trainees to show/hide"/>
+            </div>
+        </div>
+        <div class="report-panel-body">
+            <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
+                
             </aura:if>
             <!-- chart.js puts the chart here -->
             <!-- chart.js uses the parent container for sizing and

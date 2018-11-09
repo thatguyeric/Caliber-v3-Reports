@@ -39,6 +39,9 @@
         if (params) {
             helper.doServerRequest(component, helper, params.batchId, params.week, params.traineeId);
         }
+        
+        //TODO: remove when done testing
+        helper.testServerRequest(component, helper);
     },
     /* Update the chart when the selected trainees change */
     updateShownTraineeIndexesList : function(component, event, helper) {
