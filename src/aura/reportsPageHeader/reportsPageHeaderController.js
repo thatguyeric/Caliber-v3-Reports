@@ -8,8 +8,17 @@
         var action = component.get("c.GetAllYearsWithBatches");
         action.setCallback(this, function(response){
             var state = response.getState();
+            var allYears = [];
             if (state === "SUCCESS"){
-                component.set("v.allYears", response.getReturnValue());
+                response.getReturnValue().forEach(function(element){
+                    var year = {
+                        "label" : element.toString(),
+                        "value" : element,
+                    }
+                    allYears.push(year);
+                });
+                component.set("v.allYears", allYears);
+                component.set("v.yearLabel", allYears[0].label);
             }
         });
         $A.enqueueAction(action);
@@ -28,17 +37,17 @@
     },
     
 	updateYearLabel : function(component, event, helper) {
-		var menuItemLabel = event.getSource().get("v.label"); 
+		var menuItemLabel = event.getSource().get("v.value"); 
         component.set("v.yearLabel", menuItemLabel);
 	},
     
     updateBatchLabel : function(component, event, helper) {
-    	var menuItemLabel = event.getSource().get("v.label"); 
+    	var menuItemLabel = event.getSource().get("v.value"); 
         component.set("v.batchLabel", menuItemLabel);
 	},
     
     updateWeekLabel : function(component, event, helper) {
-    	var menuItemLabel = event.getSource().get("v.label"); 
+    	var menuItemLabel = event.getSource().get("v.value");
         component.set("v.weekLabel", menuItemLabel);
 	},
     
