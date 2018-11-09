@@ -1,9 +1,9 @@
 ({
 	buildBatchStrings : function(component) {
-		var action3 = component.get("c.buildBatchStrings");
+		var actionBuildBatchString = component.get("c.buildBatchStrings");
         var trainingsParam = component.get("v.allBatches");       
-        action3.setParams({"trainings" : trainingsParam});
-        action3.setCallback(this, function(response){
+        actionBuildBatchString.setParams({"trainings" : trainingsParam});
+        actionBuildBatchString.setCallback(this, function(response){
             var state = response.getState();
             var allBatches = [];
             if (state === "SUCCESS"){
@@ -16,6 +16,7 @@
                 });
                 component.set("v.allBatchLabels", allBatches);
                 component.set("v.batchLabel", allBatches[0].label);
+                this.setCurrentBatch(component);
             }
         });
         $A.enqueueAction(actionBuildBatchString);
@@ -58,7 +59,7 @@
                 response.getReturnValue().forEach(function(element){
                     trainee = {
                         "label" : element.Name,
-                        "value" : element.Id,
+                        "value" : element,
                     }
                     trainees.push(trainee);
                 });
@@ -76,8 +77,8 @@
         var trainingParam = component.get("v.allTrainees");
         var trainingContacts = [];
         var menuItemLabel = event.getSource().get("v.value");
-        for (var i = 0; i < trainingParam.length; i++){
-            trainingContacts.push(trainingParam[i].value);
+        for (var i = 1; i < trainingParam.length; i++){
+            trainingContacts.push(trainingParam[i].value.Id);
             if (trainingParam[i].value == menuItemLabel){
                 menuItemLabel = trainingParam[i].label;
             }
@@ -115,8 +116,8 @@
     },
     
     //fires event when any aspect of the report filter changes
-    //if all weeks or all trainees is selected passes in -1 for them
-    //if batch is null passes in -1
+    //if all weeks or all trainees is selected passes in nan or null for them
+    //if batch is null passes in null
     fireReportFilterChange : function(component){
         var reportFilterEvent = $A.get("e.c:ReportFilterChange");
         var batch = component.get("v.currentBatch");

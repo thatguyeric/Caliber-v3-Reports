@@ -76,6 +76,7 @@ public class ReportsController {
         for (Contact contact : contacts){
             if (contact != null){
                 if (contact.Name == traineeName){
+                    system.debug(contact);
                     return contact;
                 }
             }
@@ -92,283 +93,39 @@ public class ReportsController {
         }
         return null;
     }
-    
-    @AuraEnabled
-    public static String getBatchOverallCumulativeScoresBar(Id batchID){
-        Map<String, Object> dataToSend = new Map<String, Object>();
-        List<Id> traineeIds = new List<Id>();
-        Map<String, Object> traineeMap = null;
-        List<Map<String, Object>> gradesToCalculate = new List<Map<String, Object>>();
-        List<Map<String, Object>> benchmarkList = new List<Map<String, Object>>();
-        List<Decimal> scores = new List<Decimal>();
-        List<Decimal> maxPoints = new List<Decimal>();
-        String fullName;
-        
-        List<Training_Assignment__c> taList = [SELECT Contact__c, Training__r.TrainingTrack__c FROM Training_Assignment__c WHERE Training__c = : batchID];
-        // get trainees that are a part of current batch
-        for (Training_Assignment__c t : taList){
-            traineeIDs.add(t.Contact__c);
-        }
-        
-        // get all grades associated with each trainee
-        List<Caliber_Grade__c> gradesList = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
-                                             Score__c, Caliber_Assessment__r.Max_Points__c 
-                                             FROM Caliber_Grade__c
-                                             WHERE Contact__c IN : traineeIDs];
-        
-        // get all scores and maxpoints for each trainee, map them and put them into a list to calculate grades
-        for (Id tID : traineeIDs){
-            scores = new List<Decimal>();
-            maxPoints = new List<Decimal>();
-            for (Caliber_Grade__c g : gradesList){
-                if (g.Contact__c == tID){
-                    fullName = g.Contact__r.LastName + ', ' + g.Contact__r.FirstName;
-                    scores.add(g.Score__c);
-                    maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
-                }
-            }
-            traineeMap = new Map<String, Object>();
-            traineeMap.put('name', fullName);
-            traineeMap.put('score', scores);	
-            traineeMap.put('maxPoints', maxPoints);
-            gradesToCalculate.add(traineeMap);
-        }
-        
-        // get all caliber grades of current training track to calculate benchmark 
-        Id trainingTrackID = taList[0].Training__r.TrainingTrack__c;
-        List<Caliber_Grade__c> trainingTrackList = [SELECT Score__c, Caliber_Assessment__r.Max_Points__c 
-                                                    FROM Caliber_Grade__c
-                                                    WHERE Caliber_Assessment__r.Training_Id__r.TrainingTrack__c = : trainingTrackID ];
-        
-        // map all scores and max_points to calculate benchmark
-        scores = new List<Decimal>();
-        maxPoints = new List<Decimal>();
-        for (Caliber_Grade__c g : trainingTrackList){
-            scores.add(g.Score__c);
-            maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
-        }
-        traineeMap = new Map<String, Object>();
-        traineeMap.put('score', scores);	
-        traineeMap.put('maxPoints', maxPoints);
-        benchmarkList.add(traineeMap);
-        
-        // calculate grades from gradesToCalculate list
-        List<Map<String, Object>> data = ReportCalculations.average(gradesToCalculate);
-        
-        // calculate benchmark 
-        Decimal benchmark = ReportCalculations.benchmark(benchmarkList);
-        
-        // add to map to return to javaScript controller
-        dataToSend.put('trainee', data);
-        dataToSend.put('benchmark', benchmark);
-        
-        return JSON.serialize(dataToSend);
-    }
-    
-    // tested and working.
-    @AuraEnabled
-    public static String getBatchOverallQCTable(Id batchID){
-        Map<String, Object> dataToSend = new Map<String, Object>();
-        Map<String, Object> traineeMap = null;
-        List<Id> traineeIDs = new List<Id>();
-        List<Map<String, Object>> traineeData = new List<Map<String, Object>>();
-        String fullName;
-        List<Map<String, String>> weeklyData = new List<Map<String, String>>();
-        Map<String, String> weeklyDataMap = null;
-        String traineeGrade;
-        String traineeNote;
-        List<String> batchNotes = new List<String>();
-        List<String> batchGrades = new List<String>();
-        
-        // find out number of weeks this batch has
-        Integer numOfWeeks = (Integer)[SELECT COUNT_DISTINCT(Week_Number__c) weeks 
-                                       FROM Caliber_Note__c WHERE Training__c = : batchID][0].get('weeks');
-        
-        // get all QC scores and feedback for batch and trainees in order by week
-        List<Caliber_Note__c> qcList = [SELECT Id, Note_Content__c, Week_Number__c, QC_Status__c, Note_Type__c, Contact__c
-                                        FROM Caliber_Note__c WHERE Training__c = : batchID AND Is_QC_Feedback__c = true 
-                                        ORDER BY Week_Number__c ASC];
-        
-        // get trainees in batch
-        List<Training_Assignment__c> traineeList = [SELECT Contact__c, Contact__r.FirstName, Contact__r.LastName 
-                                                    FROM Training_Assignment__c WHERE Training__c = : batchID];
-        
-        // get trainees that are a part of current batch
-        for (Training_Assignment__c t : traineeList){
-            traineeIDs.add(t.Contact__c);
-        }
-        
-        // seperate trainee notes/grades 
-        for (Training_Assignment__c t : traineeList){
-            weeklyData = new List<Map<String, String>>();
-            for (integer i = 1; i < numOfWeeks+1; i++){
-                for (Caliber_Note__c n : qcList){
-                    if (n.Contact__c == t.Contact__c && n.Note_Type__c == 'QC Trainee' && n.Week_Number__c == i){
-                        traineeGrade = n.QC_Status__c;
-                        traineeNote = n.Note_Content__c;
-                    }
-                }
-                weeklyDataMap = new Map<String, String>();
-                weeklyDataMap.put('grade', traineeGrade);
-                weeklyDataMap.put('note', traineeNote);
-                weeklyData.add(weeklyDataMap);
-            }
-            
-            traineeMap = new Map<String, Object>();
-            fullName = t.Contact__r.LastName + ', ' + t.Contact__r.FirstName;
-            traineeMap.put('name', fullName);
-            traineeMap.put('weeklyData', weeklyData);
-            traineeData.add(traineeMap);
-        }
-        
-        // seperate batch notes/grades
-        for (Caliber_Note__c n : qcList){
-            if (n.Note_Type__c == 'QC Batch'){
-                batchGrades.add(n.QC_Status__c);
-                batchNotes.add(n.Note_Content__c);
-            }
-        }
-        
-        // add to map to return to javaScript controller
-        dataToSend.put('numOfWeeks', numOfWeeks);
-        dataToSend.put('trainees', traineeData);
-        dataToSend.put('batchGrades', batchGrades);
-        dataToSend.put('batchNotes', batchNotes);
-        system.debug(dataToSend);
-        return JSON.serialize(dataToSend);
-    }
-    
-    @AuraEnabled
-    public static String getBatchOverallTechSkillsRadar(Id batchID){
-        List<Caliber_Grade__c> allData = [SELECT Id, Score__c, Caliber_Assessment__r.Assessment_Category__r.Name,
-                                          Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__r.Trainer__r.Name, 
-                                          Caliber_Assessment__r.Training_Id__r.StartDate__c, Contact__r.FirstName, Contact__r.LastName
-                                          FROM Caliber_Grade__c WHERE Caliber_Assessment__r.Training_Id__c = : batchID];
-        
-        List<Map<String, Object>> batchGradesToCalculate = new List<Map<String, Object>>();
-        Map<String, Object> batchCategoryGrades = null;
-        List<Decimal> scores = null;
-        List<Decimal> maxPoints = null;
-        Map<String, Object> dataToSend = new Map<String, Object>();
-        Set<Id> traineeIDs = new Set<Id>();
-        
-        // get all categories, put into set
-        Set<String> categoryList = new Set<String>();
-        for (Caliber_Grade__c g : allData){
-            categoryList.add(g.Caliber_Assessment__r.Assessment_Category__r.Name);
-            traineeIDs.add(g.Contact__c);
-        }
-        
-        // for each category get all scores and max_points, put into map to calculate
-        for (String cat : categoryList){
-            scores = new List<Decimal>();
-            maxPoints = new List<Decimal>();
-            for (Caliber_Grade__c g : allData){
-                if (g.Caliber_Assessment__r.Assessment_Category__r.Name == cat){
-                    scores.add(g.Score__c);
-                    maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
-                }
-            }
-            batchCategoryGrades = new Map<String, Object>();
-            batchCategoryGrades.put('name', cat);
-            batchCategoryGrades.put('score', scores);
-            batchCategoryGrades.put('maxPoints', maxPoints);
-            batchGradesToCalculate.add(batchCategoryGrades);
-        }
-        
-        // calculate the batch's category average
-        List<Map<String, Object>> categories = ReportCalculations.average(batchGradesToCalculate);
-        
-        // get batch name
-        String name = allData[0].Caliber_Assessment__r.Training_Id__r.Trainer__r.Name + ' - ' + allData[0].Caliber_Assessment__r.Training_Id__r.StartDate__c.format();
-        
-        // add name and category to batch map        
-        Map<String, Object> batch = new Map<String, Object>();
-        batch.put('categories', categories); // categories goes here
-        batch.put('name', name);
-        
-        dataToSend.put('batch', batch);
-        
-        // do the same for each trainee
-        Map<String, Object> traineeCatMap = null;
-        Map<String, Object> traineeMap = null;
-        List<Map<String, Object>> traineeGradesToCalculate = new List<Map<String, Object>>();
-        List<Map<String, Object>> traineeList = new List<Map<String, Object>>();
-        List<Map<String, Object>> traineeCatList = null;
-        String traineeName;
-        List<Id> tList = new List<Id>(traineeIDs);
-        
-        // for each trainee we want their score and max_points of each category
-        for (Id t : tList){
-            for (String cat : categoryList){
-                scores = new List<Decimal>();
-                maxPoints = new List<Decimal>();
-                system.debug('category: ' + cat);
-                for (Caliber_Grade__c g : allData){
-                    if (t == g.Contact__c){
-                        if (g.Caliber_Assessment__r.Assessment_Category__r.Name == cat){
-                            traineeName = g.Contact__r.LastName + ', ' + g.Contact__r.FirstName;
-                            scores.add(g.Score__c);
-                            maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
-                        }
-                    }
-                }
-                traineeCatMap = new Map<String, Object>();
-                traineeCatMap.put('name', cat);
-                traineeCatMap.put('score', scores);
-                traineeCatMap.put('maxPoints', maxPoints);
-                traineeGradesToCalculate.add(traineeCatMap);
-            }
-            
-            // calculate the trainee's category average
-            traineeCatList = ReportCalculations.average(traineeGradesToCalculate);
-            traineeMap = new Map<String, Object>();
-            traineeMap.put('name', traineeName);
-            traineeMap.put('categories', traineeCatList); // traineeCatList goes here
-            traineeList.add(traineeMap); 
-        }
-        
-        dataToSend.put('trainees', traineeList);
-        return JSON.serialize(dataToSend);
-    }
-    
+	
     @AuraEnabled
     public static String getBatchOverallWeeklyProgressLine(Id batchID){
         Training__c batch = [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
         Map<String, Object> dataToSend = new Map<String, Object>();
         Map<String, Object> weekMap = null;
-        List<Map<String, Object>> gradesToCalculate = new List<Map<String, Object>>();
+        List<Map<String, Object>> calculatedGrades = new List<Map<String, Object>>();
         List<Decimal> scores = new List<Decimal>();
-        List<Decimal> maxPoints = new List<Decimal>();
-        String fullName;
         
         List<Caliber_Grade__c> gradesList = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
                                              Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
                                              Caliber_Assessment__r.Week_Number__c
                                              FROM Caliber_Grade__c
                                              WHERE Caliber_Assessment__r.Training_Id__c = :batch.id];
-        system.debug(batch.Caliber_Number_of_Weeks__c);
         for (Integer weekNum = 0; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
             scores.clear();
-            maxPoints.clear();
             for (Caliber_Grade__c g : gradesList){
                 if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
-                    scores.add(g.Score__c);
-                    maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
+                    scores.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
                 }
             }
+            Decimal avgOfAllGrades = 0;
+            for (Decimal grade : scores){
+                avgOfAllGrades+=grade;
+            }
+            avgOfAllGrades /= scores.size();
             weekMap = new Map<String, Object>();
-            weekMap.put('score', scores);	
-            weekMap.put('maxPoints', maxPoints);
-            gradesToCalculate.add(weekMap);
+            weekMap.put('week', weekNum);	
+            weekMap.put('grade', avgOfAllGrades);
+            calculatedGrades.add(weekMap);
         }
         
-        // calculate grades from gradesToCalculate list
-        // should return List<Map<String, Object>>
-        List<Map<String, Object>> data = null;
         
-        dataToSend.put('week', data);
-        
-        return JSON.serialize(dataToSend);
+        return JSON.serialize(calculatedGrades);
     }
 }//end of ReportsController class
