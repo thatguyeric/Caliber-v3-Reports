@@ -2,7 +2,7 @@
 public class TestDataFactory {
     
     /* Set the trainerId to a user Id that will be considered a trainer */
-    public static Id trainerId = '005f4000003czCI';
+    public static Id trainerId = '005f4000003oF0W';
     
     public static List<String> firstNames = new List<String>{'Donald', 'Mickey', 'Daisy', 'Goofy', 'Minnie'};
         public static List<String> lastNames = new List<String>{'Duck', 'Mouse', 'Duck', 'Goofy', 'Mouse'};
@@ -34,18 +34,7 @@ public class TestDataFactory {
                 batch.Status__c = 'In Progress';
                 batch.Trainer__c = trainerId;
                 batch.TrainingTrack__c = track.Id;
-                batch.Caliber_Number_of_Weeks__c = 4;
                 insert batch;
-                
-                //Create second batch for year testing
-                Training__c batch2 = new Training__c();
-                batch2.StartDate__c = Date.parse('09/10/2017');
-                batch2.EndDate__c = Date.parse('11/16/2018');
-                batch2.Status__c = 'In Progress';
-                batch2.Trainer__c = trainerId;
-                batch2.TrainingTrack__c = track.Id;
-                batch2.Caliber_Number_of_Weeks__c = 4;
-                insert batch2;
                 
                 //Create Training Assignments
                 List<Training_Assignment__c> taList = new List<Training_Assignment__c>();
