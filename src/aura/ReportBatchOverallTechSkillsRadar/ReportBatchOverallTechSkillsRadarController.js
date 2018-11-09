@@ -39,9 +39,6 @@
         if (params) {
             helper.doServerRequest(component, helper, params.batchId, params.week, params.traineeId);
         }
-        
-        //TODO: remove when done testing
-        helper.testServerRequest(component, helper);
     },
     openModal : function(component, event, helper) {
         // open the modal for selecting trainees to show

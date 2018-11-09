@@ -1,10 +1,6 @@
 ({
     /* Send a request to the server for chart data */
 	doServerRequest : function(component, helper, batchId, week, traineeId) {
-        //TODO: remove when done testing
-        helper.testServerRequest(component, helper, traineeId ? true : false);
-        return;
-        
         // invalidate the current data
         component.set('v.serverResponseData', null);
         // clear error message
