@@ -22,8 +22,10 @@ Batch QC Report Table:
     numOfWeeks : Integer,
     trainees : [{
         name : String,
-        grades : String[],
-        notes : String[]
+        weeklyData : [{
+        	grade : String,
+        	note : Strings
+        }]
     }],
     batchNotes : String[],
     batchGrades : String[]
@@ -34,17 +36,17 @@ Technical Skills Radar Chart:
 // All Weeks & Single Trainee
 // Single Week & Single Trainee
 {
-    batch : [{
+    batch : {
         name : String,
         categories : [{
-            category : String,
+            name : String,
             grade : Decimal
         }]
-    }],
-    trainee : [{
+    },
+    trainees : [{
         name : String,
         categories : [{
-            category : String,
+            name : String,
             grade : Decimal
         }]
     }]
@@ -62,7 +64,7 @@ Weekly Progress Line Chart:
 // All Weeks & Single Trainee
 // Single Week & Single Trainee
 {
-    trainee : [{
+    trainees : [{
         week : Integer,
         grade : Decimal
     }], 
@@ -87,7 +89,7 @@ Assessment Breakdown Bar Chart:
         type : String,
         grade : Decimal
     }],
-    trainee : [{
+    trainees : [{
         type : String,
         grade : Decimal
     }]

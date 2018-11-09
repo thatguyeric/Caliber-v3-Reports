@@ -1,15 +1,27 @@
 @isTest
 public class testReportsController {
 
+    @testSetup
+    public static void setup(){
+        TestDataFactory.createData();
+    }
+    
     @isTest
     public static void testBatchOverallQCTable(){
-        TestDataFactory.createData();
         Id batchID = [SELECT Id FROM Training__c LIMIT 1].Id;
         String expectedJson = '{"batchNotes":["good job on week 0","good job on week 1","good job on week 2","good job on week 3","good job on week 4"],"batchGrades":["Good","Good","Good","Good","Good"],"trainee":[{"notes":["good job on week 0","good job on week 1","good job on week 2","good job on week 3","good job on week 4"],"grades":["Good","Good","Good","Good","Good"],"name":"Duck, Donald"},{"notes":["good job on week 0","good job on week 1","good job on week 2","good job on week 3","good job on week 4"],"grades":["Good","Good","Good","Good","Good"],"name":"Mouse, Mickey"},{"notes":["good job on week 0","good job on week 1","good job on week 2","good job on week 3","good job on week 4"],"grades":["Good","Good","Good","Good","Good"],"name":"Duck, Daisy"},{"notes":["good job on week 0","good job on week 1","good job on week 2","good job on week 3","good job on week 4"],"grades":["Good","Good","Good","Good","Good"],"name":"Goofy, Goofy"},{"notes":["good job on week 0","good job on week 1","good job on week 2","good job on week 3","good job on week 4"],"grades":["Good","Good","Good","Good","Good"],"name":"Mouse, Minnie"}],"numOfWeeks":5}';
         String jsonResult = ReportsController.getBatchOverallQCTable(batchId);
         System.assertEquals(expectedJson, jsonResult);
     }
     
+<<<<<<< HEAD
+    @isTest 
+    public static void testBatchOverallTechSkillsRadar(){
+        Id batchID = [SELECT Id FROM Training__c LIMIT 1].Id;
+        String expectedJson = '';
+        String jsonResult = ReportsController.getBatchOverallTechSkillsRadar(batchId);
+        System.assertEquals(expectedJson, jsonResult);
+=======
     //todo: finish test when grades are calculated
     @isTest
     public static void testBatchOverallWeeklyProgress(){
@@ -55,6 +67,7 @@ public class testReportsController {
         expectedStrings.add('Cody Burchett 9/10/2018');
         expectedStrings.add('Cody Burchett 9/10/2017');
         system.assertEquals(expectedStrings, batchStrings);
+>>>>>>> 836d366b2831b55bcdc2b685f5a48a26ffc2ff99
     }
     
     @isTest
