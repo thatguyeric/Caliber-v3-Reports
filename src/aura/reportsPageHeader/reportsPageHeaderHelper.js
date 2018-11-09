@@ -1,29 +1,9 @@
 ({
-    //updates the batches for a year when a new year is chosen
-    //defaults to all weeks and all trainees for first batch
-    changeBatchesForYear : function(component){
-        var actionChangeBatches = component.get("c.getBatchesByYear");
-        var yearParam = component.get("v.yearLabel");
-        actionChangeBatches.setParams({"year" : yearParam});
-        actionChangeBatches.setCallback(this, function(response){
-            var state = response.getState();
-            if (state === "SUCCESS"){
-                //set batch attributes in component
-                component.set("v.allBatches", response.getReturnValue());
-                component.set("v.currentBatch", response.getReturnValue()[0]);
-                this.buildBatchStrings(component);
-                this.getWeeksForBatch(component);
-                this.getTraineesForBatch(component);
-            }
-        });
-        $A.enqueueAction(actionChangeBatches);
-    },
-    //build strings for the batches to represent them in UI
 	buildBatchStrings : function(component) {
-		var actionBuildBatchString = component.get("c.buildBatchStrings");
+		var action3 = component.get("c.buildBatchStrings");
         var trainingsParam = component.get("v.allBatches");       
-        actionBuildBatchString.setParams({"trainings" : trainingsParam});
-        actionBuildBatchString.setCallback(this, function(response){
+        action3.setParams({"trainings" : trainingsParam});
+        action3.setCallback(this, function(response){
             var state = response.getState();
             var allBatches = [];
             if (state === "SUCCESS"){

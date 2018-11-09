@@ -1,8 +1,12 @@
 ({
-    //load default data upon opening reports page
+    //todo: update all batches based on year, all weeks based on batch
+    //all trainees based on batch
+    
+    //todo: split doInitYears into multiple init functions?
+    //initialize years, batches, weeks, and trainees
     doInitYears : function(component, event, helper){
-        var actionInit = component.get("c.GetAllYearsWithBatches");
-        actionInit.setCallback(this, function(response){
+        var action = component.get("c.GetAllYearsWithBatches");
+        action.setCallback(this, function(response){
             var state = response.getState();
             var allYears = [];
             if (state === "SUCCESS"){
@@ -17,41 +21,38 @@
                 component.set("v.yearLabel", allYears[0].label);
             }
         });
-        $A.enqueueAction(actionInit);
-        helper.changeBatchesForYear(component);
+        $A.enqueueAction(action);
+        
+        var action2 = component.get("c.getBatchesByYear");
+        var yearParam = component.get("v.yearLabel");
+        action2.setParams({"year" : yearParam});
+        action2.setCallback(this, function(response){
+            var state = response.getState();
+            if (state === "SUCCESS"){
+                component.set("v.allBatches", response.getReturnValue());
+                helper.buildBatchStrings(component);
+            }
+        });
+        $A.enqueueAction(action2);
     },
-    //update the year label when user chooses a year
+    
 	updateYearLabel : function(component, event, helper) {
 		var menuItemLabel = event.getSource().get("v.value"); 
         component.set("v.yearLabel", menuItemLabel);
-        helper.changeBatchesForYear(component);
 	},
-    //update the batch label when user chooses a batch
+    
     updateBatchLabel : function(component, event, helper) {
     	var menuItemLabel = event.getSource().get("v.value"); 
         component.set("v.batchLabel", menuItemLabel);
-        helper.setCurrentBatch(component);
-        helper.fireReportFilterChange(component);
 	},
-    //update week label when user chooses a week
+    
     updateWeekLabel : function(component, event, helper) {
     	var menuItemLabel = event.getSource().get("v.value");
         component.set("v.weekLabel", menuItemLabel);
-        helper.fireReportFilterChange(component);
 	},
-    //update trainee label when user chooses a trainee
+    
     updateTraineeLabel : function(component, event, helper) {
-        helper.getSelectedTrainee(component, event);
-	},
-    //update trainee label for all trainees
-    updateAllTraineeLabel : function(component, event, helper){
-        component.set("v.currentTraineeName", "Trainee");
-        component.set("v.currentTrainee", null);
-        helper.fireReportFilterChange(component);
-    },
-    //update week label for all weeks
-    updateAllWeeks : function(component, event, helper){
-        component.set("v.weekLabel", "Week (All)");
-        helper.fireReportFilterChange(component);
-    }
+    	var menuItemLabel = event.getSource().get("v.label");
+        component.set("v.currentTrainee", menuItemLabel);
+	}
  })
