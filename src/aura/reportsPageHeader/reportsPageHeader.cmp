@@ -1,0 +1,26 @@
+<aura:component controller="ReportsController">
+    <aura:handler name="init" action="{!c.doInitYears}" value="{!this}"/>
+    <aura:registerEvent name="reportFilterChange" type="c:ReportFilterChange"/>
+    
+    <!-- values for chosen year and all years with batches -->
+    <aura:attribute name="allYears" type="Integer[]"/>
+    <aura:attribute name="yearLabel" type="Integer" default="2018"/>
+	<!-- values for chosen batch, all batches in a year, and their string representations -->
+    <aura:attribute name="allBatches" type="Training__c[]"/>
+    <aura:attribute name="currentBatch" type="Training__c"/>
+    <aura:attribute name="allBatchLabels" type="String[]"/>
+    <aura:attribute name="batchLabel" type="String" default="None"/>
+	<!-- values for chosen week and all weeks chosen batch has -->
+    <aura:attribute name="allWeekLabels" type="String[]"/>
+    <aura:attribute name="weekLabel" type="String" default="Week (All)"/>
+	<!-- values for all trainees in chosen batch and chosen trainee -->
+    <aura:attribute name="allTrainees" type="Contact[]"/>
+    <aura:attribute name="currentTrainee" type="Contact"/>
+    <aura:attribute name="currentTraineeName" type="String" default="Trainee"/>
+    
+    <lightning:comboBox name="yearBox" label="Choose a year" placeholder="{!v.yearLabel}" options="{! v.allYears }" onchange="{! c.updateYearLabel }"/>
+	<lightning:comboBox name="trainingBox" label="Choose a batch" placeholder="{!v.batchLabel}" options="{! v.allBatchLabels }" onchange="{! c.updateBatchLabel }"/>    
+	<lightning:comboBox name="weekBox" label="Choose a week" placeholder="{!v.weekLabel}" options="{! v.allWeekLabels }" onchange="{! c.updateWeekLabel }"/>    
+	<lightning:comboBox name="traineeBox" label="Choose a trainee" placeholder="{!v.currentTraineeName}" options="{! v.allTrainees }" onchange="{! c.updateTraineeLabel }"/>    
+
+</aura:component>
