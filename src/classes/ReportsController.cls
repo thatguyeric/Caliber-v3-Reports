@@ -99,38 +99,33 @@ public class ReportsController {
         Training__c batch = [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
         Map<String, Object> dataToSend = new Map<String, Object>();
         Map<String, Object> weekMap = null;
-        List<Map<String, Object>> gradesToCalculate = new List<Map<String, Object>>();
+        List<Map<String, Object>> calculatedGrades = new List<Map<String, Object>>();
         List<Decimal> scores = new List<Decimal>();
-        List<Decimal> maxPoints = new List<Decimal>();
-        String fullName;
         
         List<Caliber_Grade__c> gradesList = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
                                              Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
                                              Caliber_Assessment__r.Week_Number__c
                                              FROM Caliber_Grade__c
                                              WHERE Caliber_Assessment__r.Training_Id__c = :batch.id];
-        system.debug(batch.Caliber_Number_of_Weeks__c);
         for (Integer weekNum = 0; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
             scores.clear();
-            maxPoints.clear();
             for (Caliber_Grade__c g : gradesList){
                 if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
-                    scores.add(g.Score__c);
-                    maxPoints.add(g.Caliber_Assessment__r.Max_Points__c);
+                    scores.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
                 }
             }
+            Decimal avgOfAllGrades = 0;
+            for (Decimal grade : scores){
+                avgOfAllGrades+=grade;
+            }
+            avgOfAllGrades /= scores.size();
             weekMap = new Map<String, Object>();
-            weekMap.put('score', scores);	
-            weekMap.put('maxPoints', maxPoints);
-            gradesToCalculate.add(weekMap);
+            weekMap.put('week', weekNum);	
+            weekMap.put('grade', avgOfAllGrades);
+            calculatedGrades.add(weekMap);
         }
         
-        // calculate grades from gradesToCalculate list
-        // should return List<Map<String, Object>>
-        List<Map<String, Object>> data = null;
         
-        dataToSend.put('week', data);
-        
-        return JSON.serialize(dataToSend);
+        return JSON.serialize(calculatedGrades);
     }
 }//end of ReportsController class
