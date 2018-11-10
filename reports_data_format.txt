@@ -23,12 +23,15 @@ Batch QC Report Table:
     trainees : [{
         name : String,
         weeklyData : [{
+		id : String,
         	grade : String,
-        	note : Strings
+        	note : String
         }]
     }],
-    batchNotes : String[],
-    batchGrades : String[]
+    batchWeeklyData : [{
+	    batchNotes : String,
+    	batchGrades : String
+    }]
 }
 
 Technical Skills Radar Chart:

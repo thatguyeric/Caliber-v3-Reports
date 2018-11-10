@@ -22,5 +22,5 @@
 	<lightning:comboBox name="trainingBox" label="Choose a batch" placeholder="{!v.batchLabel}" options="{! v.allBatchLabels }" onchange="{! c.updateBatchLabel }"/>    
 	<lightning:comboBox name="weekBox" label="Choose a week" placeholder="{!v.weekLabel}" options="{! v.allWeekLabels }" onchange="{! c.updateWeekLabel }"/>    
 	<lightning:comboBox name="traineeBox" label="Choose a trainee" placeholder="{!v.currentTraineeName}" options="{! v.allTrainees }" onchange="{! c.updateTraineeLabel }"/>    
-
+    
 </aura:component>

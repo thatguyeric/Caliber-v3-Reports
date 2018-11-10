@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>*</members>
-        <name>AuraDefinitionBundle</name>
+        <name>ApexClass</name>
     </types>
     <types>
         <members>*</members>
@@ -10,6 +10,7 @@
     </types>
     <types>
         <members>*</members>
+<<<<<<< HEAD
         <name>StaticResource</name>
     </types>
     <types>
@@ -19,6 +20,18 @@
     <types>
         <members>Contact</members>
         <name>CustomObject</name>
+=======
+        <name>AuraDefinitionBundle</name>
+    </types>
+    <types>
+        <members>*</members>
+        <members>Contact</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>StaticResource</name>
+>>>>>>> b7a9396c1cf06aef51055bcde4da6547a86170ae
     </types>
     <version>38.0</version>
 </Package>
