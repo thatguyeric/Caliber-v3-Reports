@@ -11,6 +11,7 @@
         <td style="text-align:center">
             <a data-toggle="modal" data-target="{!'#' + v.trainee.name + traineeData.index + '-note'}">{!traineeData.grade}</a>    
         </td>
+        
         <!-- TODO: Modal pushed column out of bounds -->
         <div class="modal fade" id="{!v.trainee.name + traineeData.index + '-note'}" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -22,7 +23,6 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                       <!-- pull from master to get yupdated JSON response. Notes go in here. -->
                         {!traineeData.note}
                     </div>
                 </div>

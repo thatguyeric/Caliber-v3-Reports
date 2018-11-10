@@ -185,8 +185,11 @@ public class ReportsController {
                                         ORDER BY Week_Number__c ASC];
         
         // get trainees in batch
-        List<Training_Assignment__c> traineeList = [SELECT Contact__c, Contact__r.FirstName, Contact__r.LastName 
+        List<Training_Assignment__c> traineeList = [SELECT Contact__c, Contact__r.FirstName, Contact__r.LastName, Training__r.TrainingClass__c
                                                     FROM Training_Assignment__c WHERE Training__c = : batchID];
+        
+        //get batch name
+		String batchName = traineeList[0].Training__r.TrainingClass__c;
         
         // get trainees that are a part of current batch
         for (Training_Assignment__c t : traineeList){
@@ -241,7 +244,7 @@ public class ReportsController {
         dataToSend.put('batchWeeklyData', batchWeekList);
         dataToSend.put('numOfWeeks', numOfWeeks);
         dataToSend.put('trainees', traineeData);
-        
+        dataToSend.put('batchName', batchName);
         return JSON.serialize(dataToSend);
     }
     
