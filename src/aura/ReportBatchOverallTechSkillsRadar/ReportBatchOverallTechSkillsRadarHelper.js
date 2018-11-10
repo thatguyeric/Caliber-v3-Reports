@@ -48,7 +48,8 @@
                     component.set('v.shownTraineesValue', []);
                 }
                 // save the data for later use
-                component.set('v.serverResponseData', data);
+                var serverResponseData = JSON.parse(data);
+                component.set('v.serverResponseData', serverResponseData);
                 helper.createChart(component, helper);
             } else if (state === 'INCOMPLETE') {
                 // notify the user
@@ -81,7 +82,7 @@
         helper.populateTraineeList(component, serverResponseData);
         
         var batchData = serverResponseData.batch;
-        var traineesData = serverResponseData.trainee;
+        var traineesData = serverResponseData.trainees;
         var shownTraineesValue = component.get('v.shownTraineesValue');
         
         // get chart data
@@ -143,12 +144,12 @@
      * {label: String, value: String}
      */
     populateTraineeList : function(component, serverResponseData) {
-        var traineeData = serverResponseData['trainee'];
+        var traineeData = serverResponseData.trainees;
         var shownTraineesOptions = [];
         for (var i = 0; i < traineeData.length; i++) {
             var trainee = traineeData[i];
             shownTraineesOptions.push({
-                label : trainee['name'],
+                label : trainee.name,
                 value: '' + i
             });
         }
@@ -237,7 +238,7 @@
                 name: 'Test Batch Name',
                 categories: []
             },
-            trainee: []
+            trainees: []
         };
         var testCategorySums = [];
         // fill sums array with 0
@@ -264,8 +265,8 @@
                 testCategorySums[j] += testGrade;
             }
             // only add one trainee to the chart if filtering by trainee
-            if (!useSingleTrainee || useSingleTrainee && data.trainee.length == 0) {
-                data.trainee.push(currentTrainee);
+            if (!useSingleTrainee || useSingleTrainee && data.trainees.length == 0) {
+                data.trainees.push(currentTrainee);
             }
         }
         // add batch overall to chart
