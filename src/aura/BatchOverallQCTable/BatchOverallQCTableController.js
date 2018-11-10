@@ -19,5 +19,9 @@
         });  
         
         $A.enqueueAction(action);        
+    },
+    
+    getSmiley : function(component, event, helper){
+        
     }
 })
