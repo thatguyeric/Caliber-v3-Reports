@@ -1,0 +1,111 @@
+<aura:component controller="ReportsController">
+    <!-- include external JavaScript libraries -->
+    <ltng:require styles="{!join(',',
+                          $Resource.ReportPanelCSS,
+                          $Resource.bootstrapCSS)}"
+                  scripts="{!$Resource.chartjs}"
+                  afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
+    <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"
+                  description="Handle the application event fired when
+                               the report filters change."/>
+    <aura:attribute name="isScriptsLoaded" type="Boolean" default="false"
+                    description="The isScriptsLoaded attribute is used to avoid
+                                 creating the chart before chart.js is done loading"/>
+    <aura:attribute name="eventParamsReportFilterChange" type="Object"
+                    description="Stores the parameters of the ReportFilterChange
+                                 event if chart.js is not finished loading when
+                                 the event is received"/>
+    <aura:attribute name="serverResponseData" type="Object"
+                    description="The serverResponseData attribute holds
+                                 the data returned by the server"/>
+    <aura:attribute name="chartColors" type="Object[]"
+                    default="[
+                             {r: 114, g: 164, b: 194}, /* Revature Secondary Color Blue */
+                             {r: 252, g: 180, b: 20}, /* Revature Secondary Color Yellow */
+                             {r: 71, g: 76, b: 85} /* Revature Primary Color Dark Grey */
+                             ]"
+                    description="The chartColors attribute stores
+                                 the colors used for the chart"/>
+    <!-- List of trainees -->
+    <aura:attribute name="shownTraineesOptions" type="List"
+                    description="The shownTraineesOptions attribute is a list of
+                                 all trainee names with an index referencing the
+                                 index in the server response data.
+                                 Used to allow the user to select trainees to show.
+                                 It is in the format { label: String, value: Integer }"/>
+    <aura:attribute name="shownTraineesValue" type="List"
+                    description="The shownTraineesValue attribute is a list of
+                                 integers as an index referencing the
+                                 index in the server response data.
+                                 Used to store the trainees the user has selected to show."/>
+    <aura:attribute name="errorMsg" type="String"
+                    description="The errorMsg attribute stores error messages from the controller"/>
+    <!-- Hide error message element unless there is an error message -->
+    <aura:if isTrue="{!not(empty(v.errorMsg))}">
+        <div>{!v.errorMsg}</div>
+    </aura:if>
+    <!-- Modal for selecting trainees -->
+    <div aura:id="trainee-modal"
+         class="slds-modal"
+         role="dialog" tabindex="-1"
+         aria-labelledby="{!globalId + 'modal-heading'}"
+         aria-modal="true"
+         aria-describedby="{!globalId + 'modal-content'}">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close"
+                        onclick="{!c.closeModal}">
+                    <lightning:icon iconName="utility:close" variant="inverse"/>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="{!globalId + 'modal-heading'}"
+                    class="slds-text-heading_medium slds-hyphenate">
+                    Trainee Comparison
+                </h2>
+            </header>
+            <div class="slds-modal__content" id="{!globalId + 'modal-content'}">
+                <!-- use aura:iteration and lightning:input instead of
+       				lightning:checkboxGroup because lightning:checkboxGroup
+					is harder to put in a grid -->
+                <div class="trainee-checkbox-group">
+                    <aura:iteration items="{!v.shownTraineesOptions}" var="trainee">
+                        <lightning:input aura:id="trainee-checkbox"
+                                         type="checkbox"
+                                         label="{!trainee.label}"
+                                         name="Shown Trainees"
+                                         value="{!trainee.value}"/>
+                    </aura:iteration>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div aura:id="trainee-modal-backdrop" class="slds-backdrop"></div>
+    <!-- Report is only visible if filters apply to it -->
+    <div aura:id="reportPanel" class="report-panel">
+        <div class="report-panel-header">
+            <span class="report-panel-header-title">Technical Skills</span>
+            <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
+                <!-- Use a lightning utility icon -->
+                <!-- use either utility:people or utility:user -->
+                <!-- Button to show list of trainees to show/hide -->
+                <lightning:buttonIcon class="trainee-button"
+                                      iconClass="trainee-button-icon"
+                                      iconName="utility:people"
+                                      variant="container"
+                                      onclick="{!c.openModal}"/>
+            </aura:if>
+        </div>
+        <div class="report-panel-body">
+            <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
+                
+            </aura:if>
+            <!-- chart.js puts the chart here -->
+            <!-- chart.js uses the parent container for sizing and
+                the canvas must be the only element in its parent -->
+            <div class="chart-container">
+                <canvas aura:id="chart"/>
+            </div>
+        </div>
+    </div>
+</aura:component>
