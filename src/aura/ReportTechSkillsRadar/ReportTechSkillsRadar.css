@@ -1,0 +1,12 @@
+.THIS.hidden {
+    display: none;
+}
+
+.THIS [role=button] {
+    cursor: pointer;
+}
+
+.THIS .trainee-checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
