@@ -5,15 +5,12 @@
                            $Resource.jQuery, $Resource.bootstrapJS)}"/>
     <aura:attribute name="calGrade" type="Caliber_Grade__c[]"/>
     <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
-    <div id="container">
-        <table class="list-group list-group-flush">
+    <div class="wrapper">
             <aura:iteration items="{!v.calGrade}" var="cG">
-                <tr class="list-group-item" style="width: 100%">
+                <div class="list-group-item">
                     <div style="float: left"><span style="font-weight: bold">{!cG.Contact__r.LastName}, {!cG.Contact__r.FirstName}</span></div>
-                   <div style="float:right">{!cG.Score__c}</div>
-                </tr>
-            </aura:iteration>
-            
-        </table>
+                    <div style="float:right">{!cG.Score__c}</div>
+                </div>
+                </aura:iteration>
     </div>
 </aura:component>

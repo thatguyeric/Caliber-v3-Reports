@@ -59,7 +59,7 @@
                 response.getReturnValue().forEach(function(element){
                     trainee = {
                         "label" : element.Name,
-                        "value" : element.Id,
+                        "value" : element,
                     }
                     trainees.push(trainee);
                 });
@@ -77,14 +77,10 @@
         var trainingParam = component.get("v.allTrainees");
         var trainingContacts = [];
         var menuItemLabel = event.getSource().get("v.value");
-        if (menuItemLabel != null){
-            for (var i = 1; i < trainingParam.length; i++){
-                trainingContacts.push(trainingParam[i].value);
-                if (trainingParam[i].value == menuItemLabel.Id){
-                    if (menuItemLabel != null){
-                        menuItemLabel = trainingParam[i].label;
-                    }
-                }
+        for (var i = 1; i < trainingParam.length; i++){
+            trainingContacts.push(trainingParam[i].value.Id);
+            if (trainingParam[i].value == menuItemLabel){
+                menuItemLabel = trainingParam[i].label;
             }
         }
         actionGetTrainee.setParams({"allTraineeIds" : trainingContacts, "traineeName" : menuItemLabel});

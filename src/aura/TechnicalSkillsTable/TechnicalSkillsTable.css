@@ -1,0 +1,8 @@
+/*.header.THIS {
+    grid-area: head;
+}*/
+
+/*.wrapper.THIS{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+}*/

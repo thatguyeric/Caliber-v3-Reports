@@ -2,20 +2,18 @@
     <ltng:require
                   styles="{!join(',',$Resource.revStyling, $Resource.bootstrapCSS)}"
                   scripts="{!join(',', $Resource.jQuery, $Resource.bootstrapJS)}"/>
-    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.getBatchCat}"/>
     <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>
     <aura:attribute name="category" type="Caliber_Assessment__c"/>
     <aura:attribute name="currentBatch" type="Training__c"/>
     
-    <div id="container">
-        {!v.currentBatch.TrainingClass__c}
-        <table class="list-group list-group-flush">
-                
-            <aura:iteration items="{!v.category}" var="cat">
-                <tr class="list-group-item" style="width: 100%">
-                    <div style="float: left"><span style="font-weight: bold">{!cat.Assessment_Category__r.Name}</span></div>
-                </tr>
-            </aura:iteration>
-        </table>
+    
+    <div class="header">{!v.currentBatch.TrainingClass__c}</div>
+    <div class="wrapper">
+        <aura:iteration items="{!v.category}" var="cat">
+            <div class="list-group-item">
+                <div style="float: left"><span style="font-weight: bold">{!cat.Assessment_Category__r.Name}</span></div>
+            </div>
+        </aura:iteration>
     </div>
 </aura:component>

@@ -2,9 +2,6 @@
 <StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
     <cacheControl>Private</cacheControl>
     <contentType>text/css</contentType>
-<<<<<<< HEAD
     <description>Pulled from caliber git
 app.css</description>
-=======
->>>>>>> b7a9396c1cf06aef51055bcde4da6547a86170ae
 </StaticResource>
