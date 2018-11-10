@@ -5,38 +5,32 @@ public class testReportsController {
     public static void testBatchOverallCumulativeScoresBar(){
         TestDataFactory.createData();
         Id batchID = [SELECT Id FROM Training__c LIMIT 1].Id;
+        System.assert(batchID != null);
         String jsonResult = ReportsController.getBatchOverallCumulativeScoresBar(batchId);
-        
-        // test that each key is in the correct place. 
-        Object obj = JSON.deserializeUntyped(jsonResult);
-		
-        System.assert(true);
+        String expectedJson = '{"benchmark":60.00,"trainees":[{"grade":60.00,"name":"Duck, Donald"},{"grade":60.00,"name":"Mouse, Mickey"},{"grade":60.00,"name":"Duck, Daisy"}]}';
+        System.assertEquals(expectedJson, jsonResult);
     }
-    
+
     @isTest
     public static void testBatchOverallQCTable(){
         TestDataFactory.createData();
         Id batchID = [SELECT Id FROM Training__c LIMIT 1].Id;
+        System.assert(batchID != null);
         String jsonResult = ReportsController.getBatchOverallQCTable(batchId);
-        
-        // test that each key is in the correct place. 
-        Object obj = JSON.deserializeUntyped(jsonResult);
-		
-        System.assert(true);
+        String expectedJson = '{"batchName":"9/10 -  - Salesforce","trainees":[{"weeklyData":[{"index":"1","note":"good job on week 1","grade":"Good"},{"index":"2","note":"good job on week 2","grade":"Good"},{"index":"3","note":"good job on week 3","grade":"Good"}],"name":"Duck, Donald"},{"weeklyData":[{"index":"1","note":"good job on week 1","grade":"Good"},{"index":"2","note":"good job on week 2","grade":"Good"},{"index":"3","note":"good job on week 3","grade":"Good"}],"name":"Mouse, Mickey"},{"weeklyData":[{"index":"1","note":"good job on week 1","grade":"Good"},{"index":"2","note":"good job on week 2","grade":"Good"},{"index":"3","note":"good job on week 3","grade":"Good"}],"name":"Duck, Daisy"}],"numOfWeeks":3,"batchWeeklyData":[{"index":"1","note":"good job on week 1","grade":"Good"},{"index":"2","note":"good job on week 2","grade":"Good"},{"index":"3","note":"good job on week 3","grade":"Good"}]}';
+        System.assertEquals(expectedJson, jsonResult);
     }
-    
+
     @isTest 
     public static void testBatchOverallTechSkillsRadar(){
         TestDataFactory.createData();
         Id batchID = [SELECT Id FROM Training__c LIMIT 1].Id;
+        System.assert(batchID != null);
         String jsonResult = ReportsController.getBatchOverallTechSkillsRadar(batchId);
-        
-        // test that each key is in the correct place. 
-		Object obj = JSON.deserializeUntyped(jsonResult);
-        
-        System.assert(true);
+        String expectedJson = '{"trainees":[{"categories":[{"grade":50.00,"name":"SF Security"},{"grade":60.00,"name":"Apex"},{"grade":70.00,"name":"Visualforce"}],"name":"Duck, Donald"},{"categories":[{"grade":50.00,"name":"SF Security"},{"grade":60.00,"name":"Apex"},{"grade":70.00,"name":"Visualforce"}],"name":"Mouse, Mickey"},{"categories":[{"grade":50.00,"name":"SF Security"},{"grade":60.00,"name":"Apex"},{"grade":70.00,"name":"Visualforce"}],"name":"Duck, Daisy"}],"batch":{"name":"9/10 -  - Salesforce","categories":[{"grade":50.00,"name":"SF Security"},{"grade":60.00,"name":"Apex"},{"grade":70.00,"name":"Visualforce"}]}}';
+        System.assertEquals(expectedJson, jsonResult);
     }
-    
+
     //todo: finish test when grades are calculated
     @isTest
     public static void testBatchOverallWeeklyProgress(){
@@ -132,4 +126,5 @@ public class testReportsController {
         actualTraining = ReportsController.getSelectedBatch(batches, startDate);
         system.assertEquals(null, actualTraining);
     }
+
 }

@@ -1,4 +1,4 @@
-<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="ReportsController">
+<aura:component implements="flexipage:availableForAllPageTypes" controller="ReportsController">
     <ltng:require
                   styles="{!join(',',
                           $Resource.revStyling, 
@@ -15,7 +15,7 @@
     <aura:handler event="c:ReportFilterChange" action="{!c.doInit}"/>
     <div aura:id="reportPanel" class="report-panel">
         <div class="report-panel-header">
-            <span class="report-panel-header-title">Batch QC Report <span onclick="{!c.getSnapShot}">click</span></span>
+            <span class="report-panel-header-title">Batch QC Report</span>
         </div>
         <div class="report-panel-body">
             <div class="chart-container">
