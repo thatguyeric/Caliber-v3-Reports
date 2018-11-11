@@ -29,4 +29,3 @@ To update your org with changes made in your Force.com IDE, right click <i>Calib
 
 <br/>
 <br/>
-courtesy of Jacob Lucas and Eric Marcondes
