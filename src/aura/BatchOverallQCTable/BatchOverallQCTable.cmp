@@ -13,7 +13,7 @@
     <aura:attribute name="batchName" type="String" />
     <aura:handler event="c:ReportFilterChange" action="{!c.doInit}"/>
     
-    <div class="card">
+    <div class="card report-100">
         <div class="card-header">
             <span>Batch QC Report</span>
         </div>

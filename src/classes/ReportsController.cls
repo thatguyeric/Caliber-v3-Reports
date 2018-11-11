@@ -13,6 +13,7 @@ public class ReportsController {
     }
     
     //return list of years that have batches starting in them
+    //todo: replace aggregate result with list that gets converted to set?
     @AuraEnabled
     public static List<Integer> GetAllYearsWithBatches(){
         List<AggregateResult> trainings = [select count(Id), CALENDAR_YEAR(StartDate__c) from Training__c group by CALENDAR_YEAR(StartDate__c)];
@@ -52,6 +53,7 @@ public class ReportsController {
     public static List<String> batchWeeksStrings(Training__c batch){
         Decimal weeksInBatch = ReportsController.getWeeksInBatch(batch);
         List<String> weekStrings = new List<String>();
+        weekStrings.add('Week (All)');
         for (Integer i = 1; i <= (Integer)weeksInBatch; i++){
             weekStrings.add('Week ' + i);
         }
@@ -69,10 +71,13 @@ public class ReportsController {
     }
     //return the selected trainee's info
     @AuraEnabled
-    public static Contact getSelectedTrainee(List<Contact> allTrainees, String traineeName){
-        for (Contact trainee : allTrainees){
-            if (trainee.Name == traineeName){
-                return trainee;
+    public static Contact getSelectedTrainee(List<Id> allTraineeIds, String traineeName){
+        List<Contact> contacts = [select id, Name from Contact where id in :allTraineeIds];
+        for (Contact contact : contacts){
+            if (contact != null){
+                if (contact.Id == traineeName){
+                    return contact;
+                }
             }
         }
         return null;
@@ -138,7 +143,6 @@ public class ReportsController {
         }
         
         Id trainingTrackID = [SELECT TrainingTrack__c FROM Training__c WHERE Id = : batchID].TrainingTrack__c;
-
         // get all caliber grades of current training track to calculate benchmark 
         List<Decimal> allTrainingTrackGrades = new List<Decimal>();
         for (Caliber_Grade__c g : [SELECT Score__c, Caliber_Assessment__r.Max_Points__c FROM Caliber_Grade__c WHERE Caliber_Assessment__r.Training_Id__r.TrainingTrack__c = : trainingTrackID]){
@@ -152,7 +156,6 @@ public class ReportsController {
         return JSON.serialize(dataToSend);
     }
     
-	// tested and working.
     @AuraEnabled
     public static String getBatchOverallQCTable(Id batchID){
         Map<String, Object> dataToSend = new Map<String, Object>();
@@ -206,8 +209,7 @@ public class ReportsController {
             Map<String, Object> traineeMap = new Map<String, Object>();
             fullName = t.Contact__r.LastName + ', ' + t.Contact__r.FirstName;
             traineeMap.put('name', fullName);
-            traineeMap.put('grades', traineeGrades);	
-            traineeMap.put('notes', traineeNotes);
+            traineeMap.put('weeklyData', weeklyData);
             traineeData.add(traineeMap);
         }
         
@@ -231,6 +233,7 @@ public class ReportsController {
         }
         
         // add to map to return to javaScript controller
+        dataToSend.put('batchWeeklyData', batchWeekList);
         dataToSend.put('numOfWeeks', numOfWeeks);
         dataToSend.put('trainees', traineeData);
         dataToSend.put('batchName', traineeList[0].Training__r.TrainingClass__c);
@@ -340,7 +343,7 @@ public class ReportsController {
             }
             avgOfAllGrades /= scores.size();
             Map<String, Object> weekMap = new Map<String, Object>();
-            weekMap.put('week', weekNum);	
+            weekMap.put('week', weekNum);   
             weekMap.put('grade', avgOfAllGrades);
             calculatedGrades.add(weekMap);
         }

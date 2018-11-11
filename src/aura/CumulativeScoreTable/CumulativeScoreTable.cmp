@@ -1,14 +1,17 @@
 <aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="CumulativeScoreApexCon">
     <ltng:require
-                  styles="{!$Resource.bootstrapCSS}"
+                  styles="{!join(',',
+                          $Resource.ReportPanelCSS, 
+                          $Resource.bootstrapCSS)}"
                   scripts="{!join(',', 
                            $Resource.jQuery, $Resource.bootstrapJS)}"/>
     <aura:attribute name="calGrade" type="Caliber_Grade__c[]"/>
+    <!--<aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>-->
     <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
     <div class="wrapper">
             <aura:iteration items="{!v.calGrade}" var="cG">
                 <div class="list-group-item">
-                    <div style="float: left"><span style="font-weight: bold">{!cG.Contact__r.LastName}, {!cG.Contact__r.FirstName}</span></div>
+                    <div style="float: left"><span style="font-family:Futura-Std-Bold">{!cG.Contact__r.LastName}, {!cG.Contact__r.FirstName}</span></div>
                     <div style="float:right">{!cG.Score__c}</div>
                 </div>
                 </aura:iteration>

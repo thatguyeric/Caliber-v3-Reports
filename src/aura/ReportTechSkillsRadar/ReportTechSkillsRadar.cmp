@@ -1,9 +1,10 @@
 <aura:component controller="ReportsController">
     <!-- include external JavaScript libraries -->
     <ltng:require styles="{!join(',',
+                          $Resource.ReportPanelCSS,
                           $Resource.bootstrapCSS,
-                          $Resource.fontAwesome + '/font-awesome-4.7.0/css/font-awesome.css',
-                          $Resource.ReportPanelCSS)}"
+                          $Resource.fontAwesome + '/font-awesome-4.7.0/css/font-awesome.css'
+                          )}"
                   scripts="{!join(',',
                            $Resource.jQuery,
                            $Resource.bootstrapJS,
@@ -76,7 +77,7 @@
         </div>
     </div>
     <!-- Report is only visible if filters apply to it -->
-    <div aura:id="reportPanel" class="card">
+    <div aura:id="reportPanel" class="card report-40">
         <div class="card-header">
             <span>Technical Skills</span>
             <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
@@ -94,6 +95,7 @@
             <div class="chart-container">
                 <canvas aura:id="chart"/>
             </div>
+            <c:TechnicalSkillsTable serverResponseData="{!v.serverResponseData}"/>
         </div>
     </div>
 </aura:component>

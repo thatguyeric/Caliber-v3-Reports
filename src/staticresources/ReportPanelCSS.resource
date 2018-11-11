@@ -28,12 +28,23 @@
     color: #FFFFFF;
 }
 
-.radar-report {
-    width:40%; 
+.col {
+    padding: 0px;
 }
 
-.line-chart {
-    width:55%;
+.report-40 {
+    width: 40vw;
+    float:left;
+}
+
+.report-55 {
+    width: 55vw;
+    float:right;
+}
+
+
+.report-100 {
+    width: 100vw;
 }
 
 @media screen and (max-width:1000px) {

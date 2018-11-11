@@ -1,19 +1,20 @@
 <aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="TechnicalSkillsApexCon">
     <ltng:require
-                  styles="{!join(',',$Resource.revStyling, $Resource.bootstrapCSS)}"
+                  styles="{!join(',',$Resource.ReportPanelCSS, $Resource.bootstrapCSS)}"
                   scripts="{!join(',', $Resource.jQuery, $Resource.bootstrapJS)}"/>
-    <aura:handler name="init" value="{!this}" action="{!c.getBatchCat}"/>
     <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>
-    <aura:attribute name="category" type="Caliber_Assessment__c"/>
-    <aura:attribute name="currentBatch" type="Training__c"/>
-    
-    
-    <div class="header">{!v.currentBatch.TrainingClass__c}</div>
-    <div class="wrapper">
-        <aura:iteration items="{!v.category}" var="cat">
-            <div class="list-group-item">
-                <div style="float: left"><span style="font-weight: bold">{!cat.Assessment_Category__r.Name}</span></div>
+    <aura:attribute name="serverResponseData" type="Object"/>
+    <div class="list-group container">
+        <div class="list-group-item row">
+            <div class="col-sm-6"></div>
+            <div class="col-sm-6 floatRight" style="font-family:Futura-Std-Bold">{!v.serverResponseData.batch.name}</div>
+        </div>
+        <aura:iteration items="{!v.serverResponseData.batch.categories}" var="cat">
+            <div class="list-group-item row">
+                <div class="col-sm-6 floatLeft"><span style="font-family:Futura-Std-Bold">{!cat.name}</span></div>
+                <div class="col-sm-6 floatRight">{!cat.grade}<!-- add grades --></div>
             </div>
+            
         </aura:iteration>
     </div>
 </aura:component>

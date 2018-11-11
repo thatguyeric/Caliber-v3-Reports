@@ -1,8 +1,13 @@
-/*.header.THIS {
-    grid-area: head;
-}*/
+.THIS .floatRight{
+    float:Right;
+}
 
-/*.wrapper.THIS{
-    display:grid;
-    grid-template-columns: repeat(2, 1fr);
-}*/
+.THIS .floatLeft{
+    float:Left;
+}
+
+.THIS .list-group-item{
+    
+    border-left: none;
+    border-right: none;
+}
