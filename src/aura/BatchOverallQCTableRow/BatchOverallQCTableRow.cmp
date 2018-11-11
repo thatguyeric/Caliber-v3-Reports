@@ -1,16 +1,19 @@
 <aura:component  implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="ReportsController">
     <ltng:require
                   styles="{!join(',',
-                          $Resource.revStyling, $Resource.bootstrapCSS)}"
+                          $Resource.ReportPanelCSS,
+                          $Resource.fontAwesome + '/font-awesome-4.7.0/css/font-awesome.css',
+                          $Resource.bootstrapCSS)}"
                   scripts="{!join(',',
-                           $Resource.jQuery, $Resource.bootstrapJS)}"/>
+                           $Resource.jQuery,
+                           $Resource.bootstrapJS)}"/>
     <aura:attribute name="trainee" type="List" />
     
     <aura:iteration items="{!v.trainee.weeklyData}" var="traineeData" >
         
         <td style="text-align:center">
             <a data-toggle="modal" data-target="{!'#' + globalId + v.trainee.name + traineeData.index + '-note'}">
-                {!traineeData.grade}
+                <c:QCStatusIcon QCStatus="{!traineeData.grade}" isChangable="false"/>
             </a>    
         </td>
         
