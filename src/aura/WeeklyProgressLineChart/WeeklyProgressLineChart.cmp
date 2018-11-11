@@ -1,0 +1,17 @@
+<aura:component controller="ReportsController">
+    <ltng:require styles="{!$Resource.ReportPanelCSS}" scripts="{!$Resource.chartjs}" afterScriptsLoaded="{!c.test}"/>
+    <aura:handler event = "c:ReportFilterChange" action = "{!c.weeklyProgressChart}"/>
+    <aura:if isTrue="{!not(empty(v.errorMsg))}">
+        <div>{!v.errorMsg}</div>
+    </aura:if>
+    <div aura:id = "reportPanel" class = "report-panel">
+        <div class = "report-panel-header">
+            <span class="report-panel-header-title">Weekly Progress</span>
+        </div>
+        <div class="report-panel-body">
+            <div class="chart-container">
+                <canvas aura:id="chart"/>
+            </div>
+        </div>
+    </div> 
+</aura:component>
