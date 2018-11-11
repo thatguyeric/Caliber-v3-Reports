@@ -122,5 +122,15 @@ public class BatchCreation {
         
     }//end of createAssessmentAndGrades
     
-    
+    public static void reCreateData(){
+    	delete [SELECT Id FROM Caliber_Note__c];
+		delete [SELECT Id FROM Caliber_Grade__c];
+		delete [SELECT Id FROM Caliber_Assessment__c];
+		delete [SELECT Id FROM Caliber_Category__c];
+		delete [SELECT Id FROM Training_Assignment__c];
+		delete [SELECT Id FROM Training__c];
+		delete [SELECT Id FROM Training_Track__c];
+		Database.delete([SELECT Id FROM Contact], false);
+		BatchCreation.createData();
+    }
 }//end of class
