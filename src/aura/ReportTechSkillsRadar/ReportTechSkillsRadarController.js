@@ -41,9 +41,6 @@
         }
     },
     openModal : function(component, event, helper) {
-        // open the modal for selecting trainees to show
-        //$A.util.addClass(component.find('trainee-modal'), 'slds-fade-in-open');
-        //$A.util.addClass(component.find('trainee-modal-backdrop'), 'slds-backdrop_open');
         /* Set the checked values for the checkboxes.
          * If the aura:iteration with lightning:input is replaced with
          * lightning:checkboxGroup, then this code can be removed
@@ -57,9 +54,6 @@
         });
     },
     closeModal : function(component, event, helper) {
-        // close the modal for selecting trainees to show
-        $A.util.removeClass(component.find('trainee-modal'), 'slds-fade-in-open');
-        $A.util.removeClass(component.find('trainee-modal-backdrop'), 'slds-backdrop_open');
         /* Update the list of selected trainees.
          * If the aura:iteration with lightning:input is replaced with
          * lightning:checkboxGroup, then this code needs to be modified to

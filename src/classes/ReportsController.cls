@@ -316,32 +316,42 @@ public class ReportsController {
         return JSON.serialize(dataToSend);
     }
     
+    static List<Decimal> getAllGradePercentagesByWeek(List<Caliber_Grade__c> gradesList, Integer weekNum){
+        List<Decimal> scores = new List<Decimal>();
+        for (Caliber_Grade__c g : gradesList){
+            if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
+                scores.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
+            }
+        }
+        return scores;
+    }
+    
+    static Training__c getBatchById(Id batchId){
+        return [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
+    }
+    
+    static List<Caliber_Grade__c> getGradesForBatch(Id batchId){
+        return [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
+                                             FROM Caliber_Grade__c
+                                             WHERE Caliber_Assessment__r.Training_Id__c = :batchId];
+    }
+    
     @AuraEnabled
     public static String getBatchOverallWeeklyProgressLine(Id batchID){
-        Training__c batch = [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
+        Training__c batch = getBatchById(batchId);
         Map<String, Object> dataToSend = new Map<String, Object>();
         List<Map<String, Object>> calculatedGrades = new List<Map<String, Object>>();
         List<Decimal> scores = new List<Decimal>();
         
         //get the list of all grades for the batch
-        List<Caliber_Grade__c> gradesList = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
-                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
-                                             Caliber_Assessment__r.Week_Number__c
-                                             FROM Caliber_Grade__c
-                                             WHERE Caliber_Assessment__r.Training_Id__c = :batch.id];
+        List<Caliber_Grade__c> gradesList = getGradesForBatch(batchId);
         //average each weeks grades
         for (Integer weekNum = 0; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
             scores.clear();
-            for (Caliber_Grade__c g : gradesList){
-                if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
-                    scores.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
-                }
-            }
-            Decimal avgOfAllGrades = 0;
-            for (Decimal grade : scores){
-                avgOfAllGrades+=grade;
-            }
-            avgOfAllGrades /= scores.size();
+            scores = ReportsController.getAllGradePercentagesByWeek(gradesList, weekNum);
+            Decimal avgOfAllGrades = getAverageGrade(scores);
             Map<String, Object> weekMap = new Map<String, Object>();
             weekMap.put('week', weekNum);   
             weekMap.put('grade', avgOfAllGrades);

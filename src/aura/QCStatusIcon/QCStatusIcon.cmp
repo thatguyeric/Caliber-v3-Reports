@@ -1,0 +1,37 @@
+<aura:component >
+    <aura:attribute name="QCStatus" type="String"/>
+    <!-- The only place where this is currently false is
+		 on the QC page for Overall Feedback -->
+    <aura:attribute name="isPick" type="Boolean" default="true"/>
+    <!-- This is used to change the title text for the undefined
+         icon when the icon cannot be changed, such as reports -->
+    <aura:attribute name="isChangable" type="Boolean" default="true"/>
+    <aura:if isTrue="{!v.QCStatus == 'Superstar'}">
+        <a class="{!'fa fa-star fa-2x' + if(v.isPick, ' pick', '')}"
+           title="Excellent"></a>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!v.QCStatus == 'Good'}">
+                <a class="{!'fa fa-smile-o fa-2x' + if(v.isPick, ' pick', '')}"
+                   title="Good"></a>
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!v.QCStatus == 'Average'}">
+                        <a class="{!'fa fa-meh-o fa-2x' + if(v.isPick, ' pick', '')}"
+                           title="Fair"></a>
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!v.QCStatus == 'Poor'}">
+                                <a class="{!'fa fa-frown-o fa-2x' + if(v.isPick, ' pick', '')}"
+                                   title="Poor"></a>
+                                <aura:set attribute="else">
+                                    <a class="{!'fa fa-question-circle fa-2x' + if(v.isPick, ' pick', '')}"
+                                       title="{!if(v.isChangable,
+                                              'Click to update your feedback.',
+                                              'Undefined')}"></a>
+                                </aura:set>
+                            </aura:if>
+                        </aura:set>
+                    </aura:if>
+                </aura:set>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+</aura:component>
