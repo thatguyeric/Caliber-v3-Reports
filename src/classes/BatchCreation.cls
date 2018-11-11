@@ -1,7 +1,7 @@
 public class BatchCreation {
     
     /* Set the trainerId to a user Id for a user that will be considered a trainer */
-    public static Id trainerId = '005f4000003czCI';
+    public static Id trainerId = UserInfo.getUserId();
     
     
     public static List<String> firstNames = new List<String>{'Donald', 'Mickey', 'Daisy', 'Goofy', 'Minnie', 'Dan', 'Oliver', 'Barry', 'Felicity', 'Iris', 
@@ -122,5 +122,15 @@ public class BatchCreation {
         
     }//end of createAssessmentAndGrades
     
-    
+    public static void reCreateData(){
+    	delete [SELECT Id FROM Caliber_Note__c];
+		delete [SELECT Id FROM Caliber_Grade__c];
+		delete [SELECT Id FROM Caliber_Assessment__c];
+		delete [SELECT Id FROM Caliber_Category__c];
+		delete [SELECT Id FROM Training_Assignment__c];
+		delete [SELECT Id FROM Training__c];
+		delete [SELECT Id FROM Training_Track__c];
+		Database.delete([SELECT Id FROM Contact], false);
+		BatchCreation.createData();
+    }
 }//end of class
