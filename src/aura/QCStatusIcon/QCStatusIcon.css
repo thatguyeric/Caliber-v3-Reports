@@ -1,0 +1,48 @@
+.THIS.fa-question-circle {
+	color: #F26925 !important;
+	border-color: white !important;
+	background-color: white !important;
+}
+
+/* Use on QC page for Overall Feedback */
+
+.THIS.fa-smile-o,
+.THIS.fa-meh-o,
+.THIS.fa-frown-o,
+.THIS.fa-star {
+	color: #B9B9BA;
+}
+
+.THIS.fa-smile-o:hover {
+	color: #81f575;
+}
+
+.THIS.fa-meh-o:hover {
+	color: #fdff9e;
+}
+
+.THIS.fa-frown-o:hover {
+	color: #ff7575;
+}
+
+.THIS.fa-star:hover {
+	color: #7972ff;
+}
+
+/* Use when able to click to change icon */
+
+.THIS.fa-smile-o.pick {
+	color: #18ad18 !important;
+}
+
+.THIS.fa-meh-o.pick {
+	color: #f9e900 !important;
+}
+
+.THIS.fa-frown-o.pick {
+	color: #ea2825 !important;
+}
+
+.THIS.fa-star.pick {
+	color: #393fef !important;
+}
