@@ -14,27 +14,27 @@
         <td style="text-align:center">
             <a data-toggle="modal" data-target="{!'#' + globalId + v.trainee.name + traineeData.index + '-note'}">
                 <c:QCStatusIcon QCStatus="{!traineeData.grade}" isChangable="false"/>
-            </a>    
-        </td>
-        
-        <div class="modal fade" id="{!globalId + v.trainee.name + traineeData.index + '-note'}" tabindex="-1" role="dialog" aria-labelledby="globalId + modalTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="globalId + modalTitle">{!v.trainee.name} - Week {!traineeData.index}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <aura:if isTrue="{!empty(traineeData.note)}">
-                            <div>No available notes.</div>
-                        </aura:if>
-                        {!traineeData.note}
+            </a>
+            
+            <div class="modal fade" id="{!globalId + v.trainee.name + traineeData.index + '-note'}" tabindex="-1" role="dialog" aria-labelledby="globalId + modalTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="globalId + modalTitle">{!v.trainee.name} - Week {!traineeData.index}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <aura:if isTrue="{!empty(traineeData.note)}">
+                                <div>No available notes.</div>
+                            </aura:if>
+                            {!traineeData.note}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </td>
     </aura:iteration>
     
 </aura:component>

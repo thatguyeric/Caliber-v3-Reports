@@ -4,7 +4,7 @@
 		 on the QC page for Overall Feedback -->
     <aura:attribute name="isPick" type="Boolean" default="true"/>
     <!-- This is used to change the title text for the undefined
-         icon when the icon cannot be changed, such as rep -->
+         icon when the icon cannot be changed, such as reports -->
     <aura:attribute name="isChangable" type="Boolean" default="true"/>
     <aura:if isTrue="{!v.QCStatus == 'Superstar'}">
         <a class="{!'fa fa-star fa-2x' + if(v.isPick, ' pick', '')}"
