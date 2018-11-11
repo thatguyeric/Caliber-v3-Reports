@@ -2,9 +2,10 @@
     <div class="container" style="background-color:white;">
         <c:reportsPageHeader></c:reportsPageHeader>
         <div style="height:600px;">
-        	bar chart goes here
+            <c:CumulativeScoresBarChart/>
         </div>
         <c:BatchOverallQCTable />
+        <c:WeeklyProgressLineChart/>
     </div>
     
     <div style="height:100px"/>
