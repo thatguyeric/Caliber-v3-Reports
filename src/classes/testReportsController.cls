@@ -70,12 +70,13 @@ public class testReportsController {
     @isTest
     public static void testBuildBatchStrings(){
         TestDataFactory.createData();
+        Profile adminProfile = [SELECT Id FROM Profile WHERE Name='System Administrator'];
+        User adminUser = [SELECT Id, Name FROM User WHERE ProfileId =:adminProfile.id];
         List<Training__c> batches = [select Trainer__c, startDate__c from Training__c];
         List<String> batchStrings = ReportsController.buildBatchStrings(batches);
         List<String> expectedStrings = new List<String>();
-        //todo: change based on name of your user of org code is run in
-        expectedStrings.add('Cody Burchett 9/10/2018');
-        expectedStrings.add('Cody Burchett 9/10/2017');
+        expectedStrings.add(adminUser.Name + ' 9/10/2018');
+        expectedStrings.add(adminUser.Name + ' 9/10/2017');
         system.assertEquals(expectedStrings, batchStrings);
     }
     
