@@ -23,22 +23,9 @@
     font-size: 14px;
 }
 
-.report-panel {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #B9B9BA;  /* Revature Secondary Color Light Grey */
-    border-radius: 4px;
-    margin-bottom: 20px;
-}
-
-.report-panel-header {
+.card>.card-header {
     background-color: #F26925;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    padding: 10px 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    color: #FFFFFF;
 }
 
 .radar-report {
@@ -47,14 +34,6 @@
 
 .line-chart {
     width:55%;
-}
-
-.report-panel-body {
-    padding: 15px;
-}
-
-.report-panel-header-title {
-    color: #FFFFFF;
 }
 
 @media screen and (max-width:1000px) {

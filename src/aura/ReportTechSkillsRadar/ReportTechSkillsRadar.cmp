@@ -1,0 +1,99 @@
+<aura:component controller="ReportsController">
+    <!-- include external JavaScript libraries -->
+    <ltng:require styles="{!join(',',
+                          $Resource.bootstrapCSS,
+                          $Resource.fontAwesome + '/font-awesome-4.7.0/css/font-awesome.css',
+                          $Resource.ReportPanelCSS)}"
+                  scripts="{!join(',',
+                           $Resource.jQuery,
+                           $Resource.bootstrapJS,
+                           $Resource.chartjs)}"
+                  afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
+    <aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"
+                  description="Handle the application event fired when
+                               the report filters change."/>
+    <aura:attribute name="isScriptsLoaded" type="Boolean" default="false"
+                    description="The isScriptsLoaded attribute is used to avoid
+                                 creating the chart before chart.js is done loading"/>
+    <aura:attribute name="eventParamsReportFilterChange" type="Object"
+                    description="Stores the parameters of the ReportFilterChange
+                                 event if chart.js is not finished loading when
+                                 the event is received"/>
+    <aura:attribute name="serverResponseData" type="Object"
+                    description="The serverResponseData attribute holds
+                                 the data returned by the server"/>
+    <aura:attribute name="chartColors" type="Object[]"
+                    default="[
+                             {r: 114, g: 164, b: 194}, /* Revature Secondary Color Blue */
+                             {r: 252, g: 180, b: 20}, /* Revature Secondary Color Yellow */
+                             {r: 71, g: 76, b: 85} /* Revature Primary Color Dark Grey */
+                             ]"
+                    description="The chartColors attribute stores
+                                 the colors used for the chart"/>
+    <!-- List of trainees -->
+    <aura:attribute name="shownTraineesOptions" type="List"
+                    description="The shownTraineesOptions attribute is a list of
+                                 all trainee names with an index referencing the
+                                 index in the server response data.
+                                 Used to allow the user to select trainees to show.
+                                 It is in the format { label: String, value: Integer }"/>
+    <aura:attribute name="shownTraineesValue" type="List"
+                    description="The shownTraineesValue attribute is a list of
+                                 integers as an index referencing the
+                                 index in the server response data.
+                                 Used to store the trainees the user has selected to show."/>
+    <aura:attribute name="errorMsg" type="String"
+                    description="The errorMsg attribute stores error messages from the controller"/>
+    <!-- Hide error message element unless there is an error message -->
+    <aura:if isTrue="{!not(empty(v.errorMsg))}">
+        <div>{!v.errorMsg}</div>
+    </aura:if>
+    <!-- Modal for selecting trainees -->
+    <div id="{!globalId + 'trainee-modal'}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Trainee Comparison</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- use aura:iteration and lightning:input instead of
+           				 lightning:checkboxGroup because lightning:checkboxGroup
+    					 is harder to put in a grid -->
+                    <div class="trainee-checkbox-group">
+                        <aura:iteration items="{!v.shownTraineesOptions}" var="trainee">
+                            <lightning:input aura:id="trainee-checkbox"
+                                             type="checkbox"
+                                             label="{!trainee.label}"
+                                             name="Shown Trainees"
+                                             value="{!trainee.value}"/>
+                        </aura:iteration>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Report is only visible if filters apply to it -->
+    <div aura:id="reportPanel" class="card">
+        <div class="card-header">
+            <span>Technical Skills</span>
+            <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
+                <!-- Button to show list of trainees to show/hide -->
+                <div role="button" class="pull-right" onclick="{!c.openModal}"
+                     data-toggle="modal" data-target="{!'#' + globalId + 'trainee-modal'}">
+                	<i class="fa fa-user-circle-o fa-lg" aria-hidden="true"></i>
+                </div>
+            </aura:if>
+        </div>
+        <div class="card-body">
+            <!-- chart.js puts the chart here -->
+            <!-- chart.js uses the parent container for sizing and
+                the canvas must be the only element in its parent -->
+            <div class="chart-container">
+                <canvas aura:id="chart"/>
+            </div>
+        </div>
+    </div>
+</aura:component>
