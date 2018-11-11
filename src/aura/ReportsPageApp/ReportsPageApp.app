@@ -5,8 +5,6 @@
         	bar chart goes here
         </div>
         <c:BatchOverallQCTable />
-        <c:ReportBatchOverallTechSkillsRadar/>
-          
     </div>
     <div style="height:100px"/>
 </aura:application>
