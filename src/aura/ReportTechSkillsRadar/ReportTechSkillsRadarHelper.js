@@ -60,7 +60,7 @@
                 var errors = response.getError();
                 var errorMsg = 'Unknown Error';
                 if (errors) {
-                    if (errors[0] && erros[0].message) {
+                    if (errors[0] && errors[0].message) {
                     	errorMsg = 'Error Message: ' + errors[0].message;
                     }
                 }
