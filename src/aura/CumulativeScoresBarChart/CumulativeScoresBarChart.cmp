@@ -10,11 +10,11 @@
     <aura:if isTrue="{!not(empty(v.errorMsg))}">
         <div>{!v.errorMsg}</div>
     </aura:if>
-    <div aura:id = "reportPanel" class = "report-panel">
-        <div class="report-panel-header">
-            <span class="report-panel-header-title">Cumulative Scores</span>       
+    <div aura:id = "reportPanel" class = "card">
+        <div class="card-header">
+            <span>Cumulative Scores</span>       
         </div>
-        <div class="report-panel-body">
+        <div class="card-body">
             <div class="chart-container">
                 <canvas aura:id="chart"/> 
             </div>

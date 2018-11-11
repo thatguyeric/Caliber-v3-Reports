@@ -15,22 +15,32 @@
             action = component.get('c.getBatchOverallWeeklyProgressLine');
             action.setParams({ batchID : batchId});
         }
-        
+       	
         action.setCallback(this, function(response){
+           
             var state = response.getState();
+             console.log(response.getError()[0].message);
             if(state === "SUCCESS"){
                 component.set('v.errorMsg', null);
-                console.log('test');
                 var tempdata = response.getReturnValue();
-                console.log(tempdata);
                 var data = JSON.parse(tempdata);
                 console.log(data);
                 helper.configureWeeklyProgressChart(component, helper, data);
             }else if(state === "INCOMPLETE"){
                 var errormsg = 'Incomplete server request.';
                 component.set('v.errorMsg', errormsg);
-            }else{
-                component.set('v.errorMsg', 'Some error has occurred');
+            }else if (state === 'ERROR') {
+                // notify the user of the error
+                var errors = response.getError();
+                var errorMsg = 'Unknown Error';
+                if (errors) {
+                    if (errors[0] && errors[0].message) {
+                    	errorMsg = 'Error Message: ' + errors[0].message;
+                    }
+                }
+                console.log('Server returned error: ' + errorMsg);
+                component.set('v.errorMsg', errorMsg);
+                
             }
         });
         $A.enqueueAction(action);
@@ -39,7 +49,9 @@
     
     configureWeeklyProgressChart : function(component, helper, data){
         //configure batch data
-    
+        if(!data){
+             component.set('v.errorMsg', 'Insufficient data');
+        }else{
         var batchdata = data.batch;	
         
         function comparebyWeek(a, b){
@@ -82,6 +94,7 @@
         }
         
         helper.renderChart(component, helper, batchGrades, traineeGrades, labels);
+            }
     },
     
     renderChart : function(component, helper, batchGrades, traineeGrades, labels){

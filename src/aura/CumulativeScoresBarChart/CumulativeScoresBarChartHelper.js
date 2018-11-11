@@ -30,6 +30,9 @@
     
     configureCumulativeScoresChart : function(component, helper, data){
         //get key value pairs from JSON object
+        if(!data){
+           component.set('v.errorMsg', 'Insufficient data'); 
+        }else{
         var batch = data.trainees;
         
         batch.sort(function(a, b){
@@ -68,7 +71,7 @@
        
         //call render function
         helper.renderChart(component, helper, grades, benchmark, labels);
-        
+        }
     },
     
     renderChart : function(component, helper, grades, benchmark, labels){

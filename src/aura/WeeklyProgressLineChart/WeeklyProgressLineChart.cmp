@@ -4,15 +4,16 @@
     <aura:attribute name = "batch" type = "Id" />
     <aura:attribute name = "week" type = "Integer" />
     <aura:attribute name = "trainee" type = "Id" />
+    <aura:attribute name = "errorMsg" type = "String"/>
     <aura:handler event = "c:ReportFilterChange" action = "{!c.weeklyProgressChart}"/>
     <aura:if isTrue="{!not(empty(v.errorMsg))}">
         <div>{!v.errorMsg}</div>
     </aura:if>
-    <div aura:id = "reportPanel" class = "report-panel">
-        <div class = "report-panel-header">
-            <span class="report-panel-header-title">Weekly Progress</span>
+    <div aura:id = "reportPanel" class = "card">
+        <div class = "card-header">
+            <span>Weekly Progress</span>
         </div>
-        <div class="report-panel-body">
+        <div class="card-body">
             <div class="chart-container">
                 <canvas aura:id="chart"/>
             </div>
