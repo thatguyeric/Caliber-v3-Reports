@@ -13,7 +13,7 @@
                     allYears.push(year);
                 });
                 component.set("v.allYears", allYears);
-                component.set("v.yearLabel", allYears[0].label);
+                component.set("v.yearLabel", allYears[0].value);
                 component.find("selectYear").set("v.value", component.get("v.yearLabel"));
                 this.getBatchesForYear(component);
             }
@@ -24,7 +24,6 @@
     getBatchesForYear : function(component){
         var action2 = component.get("c.getBatchesByYear");
         var yearParam = component.get("v.yearLabel");
-        console.log(yearParam);
         action2.setParams({"year" : yearParam});
         action2.setCallback(this, function(response){
             var state = response.getState();
@@ -104,7 +103,7 @@
                     trainees.push(trainee);
                 });
                 component.set("v.allTrainees", trainees);
-                component.set("v.currentTraineeName", "All");
+                component.set("v.currentTraineeName", trainees[0].label);
                 component.set("v.currentTrainee", null);
                 this.fireReportFilterChange(component);
             }
