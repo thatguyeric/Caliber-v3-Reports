@@ -1,4 +1,42 @@
 ({
+    getAllYears : function(component){
+        var action = component.get("c.GetAllYearsWithBatches");
+        action.setCallback(this, function(response){
+            var state = response.getState();
+            var allYears = [];
+            if (state === "SUCCESS"){
+                response.getReturnValue().forEach(function(element){
+                    var year = {
+                        "label" : element.toString(),
+                        "value" : element,
+                    }
+                    allYears.push(year);
+                });
+                component.set("v.allYears", allYears);
+                component.set("v.yearLabel", allYears[0].label);
+                component.find("selectYear").set("v.value", component.get("v.yearLabel"));
+                this.getBatchesForYear(component);
+            }
+        });
+        $A.enqueueAction(action);
+    },
+    
+    getBatchesForYear : function(component){
+        var action2 = component.get("c.getBatchesByYear");
+        var yearParam = component.get("v.yearLabel");
+        console.log(yearParam);
+        action2.setParams({"year" : yearParam});
+        action2.setCallback(this, function(response){
+            var state = response.getState();
+            if (state === "SUCCESS"){
+                component.set("v.allBatches", response.getReturnValue());
+                component.set("v.currentBatch", response.getReturnValue()[0]);
+                this.buildBatchStrings(component);
+            }
+        });
+        $A.enqueueAction(action2);
+    },
+    
 	buildBatchStrings : function(component) {
 		var actionBuildBatchString = component.get("c.buildBatchStrings");
         var trainingsParam = component.get("v.allBatches");       
@@ -16,6 +54,7 @@
                 });
                 component.set("v.allBatchLabels", allBatches);
                 component.set("v.batchLabel", allBatches[0].label);
+                component.find("selectBatch").set("v.value", component.get("v.batchLabel"));
                 this.setCurrentBatch(component);
             }
         });
@@ -40,6 +79,7 @@
                 });
                 component.set("v.allWeekLabels", allWeeks);
                 component.set("v.weekLabel", "Week (All)");
+                component.find("selectWeek").set("v.value", component.get("v.weekLabel"));
             }
         });
         $A.enqueueAction(actionGetBatchWeeks);
@@ -54,7 +94,7 @@
             var state = response.getState();
             var trainees = [];
             if (state === "SUCCESS"){
-                var trainee = {"label":"Trainee", "value": null};
+                var trainee = {"label":"All", "value": null};
                 trainees.push(trainee);
                 response.getReturnValue().forEach(function(element){
                     trainee = {
@@ -64,7 +104,7 @@
                     trainees.push(trainee);
                 });
                 component.set("v.allTrainees", trainees);
-                component.set("v.currentTraineeName", "Trainee");
+                component.set("v.currentTraineeName", "All");
                 component.set("v.currentTrainee", null);
                 this.fireReportFilterChange(component);
             }
@@ -134,7 +174,7 @@
         
         var trainee = component.get("v.currentTrainee");
         var traineeId = trainee == null ? null : trainee.Id;
-        console.log("batchId: " + batchId + " week: " + week + " traineeId: " + traineeId);
+        //console.log("batchId: " + batchId + " week: " + week + " traineeId: " + traineeId);
         reportFilterEvent.setParams({"batchId" : batchId, "week" : week, "traineeId" : traineeId});
         reportFilterEvent.fire();
     }

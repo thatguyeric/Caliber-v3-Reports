@@ -1,4 +1,4 @@
-<aura:component controller="ReportsController">
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="ReportsController">
     <aura:handler name="init" action="{!c.doInitYears}" value="{!this}"/>
     <aura:registerEvent name="reportFilterChange" type="c:ReportFilterChange"/>
     
@@ -17,10 +17,10 @@
     <aura:attribute name="allTrainees" type="Contact[]"/>
     <aura:attribute name="currentTrainee" type="Contact"/>
     <aura:attribute name="currentTraineeName" type="String" default="Trainee"/>
-    
-    <lightning:comboBox name="yearBox" label="Choose a year" placeholder="{!v.yearLabel}" options="{! v.allYears }" onchange="{! c.updateYearLabel }"/>
-	<lightning:comboBox name="trainingBox" label="Choose a batch" placeholder="{!v.batchLabel}" options="{! v.allBatchLabels }" onchange="{! c.updateBatchLabel }"/>    
-	<lightning:comboBox name="weekBox" label="Choose a week" placeholder="{!v.weekLabel}" options="{! v.allWeekLabels }" onchange="{! c.updateWeekLabel }"/>    
-	<lightning:comboBox name="traineeBox" label="Choose a trainee" placeholder="{!v.currentTraineeName}" options="{! v.allTrainees }" onchange="{! c.updateTraineeLabel }"/>    
-    
+    <div>
+        <lightning:comboBox class="slds-size_1-of-8 selectBatchCombobox" aura:id="selectYear" name="yearBox" label="Choose a year" placeholder="{!v.yearLabel}" options="{! v.allYears }" onchange="{! c.updateYearLabel }"/>
+        <lightning:comboBox class="slds-size_1-of-8 selectBatchCombobox" aura:id="selectBatch" name="trainingBox" label="Choose a batch" placeholder="{!v.batchLabel}" options="{! v.allBatchLabels }" onchange="{! c.updateBatchLabel }"/>    
+        <lightning:comboBox class="slds-size_1-of-8 selectBatchCombobox" aura:id="selectWeek" name="weekBox" label="Choose a week" placeholder="{!v.weekLabel}" options="{! v.allWeekLabels }" onchange="{! c.updateWeekLabel }"/>    
+        <lightning:comboBox class="slds-size_1-of-8 selectBatchCombobox" aura:id="selectTrainee" name="traineeBox" label="Choose a trainee" placeholder="{!v.currentTraineeName}" options="{! v.allTrainees }" onchange="{! c.updateTraineeLabel }"/>    
+    </div>
 </aura:component>
