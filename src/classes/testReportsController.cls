@@ -118,6 +118,12 @@ public class testReportsController {
         actualAssociate = ReportsController.getSelectedTrainee(associateIds, '');
         system.assertEquals(null, actualAssociate);
     }
+    @isTest
+    public static void testNoGradesGetAverage(){
+        List<Decimal> gradePercents = new List<Decimal>();
+        Decimal average = ReportsController.getAverageGrade(gradePercents);
+        system.assertEquals(null, average);
+    }
     
     @isTest
     public static void testGetSelectedBatch(){
