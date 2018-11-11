@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Assessment_Category__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Assessment Category</label>
+        <referenceTo>Caliber_Category__c</referenceTo>
+        <relationshipLabel>Caliber Assessments</relationshipLabel>
+        <relationshipName>Caliber_Assessments</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Assessment_Title__c</fullName>
+        <externalId>false</externalId>
+        <formula>Assessment_Category__r.Name &amp; &quot; - &quot; &amp;  TEXT(Assessment_Type__c)</formula>
+        <label>Assessment Title</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Assessment_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Assessment Type</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Exam</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Verbal</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Project</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Presentation</fullName>
+                    <default>false</default>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Max_Points__c</fullName>
+        <description>An arbitrary number designating the maximum number of points a trainee can earn for an assessment. The weighted score (out of 100%) is determined by Caliber_Grade__c.Score__c / Max_Points__c</description>
+        <externalId>false</externalId>
+        <label>Max Points</label>
+        <precision>18</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Training_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Training Id</label>
+        <referenceTo>Training__c</referenceTo>
+        <relationshipLabel>Caliber Assessments</relationshipLabel>
+        <relationshipName>Caliber_Assessments</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Week_Number__c</fullName>
+        <description>The week that the test was administered, for example a Java Verbal test on Week 1.</description>
+        <externalId>false</externalId>
+        <label>Week Number</label>
+        <precision>2</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>Caliber Assessment</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <displayFormat>ASMNT-{0000000}</displayFormat>
+        <label>Caliber Assessment Id</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Caliber Assessments</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+</CustomObject>
