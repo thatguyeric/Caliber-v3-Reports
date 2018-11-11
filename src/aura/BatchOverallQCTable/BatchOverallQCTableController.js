@@ -10,15 +10,18 @@
                 var result = actionResult.getReturnValue();
                 var obj = JSON.parse(result);
                 console.log(obj);
-                
                 var weeks = helper.getWeeks(obj);
                 component.set("v.weekNums", weeks);
-                
                 component.set("v.trainees", obj.trainees);
                 component.set("v.batch",obj.batchWeeklyData);
+                component.set("v.batchName", obj.batchName);
             }
         });  
         
         $A.enqueueAction(action);        
+    },
+    
+    getSmiley : function(component, event, helper){
+        
     }
 })
