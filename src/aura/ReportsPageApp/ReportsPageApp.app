@@ -6,5 +6,6 @@
         </div>
         <c:BatchOverallQCTable />
     </div>
+    
     <div style="height:100px"/>
 </aura:application>
