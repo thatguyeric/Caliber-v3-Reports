@@ -31,12 +31,13 @@ public class testReportsController {
         System.assertEquals(expectedJson, jsonResult);
     }
 
-    //todo: finish test when grades are calculated
     @isTest
     public static void testBatchOverallWeeklyProgress(){
         TestDataFactory.createData();
-        Id batchID = [SELECT Id FROM Training__c LIMIT 1].Id;
-		String jsonResult = ReportsController.getBatchOverallWeeklyProgressLine(batchId);
+        Training__c batch = [SELECT Id, Caliber_Number_of_Weeks__c FROM Training__c LIMIT 1];
+		String jsonResult = ReportsController.getBatchOverallWeeklyProgressLine(batch.Id);
+        String expectedResult = '[{"grade":50.00,"week":1},{"grade":60.00,"week":2},{"grade":70.00,"week":3}]';
+        system.assertEquals(expectedResult, jsonResult);
     }
     
     @isTest
@@ -72,7 +73,7 @@ public class testReportsController {
         List<Training__c> batches = [select Trainer__c, startDate__c from Training__c];
         List<String> batchStrings = ReportsController.buildBatchStrings(batches);
         List<String> expectedStrings = new List<String>();
-        //change based on name of your user
+        //todo: change based on name of your user of org code is run in
         expectedStrings.add('Cody Burchett 9/10/2018');
         expectedStrings.add('Cody Burchett 9/10/2017');
         system.assertEquals(expectedStrings, batchStrings);
@@ -84,10 +85,10 @@ public class testReportsController {
         Training__c batch = [select Caliber_Number_of_Weeks__c from Training__c limit 1];
         List<String> weekStrings = Reportscontroller.batchWeeksStrings(batch);
         List<String> expectedWeekStrings = new List<String>();
-        expectedWeekStrings.add('Week 1');
-        expectedWeekStrings.add('Week 2');
-        expectedWeekStrings.add('Week 3');
-        expectedWeekStrings.add('Week 4');
+        expectedWeekStrings.add('Week (All)');
+        for (Integer i = 1; i <= batch.Caliber_Number_of_Weeks__c; i++){
+        expectedWeekStrings.add('Week ' + i);
+    	}
         system.assertEquals(expectedWeekStrings, weekStrings);
     }
     
@@ -105,12 +106,16 @@ public class testReportsController {
     public static void testGetSelectedTrainee(){
         TestDataFactory.createData();
         List<Contact> associates = [select Name from Contact];
+        List<Id> associateIds = new List<Id>();
+        for (Contact associate : associates){
+            associateIds.add(associate.Id);
+        }
         String associateName = 'Mickey Mouse';
-        //Contact actualAssociate = ReportsController.getSelectedTrainee(associates, associateName);
-       // Contact expectedAssociate = [select id, Name from Contact where Name='Mickey Mouse' limit 1];
-        //system.assertEquals(expectedAssociate, actualAssociate);
-        //actualAssociate = ReportsController.getSelectedTrainee(associates, '');
-        //system.assertEquals(null, actualAssociate);
+        Contact actualAssociate = ReportsController.getSelectedTrainee(associateIds, associateName);
+        Contact expectedAssociate = [select id, Name from Contact where Name='Mickey Mouse' limit 1];
+        system.assertEquals(expectedAssociate, actualAssociate);
+        actualAssociate = ReportsController.getSelectedTrainee(associateIds, '');
+        system.assertEquals(null, actualAssociate);
     }
     
     @isTest

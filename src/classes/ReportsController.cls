@@ -75,7 +75,7 @@ public class ReportsController {
         List<Contact> contacts = [select id, Name from Contact where id in :allTraineeIds];
         for (Contact contact : contacts){
             if (contact != null){
-                if (contact.Id == traineeName){
+                if (contact.Name == traineeName){
                     return contact;
                 }
             }
@@ -317,7 +317,7 @@ public class ReportsController {
         return JSON.serialize(dataToSend);
     }
     
-    static List<Decimal> getAllGradePercentagesByWeek(List<Caliber_Grade__c> gradesList, Integer weekNum){
+    public static List<Decimal> getAllGradePercentagesByWeek(List<Caliber_Grade__c> gradesList, Integer weekNum){
         List<Decimal> scores = new List<Decimal>();
         for (Caliber_Grade__c g : gradesList){
             if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
@@ -327,11 +327,11 @@ public class ReportsController {
         return scores;
     }
     
-    static Training__c getBatchById(Id batchId){
+    public static Training__c getBatchById(Id batchId){
         return [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
     }
     
-    static List<Caliber_Grade__c> getGradesForBatch(Id batchId){
+    public static List<Caliber_Grade__c> getGradesForBatch(Id batchId){
         return [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
                                              Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
                                              Caliber_Assessment__r.Week_Number__c
@@ -352,11 +352,13 @@ public class ReportsController {
         for (Integer weekNum = 0; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
             scores.clear();
             scores = ReportsController.getAllGradePercentagesByWeek(gradesList, weekNum);
-            Decimal avgOfAllGrades = getAverageGrade(scores);
-            Map<String, Object> weekMap = new Map<String, Object>();
-            weekMap.put('week', weekNum);	
-            weekMap.put('grade', avgOfAllGrades);
-            calculatedGrades.add(weekMap);
+            if (scores.size() > 0){
+            	Decimal avgOfAllGrades = getAverageGrade(scores);
+                Map<String, Object> weekMap = new Map<String, Object>();
+                weekMap.put('week', weekNum);	
+                weekMap.put('grade', avgOfAllGrades);
+                calculatedGrades.add(weekMap);
+            }
         }
         
         
