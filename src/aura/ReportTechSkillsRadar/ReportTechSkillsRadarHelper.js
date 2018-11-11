@@ -181,8 +181,7 @@
      * then a random color will be added to the array
      */
     addColorsToChartJSDataset : function(component, chartJSDataset, colorIndex) {
-        /* array of colors to use
-         */
+        /* array of colors to use */
         var colors = component.get('v.chartColors');
         
         // color alpha values

@@ -1,7 +1,8 @@
 <aura:component implements="flexipage:availableForAllPageTypes" controller="ReportsController">
     <ltng:require
                   styles="{!join(',',
-                          $Resource.ReportPanelCSS, 
+                          $Resource.ReportPanelCSS,
+                          $Resource.fontAwesome + '/font-awesome-4.7.0/css/font-awesome.css',
                           $Resource.bootstrapCSS)}"
                   scripts="{!join(',',
                            $Resource.jQuery, 
@@ -50,7 +51,7 @@
                         
                         <th style="text-align:center">
                             <a data-toggle="modal" data-target="{!'#' + globalId + batch.index + batch.note + '-note'}">
-                                {!batch.grade}
+                                <c:QCStatusIcon QCStatus="{!batch.grade}" isChangable="false"/>
                             </a>
                         </th>
                         
