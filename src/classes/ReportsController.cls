@@ -13,7 +13,6 @@ public class ReportsController {
     }
     
     //return list of years that have batches starting in them
-    //todo: replace aggregate result with list that gets converted to set?
     @AuraEnabled
     public static List<Integer> GetAllYearsWithBatches(){
         List<AggregateResult> trainings = [select count(Id), CALENDAR_YEAR(StartDate__c) from Training__c group by CALENDAR_YEAR(StartDate__c)];
@@ -92,10 +91,9 @@ public class ReportsController {
         }
         return null;
     }
-        
+    // get trainees that are part of a batch
     public static List<Id> getTraineeIDs(Id batchID){
         List<Id> traineeIDs = new List<Id>();
-        // get trainees that are part of a batch
         for (Training_Assignment__c t : [SELECT Contact__c FROM Training_Assignment__c WHERE Training__c = : batchID]){
             traineeIDs.add(t.Contact__c);
         }
@@ -104,10 +102,13 @@ public class ReportsController {
     
     public static Decimal getAverageGrade(List<Decimal> grades){
         Decimal grade = 0;
-        for (Decimal g : grades){
-            grade += g;
+        if (grades.size() > 0){
+            for (Decimal g : grades){
+                grade += g;
+            }
+            return grade = grade / grades.size() * 100;
         }
-        return grade = grade / grades.size() * 100;
+        return null;
     }
     
     public static Map<String, Object> mapTraineesAndGrades(Id traineeID, List<Caliber_Grade__c> gradesList){
@@ -117,7 +118,7 @@ public class ReportsController {
         for (Caliber_Grade__c g : gradesList){
             if (g.Contact__c == traineeID){
                 fullName = g.Contact__r.LastName + ', ' + g.Contact__r.FirstName;
-                traineeGrades.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
+                traineeGrades.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
             }
         }
         traineeMap.put('name', fullName);
@@ -147,7 +148,7 @@ public class ReportsController {
         // get all caliber grades of current training track to calculate benchmark 
         List<Decimal> allTrainingTrackGrades = new List<Decimal>();
         for (Caliber_Grade__c g : [SELECT Score__c, Caliber_Assessment__r.Max_Points__c FROM Caliber_Grade__c WHERE Caliber_Assessment__r.Training_Id__r.TrainingTrack__c = : trainingTrackID]){
-            allTrainingTrackGrades.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
+            allTrainingTrackGrades.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
         }
         
         // add to map to return to javaScript controller
@@ -264,12 +265,7 @@ public class ReportsController {
         // for each category calculate grades and get names
         List<String> categoryList = new List<String>(batchCategories);
         for (String cat : categoryList){
-            List<Decimal> grades = new List<Decimal>();
-            for (Caliber_Grade__c g : allData){
-                if (g.Caliber_Assessment__r.Assessment_Category__r.Name == cat){
-                    grades.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
-                }
-            }
+            List<Decimal> grades = getAllGradePercentagesByCategory(allData, cat);
             Map<String, Object> batchCategory = new Map<String, Object>();
             batchCategory.put('name', cat);
             batchCategory.put('grade', getAverageGrade(grades));
@@ -296,7 +292,7 @@ public class ReportsController {
                     if (t == g.Contact__c){
                         if (g.Caliber_Assessment__r.Assessment_Category__r.Name == cat){
                             traineeName = g.Contact__r.LastName + ', ' + g.Contact__r.FirstName;
-                            grades.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
+                            grades.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
                         }
                     }
                 }
@@ -317,11 +313,25 @@ public class ReportsController {
         return JSON.serialize(dataToSend);
     }
     
+    static Decimal getGradePercentage(Decimal score, Decimal maxScore){
+        return score / maxScore;
+    }
+    
+    public static List<Decimal> getAllGradePercentagesByCategory(List<Caliber_Grade__c> allData, String name){
+        List<Decimal> grades = new List<Decimal>();
+        for (Caliber_Grade__c g : allData){
+            if (g.Caliber_Assessment__r.Assessment_Category__r.Name == name){
+                grades.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
+            }
+        }
+        return grades;
+    }
+    
     public static List<Decimal> getAllGradePercentagesByWeek(List<Caliber_Grade__c> gradesList, Integer weekNum){
         List<Decimal> scores = new List<Decimal>();
         for (Caliber_Grade__c g : gradesList){
             if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
-                scores.add(g.Score__c / g.Caliber_Assessment__r.Max_Points__c);
+                scores.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
             }
         }
         return scores;
@@ -351,7 +361,7 @@ public class ReportsController {
         //average each weeks grades
         for (Integer weekNum = 0; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
             scores.clear();
-            scores = ReportsController.getAllGradePercentagesByWeek(gradesList, weekNum);
+            scores = getAllGradePercentagesByWeek(gradesList, weekNum);
             if (scores.size() > 0){
             	Decimal avgOfAllGrades = getAverageGrade(scores);
                 Map<String, Object> weekMap = new Map<String, Object>();
@@ -360,8 +370,6 @@ public class ReportsController {
                 calculatedGrades.add(weekMap);
             }
         }
-        
-        
         return JSON.serialize(calculatedGrades);
     }
 }//end of ReportsController class
