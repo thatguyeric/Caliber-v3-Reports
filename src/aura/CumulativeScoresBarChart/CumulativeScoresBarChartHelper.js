@@ -14,7 +14,8 @@
             var state = response.getState();
             if(state === "SUCCESS"){
                 component.set('v.errorMsg', null);
-                var data = response.getReturnValue();
+                var stringdata = response.getReturnValue();
+               	var data = JSON.parse(stringdata);      
                 helper.configureCumulativeScoresChart(component, helper, data);
             }else if(state === "INCOMPLETE"){
                 var errormsg = 'Incomplete server request.';
@@ -126,10 +127,10 @@
                 name: 'Jim 2',
                 grade: 84.8
             },{
-                name:  'Lan 1',
+                name:  'Ying',
                 grade: 92.5
             },{
-                name: 'Lan 2',
+                name: 'Lan',
                 grade: 85.7
             }]
             

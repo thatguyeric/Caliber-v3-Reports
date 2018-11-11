@@ -3,7 +3,7 @@
         
         var action;
         if(week){
-            action = component.get('c.getBatchOverallWeeklyProgressLine');
+            action = component.get('c.getBatchSingleWeekSingleTraineeWeeklyProgressLine');
             action.setParams({ batchID : batchId,
                               traineeID: traineeId,
                               week : week});
@@ -12,7 +12,7 @@
             action.setParams({ batchID : batchId,
                               traineeID: traineeId});
         }else{
-            action = component.get('c.getBatchSingleWeekSingleTraineeWeeklyProgressLine');
+            action = component.get('c.getBatchOverallWeeklyProgressLine');
             action.setParams({ batchID : batchId});
         }
         
@@ -20,7 +20,11 @@
             var state = response.getState();
             if(state === "SUCCESS"){
                 component.set('v.errorMsg', null);
-                var data = response.getReturnValue();
+                console.log('test');
+                var tempdata = response.getReturnValue();
+                console.log(tempdata);
+                var data = JSON.parse(tempdata);
+                console.log(data);
                 helper.configureWeeklyProgressChart(component, helper, data);
             }else if(state === "INCOMPLETE"){
                 var errormsg = 'Incomplete server request.';
@@ -35,7 +39,7 @@
     
     configureWeeklyProgressChart : function(component, helper, data){
         //configure batch data
-        
+    
         var batchdata = data.batch;	
         
         function comparebyWeek(a, b){

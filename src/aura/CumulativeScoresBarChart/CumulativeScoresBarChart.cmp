@@ -1,6 +1,9 @@
 <aura:component controller="ReportsController">
-    <ltng:require styles="{!$Resource.ReportPanelCSS}" scripts="{!$Resource.chartjs}" afterScriptsLoaded="{!c.test}"/>
+    <ltng:require styles="{!$Resource.ReportPanelCSS}" scripts="{!$Resource.chartjs}" afterScriptsLoaded="{!c.handleScriptsLoaded}"/>
     <aura:attribute name = "chartState" type = "Boolean" default = "false"/>
+    <aura:attribute name = "batch" type = "Id" />
+    <aura:attribute name = "week" type = "Integer" />
+    <aura:attribute name = "trainee" type = "Id" />
     <aura:attribute name = "isVisible" type = "Boolean" default = "false"/>
     <aura:handler event = "c:ReportFilterChange" action = "{!c.cumulativeScoresBar}"/>
     <aura:attribute name="errorMsg" type="String"/>    
