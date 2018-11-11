@@ -44,10 +44,10 @@
         });
         
         
-        //get labels and grades for chart
+        //create label and grade arrays
         var labels = [];
         var grades = [];
-        //store label, name, and grade values
+        //store label and grade values in arrays
         batch.forEach(function(name){
             var traineeGrade = name.grade;
             var traineeName = name.name;

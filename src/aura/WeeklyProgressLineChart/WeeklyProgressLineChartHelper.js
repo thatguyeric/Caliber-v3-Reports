@@ -1,5 +1,6 @@
 ({
-    doServerMethod : function(component, helper, batchId, traineeId, week) {
+    doServerRequest : function(component, helper, batchId, traineeId, week) {
+        
         var action;
         if(week){
             action = component.get('c.getBatchOverallWeeklyProgressLine');
@@ -126,6 +127,7 @@
     },
     
     test : function(component, helper){
+        //test method before integration with server
         var data = {
             batch : [{
                 week : 1,

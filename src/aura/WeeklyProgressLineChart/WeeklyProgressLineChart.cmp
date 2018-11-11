@@ -1,5 +1,6 @@
 <aura:component controller="ReportsController">
-    <ltng:require styles="{!$Resource.ReportPanelCSS}" scripts="{!$Resource.chartjs}" afterScriptsLoaded="{!c.test}"/>
+    <ltng:require styles="{!$Resource.ReportPanelCSS}" scripts="{!$Resource.chartjs}" afterScriptsLoaded="{!c.initialChart}"/>
+    <aura:attribute name = "chartState" type = "Boolean" default = "false"/>
     <aura:handler event = "c:ReportFilterChange" action = "{!c.weeklyProgressChart}"/>
     <aura:if isTrue="{!not(empty(v.errorMsg))}">
         <div>{!v.errorMsg}</div>
