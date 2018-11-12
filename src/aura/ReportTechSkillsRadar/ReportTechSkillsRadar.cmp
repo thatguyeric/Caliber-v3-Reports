@@ -55,7 +55,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Trainee Comparison</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close" onclick="{!c.onModalClose}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -82,7 +83,7 @@
             <span>Technical Skills</span>
             <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">
                 <!-- Button to show list of trainees to show/hide -->
-                <div role="button" class="pull-right" onclick="{!c.openModal}"
+                <div role="button" class="pull-right" onclick="{!c.onModalOpen}"
                      data-toggle="modal" data-target="{!'#' + globalId + 'trainee-modal'}">
                 	<i class="fa fa-user-circle-o fa-lg" aria-hidden="true"></i>
                 </div>

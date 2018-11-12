@@ -60,7 +60,7 @@
                 var errors = response.getError();
                 var errorMsg = 'Unknown Error';
                 if (errors) {
-                    if (errors[0] && erros[0].message) {
+                    if (errors[0] && errors[0].message) {
                     	errorMsg = 'Error Message: ' + errors[0].message;
                     }
                 }
@@ -83,6 +83,7 @@
         
         var batchData = serverResponseData.batch;
         var traineesData = serverResponseData.trainees;
+        var isSingleTrainee = component.get('v.shownTraineesOptions').length === 1;
         var shownTraineesValue = component.get('v.shownTraineesValue');
         
         // get chart data
@@ -100,18 +101,25 @@
         chartData.datasets = [];
         // format batch data for chart.js
         var batchDataset = helper.getChartJSDataset(batchData, categoryIndexMap);
-        helper.addColorsToChartJSDataset(component, batchDataset, 0);
-        chartData.datasets.push(batchDataset);
+        helper.addColorsToChartJSDataset(component, batchDataset, isSingleTrainee ? 1 : 0);
+        if (!isSingleTrainee) {
+            chartData.datasets.push(batchDataset);
+        }
         
         // format trainee data for chart.js for shown trainees
         var nextColorIndex = 1;
         shownTraineesValue.forEach(function(indexString) {
             var index = Number.parseInt(indexString);
             var traineeDataset = helper.getChartJSDataset(traineesData[index], categoryIndexMap);
-        	helper.addColorsToChartJSDataset(component, traineeDataset, nextColorIndex);
+        	helper.addColorsToChartJSDataset(component, traineeDataset,
+                                             isSingleTrainee ? 0 : nextColorIndex);
             nextColorIndex += 1;
             chartData.datasets.push(traineeDataset);
         });
+        
+        if (isSingleTrainee) {
+            chartData.datasets.push(batchDataset);
+        }
         
         /* create chart config
          * use 1:1 aspect ratio
@@ -123,9 +131,6 @@
             data: chartData,
             options: {
                 aspectRatio: 1,
-                legend: {
-                    display: true
-                },
                 scale: {
                     ticks: {
                         min: 0,
@@ -176,7 +181,6 @@
     },
     /* Add colors to a chart.js dataset
      * colorIndex is the index in the colors array
-     * use colorIndex === 0 for batch overall
      * if colorIndex is outside the array,
      * then a random color will be added to the array
      */
@@ -219,7 +223,7 @@
         chartJSDataset.pointHoverBackgroundColor = colorToString(colors[colorIndex], hoverColorAlpha);
         chartJSDataset.pointHoverBorderColor = colorToString(colors[colorIndex], hoverColorAlpha);
         chartJSDataset.pointBorderColor = '#FFF';
-        // radar chart should only use fill for batch overall, which we assume to use color index 0
+        // radar chart should only use fill for color index 0
         chartJSDataset.fill = colorIndex === 0;
 	},
     /* for testing only */

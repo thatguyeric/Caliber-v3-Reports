@@ -40,7 +40,7 @@
             helper.doServerRequest(component, helper, params.batchId, params.week, params.traineeId);
         }
     },
-    openModal : function(component, event, helper) {
+    onModalOpen : function(component, event, helper) {
         /* Set the checked values for the checkboxes.
          * If the aura:iteration with lightning:input is replaced with
          * lightning:checkboxGroup, then this code can be removed
@@ -53,7 +53,7 @@
             }
         });
     },
-    closeModal : function(component, event, helper) {
+    onModalClose : function(component, event, helper) {
         /* Update the list of selected trainees.
          * If the aura:iteration with lightning:input is replaced with
          * lightning:checkboxGroup, then this code needs to be modified to
