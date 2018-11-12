@@ -1,5 +1,6 @@
 ({
     cumulativeScoresBar : function(component, event, helper) {
+        //get parameters
         var batchId = event.getParam("batchId");
         var week = event.getParam("week");
         var traineeId = event.getParam("traineeId");
@@ -19,10 +20,6 @@
         }
         
         
-    },
-    
-    renderChart : function(component, event, helper) {
-        helper.renderChart(component);
     },
     
     handleScriptsLoaded : function(component, event, helper){

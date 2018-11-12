@@ -2,6 +2,7 @@
     doServerRequest : function(component, helper, batchId, traineeId, week) {
         
         var action;
+        //call server method based on criteria
         if(week){
             action = component.get('c.getBatchSingleWeekSingleTraineeWeeklyProgressLine');
             action.setParams({ batchID : batchId,
@@ -15,16 +16,15 @@
             action = component.get('c.getBatchOverallWeeklyProgressLine');
             action.setParams({ batchID : batchId});
         }
-       	
+       	//create callback function
         action.setCallback(this, function(response){
            
             var state = response.getState();
-             console.log(response.getError()[0].message);
+            //if successful call chart configuration
             if(state === "SUCCESS"){
                 component.set('v.errorMsg', null);
                 var tempdata = response.getReturnValue();
                 var data = JSON.parse(tempdata);
-                console.log(data);
                 helper.configureWeeklyProgressChart(component, helper, data);
             }else if(state === "INCOMPLETE"){
                 var errormsg = 'Incomplete server request.';
@@ -43,17 +43,18 @@
                 
             }
         });
+        //enqueue action
         $A.enqueueAction(action);
         
     },
     
     configureWeeklyProgressChart : function(component, helper, data){
-        //configure batch data
+        //configure batch data if data is not null
         if(!data){
              component.set('v.errorMsg', 'Insufficient data');
         }else{
         var batchdata = data.batch;	
-        
+        //sort data by week
         function comparebyWeek(a, b){
             if(a.week < b.week){
                 return -1;
@@ -92,16 +93,16 @@
                 traineeGrades.push(traineeGrade);
             });
         }
-        
+        //create chart using data
         helper.renderChart(component, helper, batchGrades, traineeGrades, labels);
             }
     },
     
     renderChart : function(component, helper, batchGrades, traineeGrades, labels){
-        
+        //find Lightning canvas element
         var chartElement = component.find("chart").getElement();
         var dataset = [];
-        
+		//configure chart dataset        
         var batchGradeDataset = {
             data: batchGrades,
             label: 'Batch',
@@ -111,13 +112,13 @@
         };
         
         dataset.push(batchGradeDataset);
-        
+        //configure traineegrades dataset if applicable
         if(traineeGrades){
             var traineeGradeDataset = {
                 data: traineeGrades,
                 label: 'Trainee',
                 backgroundColor: 'rgba(114, 164, 194, 0.5)',
-                borderColor: 'rgba(114, 164, 194, 1)',
+                borderColor: 'rgba(114, 164, 194, 1)',       
                 fill: false
             };
             dataset.push(traineeGradeDataset);
@@ -134,7 +135,10 @@
             options: {
                 scales: {
                     yAxes: [{
-                        stacked: false
+                        ticks: {
+                            min: 0,
+                            max: 100
+                        }
                     }]
                 }
             }

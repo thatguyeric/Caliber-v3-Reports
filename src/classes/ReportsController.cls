@@ -370,6 +370,7 @@ public class ReportsController {
                 calculatedGrades.add(weekMap);
             }
         }
-        return JSON.serialize(calculatedGrades);
+        dataToSend.put('batch', calculatedGrades);
+        return JSON.serialize(dataToSend);
     }
 }//end of ReportsController class
