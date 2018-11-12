@@ -1,128 +1,20 @@
 public class ReportsController {
     
-    //return all batches starting or ending in a specific year
-    @AuraEnabled
-    public static List<Training__c> getBatchesByYear(Decimal year){
-        Date startOfYear = date.newInstance((Integer)year, 1, 1);
-        Date endOfYear = date.newInstance((Integer)year, 12, 31);
-        List<Training__c> batchList =  [SELECT Id, Trainer__c, TrainingTrack__c, startDate__c, Caliber_Number_of_Weeks__c
-                                        FROM Training__c
-                                        WHERE (startDate__c >= : startOfYear AND startDate__c <= : endOfYear) 
-                                        OR (endDate__c >= : startOfYear AND endDate__c <= : endOfYear)];
-        return batchList;
-    }
-    
-    //return list of years that have batches starting in them
-    @AuraEnabled
-    public static List<Integer> GetAllYearsWithBatches(){
-        List<AggregateResult> trainings = [select count(Id), CALENDAR_YEAR(StartDate__c) from Training__c group by CALENDAR_YEAR(StartDate__c)];
-        List<Integer> years = new List<Integer>();
-        for (AggregateResult ar : trainings){
-            years.add((Integer)ar.get('expr1'));
-        }
-        return years;
-    }
-    
-    //build a list of strings for all batches in year
-    @AuraEnabled
-    public static List<String> buildBatchStrings(List<Training__c> trainings){
-        List<String> batchStrings = new List<String>();
-        List<Id> trainerIds = new List<Id>();
-        for (Training__c training : trainings){
-            trainerIds.add(training.Trainer__c);
-        }
-        List<User> userTrainers = [select id, name from User where id in :trainerIds];
-        for (Training__c training : trainings){
-            for (User trainer : userTrainers){
-                if (trainer.id == training.Trainer__c){
-                    String tString = trainer.Name + ' ' + training.startDate__c.format();
-                    batchStrings.add(tString);
-                }
-            }
-        }
-        return batchStrings;
-    }
-    //return the number of weeks in a batch
-    public static Decimal getWeeksInBatch(Training__c batch){
-        return batch.Caliber_Number_of_Weeks__c;
-    }
-    
-    //return strings for each week in a batch
-    @AuraEnabled
-    public static List<String> batchWeeksStrings(Training__c batch){
-        Decimal weeksInBatch = ReportsController.getWeeksInBatch(batch);
-        List<String> weekStrings = new List<String>();
-        weekStrings.add('Week (All)');
-        for (Integer i = 1; i <= (Integer)weeksInBatch; i++){
-            weekStrings.add('Week ' + i);
-        }
-        return weekStrings;
-    }
-    //return all trainees in a batch
-    @AuraEnabled
-    public static List<Contact> batchTrainees(Training__c batch){
-        List<Training_Assignment__c> assignments = [select id, Contact__c from Training_Assignment__c where training__c = :batch.id];
-        List<Id> traineeContactIds = new List<Id>();
-        for (Training_Assignment__c assignment : assignments){
-            traineeContactIds.add(assignment.contact__c);
-        }
-        return [select id, name from Contact where id in :traineeContactIds];
-    }
-    //return the selected trainee's info
-    @AuraEnabled
-    public static Contact getSelectedTrainee(List<Id> allTraineeIds, String traineeName){
-        List<Contact> contacts = [select id, Name from Contact where id in :allTraineeIds];
-        for (Contact contact : contacts){
-            if (contact != null){
-                if (contact.Name == traineeName){
-                    return contact;
-                }
-            }
-        }
-        return null;
-    }
-    //return the batch info for selected batch
-    @AuraEnabled
-    public static Training__c getSelectedBatch(List<Training__c> batches, String batchName){
-        for (Training__c batch : batches){
-            if (batchName.contains(batch.StartDate__c.format())){
-                return batch;
-            }
-        }
-        return null;
-    }
-    // get trainees that are part of a batch
-    public static List<Id> getTraineeIDs(Id batchID){
-        List<Id> traineeIDs = new List<Id>();
-        for (Training_Assignment__c t : [SELECT Contact__c FROM Training_Assignment__c WHERE Training__c = : batchID]){
-            traineeIDs.add(t.Contact__c);
-        }
-        return traineeIDs;
-    }
-    
-    public static Decimal getAverageGrade(List<Decimal> grades){
-        Decimal grade = 0;
-        if (grades.size() > 0){
-            for (Decimal g : grades){
-                grade += g;
-            }
-            return grade = grade / grades.size() * 100;
-        }
-        return null;
-    }
-    
     public static Map<String, Object> mapTraineesAndGrades(Id traineeID, List<Caliber_Grade__c> gradesList){
         List<Decimal> traineeGrades = new List<Decimal>();
         Map<String, Object> traineeMap = new Map<String, Object>();
         String fullName;
+        Decimal scoreSum = 0;
+        Decimal maxPointSum = 0;
         for (Caliber_Grade__c g : gradesList){
             if (g.Contact__c == traineeID){
                 fullName = g.Contact__r.LastName + ', ' + g.Contact__r.FirstName;
-                traineeGrades.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
+                scoreSum+=g.Score__c;
+                maxPointSum += g.Caliber_Assessment__r.Max_Points__c;
             }
         }
         traineeMap.put('name', fullName);
-        traineeMap.put('grade', getAverageGrade(traineeGrades));
+        traineeMap.put('grade', getGradePercentage(scoreSum, maxPointSum));
         return traineeMap;
     }
     
@@ -146,14 +38,17 @@ public class ReportsController {
         Id trainingTrackID = [SELECT TrainingTrack__c FROM Training__c WHERE Id = : batchID].TrainingTrack__c;
 
         // get all caliber grades of current training track to calculate benchmark 
+        Decimal scoreSum = 0;
+        Decimal maxPointSum = 0;
         List<Decimal> allTrainingTrackGrades = new List<Decimal>();
         for (Caliber_Grade__c g : [SELECT Score__c, Caliber_Assessment__r.Max_Points__c FROM Caliber_Grade__c WHERE Caliber_Assessment__r.Training_Id__r.TrainingTrack__c = : trainingTrackID]){
-            allTrainingTrackGrades.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
+            scoreSum+=g.Score__c;
+            maxPointSum += g.Caliber_Assessment__r.Max_Points__c;
         }
         
         // add to map to return to javaScript controller
         dataToSend.put('trainees', trainees);
-        dataToSend.put('benchmark', getAverageGrade(allTrainingTrackGrades));
+        dataToSend.put('benchmark', getGradePercentage(scoreSum, maxPointSum));
         
         return JSON.serialize(dataToSend);
     }
@@ -265,10 +160,9 @@ public class ReportsController {
         // for each category calculate grades and get names
         List<String> categoryList = new List<String>(batchCategories);
         for (String cat : categoryList){
-            List<Decimal> grades = getAllGradePercentagesByCategory(allData, cat);
             Map<String, Object> batchCategory = new Map<String, Object>();
             batchCategory.put('name', cat);
-            batchCategory.put('grade', getAverageGrade(grades));
+            batchCategory.put('grade', getAllGradeAveragesByCategory(allData, cat));
             categories.add(batchCategory);
         }
         
@@ -287,18 +181,20 @@ public class ReportsController {
             List<Map<String, Object>> traineeCatList = new List<Map<String, Object>>();
             String traineeName;
             for (String cat : categoryList){
-                List<Decimal> grades = new List<Decimal>();
+                Decimal scoreSum = 0;
+                Decimal maxPointSum = 0;
                 for (Caliber_Grade__c g : allData){
                     if (t == g.Contact__c){
                         if (g.Caliber_Assessment__r.Assessment_Category__r.Name == cat){
                             traineeName = g.Contact__r.LastName + ', ' + g.Contact__r.FirstName;
-                            grades.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
+                            scoreSum += g.Score__c;
+                            maxPointSum += g.Caliber_Assessment__r.Max_Points__c;
                         }
                     }
                 }
                 Map<String, Object> traineeCategory = new Map<String, Object>();
                 traineeCategory.put('name', cat);
-                traineeCategory.put('grade', getAverageGrade(grades));
+                traineeCategory.put('grade', getGradePercentage(scoreSum, maxPointSum));
                 traineeCatList.add(traineeCategory);
             }
             
@@ -313,42 +209,6 @@ public class ReportsController {
         return JSON.serialize(dataToSend);
     }
     
-    static Decimal getGradePercentage(Decimal score, Decimal maxScore){
-        return score / maxScore;
-    }
-    
-    public static List<Decimal> getAllGradePercentagesByCategory(List<Caliber_Grade__c> allData, String name){
-        List<Decimal> grades = new List<Decimal>();
-        for (Caliber_Grade__c g : allData){
-            if (g.Caliber_Assessment__r.Assessment_Category__r.Name == name){
-                grades.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
-            }
-        }
-        return grades;
-    }
-    
-    public static List<Decimal> getAllGradePercentagesByWeek(List<Caliber_Grade__c> gradesList, Integer weekNum){
-        List<Decimal> scores = new List<Decimal>();
-        for (Caliber_Grade__c g : gradesList){
-            if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
-                scores.add(getGradePercentage(g.Score__c, g.Caliber_Assessment__r.Max_Points__c));
-            }
-        }
-        return scores;
-    }
-    
-    public static Training__c getBatchById(Id batchId){
-        return [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
-    }
-    
-    public static List<Caliber_Grade__c> getGradesForBatch(Id batchId){
-        return [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
-                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
-                                             Caliber_Assessment__r.Week_Number__c
-                                             FROM Caliber_Grade__c
-                                             WHERE Caliber_Assessment__r.Training_Id__c = :batchId];
-    }
-    
     @AuraEnabled
     public static String getBatchOverallWeeklyProgressLine(Id batchID){
         Training__c batch = getBatchById(batchId);
@@ -359,18 +219,185 @@ public class ReportsController {
         //get the list of all grades for the batch
         List<Caliber_Grade__c> gradesList = getGradesForBatch(batchId);
         //average each weeks grades
-        for (Integer weekNum = 0; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
-            scores.clear();
-            scores = getAllGradePercentagesByWeek(gradesList, weekNum);
-            if (scores.size() > 0){
-            	Decimal avgOfAllGrades = getAverageGrade(scores);
-                Map<String, Object> weekMap = new Map<String, Object>();
-                weekMap.put('week', weekNum);	
-                weekMap.put('grade', avgOfAllGrades);
-                calculatedGrades.add(weekMap);
-            }
+        for (Integer weekNum = 1; weekNum < batch.caliber_number_of_weeks__c; weekNum++){
+            Map<String, Object> weekMap = new Map<String, Object>();
+            weekMap.put('week', weekNum);	
+            weekMap.put('grade', getAllGradeAveragesByWeek(gradesList, weekNum));
+            calculatedGrades.add(weekMap);
         }
         dataToSend.put('batch', calculatedGrades);
         return JSON.serialize(dataToSend);
+    }
+    /*Helper Functions*/
+    //get grade average for category 
+    public static Decimal getAllGradeAveragesByCategory(List<Caliber_Grade__c> allData, String name){
+        Decimal scoreSum = 0;
+        Decimal maxPointSum = 0;
+        for (Caliber_Grade__c g : allData){
+            if (g.Caliber_Assessment__r.Assessment_Category__r.Name == name){
+                scoreSum += g.Score__c;
+                maxPointSum += g.Caliber_Assessment__r.Max_Points__c;
+            }
+        }
+        return getGradePercentage(scoreSum, maxPointSum);
+    }
+    //get list of grade percentages depending on week of assessment
+    public static Decimal getAllGradeAveragesByWeek(List<Caliber_Grade__c> gradesList, Integer weekNum){
+        Decimal scoreSum = 0;
+        Decimal maxPointSum = 0;
+        for (Caliber_Grade__c g : gradesList){
+            if (g.Caliber_Assessment__r.Week_Number__c == weekNum){
+                scoreSum += g.score__c;
+                maxPointSum += g.Caliber_Assessment__r.Max_Points__c;
+            }
+        }
+       return getGradePercentage(scoreSum, maxPointSum);
+    }
+    //get a specific batch
+    public static Training__c getBatchById(Id batchId){
+        return [select id, caliber_number_of_weeks__c from Training__c where id = :batchId limit 1];
+    }
+    //get list of grades for a specific batch
+    public static List<Caliber_Grade__c> getGradesForBatch(Id batchId){
+        return [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
+                                             FROM Caliber_Grade__c
+                                             WHERE Caliber_Assessment__r.Training_Id__c = :batchId];
+    }
+
+    //return list of grades for a specific batch on assessments taken during a specific week
+    public static List<Caliber_Grade__c> getGradesForBatchAndWeek(Id batchId, Integer weekNum){
+        return [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
+                                             FROM Caliber_Grade__c
+                                             WHERE Caliber_Assessment__r.Training_Id__c = :batchId AND Caliber_Assessment__r.Week_Number__c = :weekNum];
+    }
+    
+    //get list of grades for a trainee
+    public static List<Caliber_Grade__c> getGradesForTrainee(Id traineeId){
+        return [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
+                                             FROM Caliber_Grade__c
+                                             WHERE Contact__c = :traineeId];
+    }
+
+     //get list of grades for a specific week and trainee
+    public static List<Caliber_Grade__c> getGradesForTraineeByWeek(Id traineeId, Integer WeekNum){
+        return [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
+                                             FROM Caliber_Grade__c
+                                             WHERE Contact__c = :traineeId AND Caliber_Assessment__r.Week_Number__c = :weekNum];
+    }
+    //return the percentage received on an assessment
+    static Decimal getGradePercentage(Decimal score, Decimal maxScore){
+        if (maxScore > 0){
+        	return (score / maxScore) * 100;
+        }else{
+        	return null;
+        }
+    }
+    
+    //return all batches starting or ending in a specific year
+    @AuraEnabled
+    public static List<Training__c> getBatchesByYear(Decimal year){
+        Date startOfYear = date.newInstance((Integer)year, 1, 1);
+        Date endOfYear = date.newInstance((Integer)year, 12, 31);
+        List<Training__c> batchList =  [SELECT Id, Trainer__c, TrainingTrack__c, startDate__c, Caliber_Number_of_Weeks__c
+                                        FROM Training__c
+                                        WHERE (startDate__c >= : startOfYear AND startDate__c <= : endOfYear) 
+                                        OR (endDate__c >= : startOfYear AND endDate__c <= : endOfYear)];
+        return batchList;
+    }
+    
+    //return list of years that have batches starting in them
+    @AuraEnabled
+    public static List<Integer> GetAllYearsWithBatches(){
+        List<AggregateResult> trainings = [select count(Id), CALENDAR_YEAR(StartDate__c) from Training__c group by CALENDAR_YEAR(StartDate__c)];
+        List<Integer> years = new List<Integer>();
+        for (AggregateResult ar : trainings){
+            years.add((Integer)ar.get('expr1'));
+        }
+        return years;
+    }
+    
+    //build a list of strings for all batches in year
+    @AuraEnabled
+    public static List<String> buildBatchStrings(List<Training__c> trainings){
+        List<String> batchStrings = new List<String>();
+        List<Id> trainerIds = new List<Id>();
+        for (Training__c training : trainings){
+            trainerIds.add(training.Trainer__c);
+        }
+        List<User> userTrainers = [select id, name from User where id in :trainerIds];
+        for (Training__c training : trainings){
+            for (User trainer : userTrainers){
+                if (trainer.id == training.Trainer__c){
+                    String tString = trainer.Name + ' ' + training.startDate__c.format();
+                    batchStrings.add(tString);
+                }
+            }
+        }
+        return batchStrings;
+    }
+    //return the number of weeks in a batch
+    public static Decimal getWeeksInBatch(Training__c batch){
+        return batch.Caliber_Number_of_Weeks__c;
+    }
+    
+    //return strings for each week in a batch
+    @AuraEnabled
+    public static List<String> batchWeeksStrings(Training__c batch){
+        Decimal weeksInBatch = ReportsController.getWeeksInBatch(batch);
+        List<String> weekStrings = new List<String>();
+        weekStrings.add('Week (All)');
+        for (Integer i = 1; i <= (Integer)weeksInBatch; i++){
+            weekStrings.add('Week ' + i);
+        }
+        return weekStrings;
+    }
+    //return all trainees in a batch
+    @AuraEnabled
+    public static List<Contact> batchTrainees(Training__c batch){
+        List<Training_Assignment__c> assignments = [select id, Contact__c from Training_Assignment__c where training__c = :batch.id];
+        List<Id> traineeContactIds = new List<Id>();
+        for (Training_Assignment__c assignment : assignments){
+            traineeContactIds.add(assignment.contact__c);
+        }
+        return [select id, name from Contact where id in :traineeContactIds];
+    }
+    //return the selected trainee's info
+    @AuraEnabled
+    public static Contact getSelectedTrainee(List<Id> allTraineeIds, String traineeName){
+        List<Contact> contacts = [select id, Name from Contact where id in :allTraineeIds];
+        for (Contact contact : contacts){
+            if (contact != null){
+                if (contact.Name == traineeName){
+                    return contact;
+                }
+            }
+        }
+        return null;
+    }
+    //return the batch info for selected batch
+    @AuraEnabled
+    public static Training__c getSelectedBatch(List<Training__c> batches, String batchName){
+        for (Training__c batch : batches){
+            if (batchName.contains(batch.StartDate__c.format())){
+                return batch;
+            }
+        }
+        return null;
+    }
+    // get trainees that are part of a batch
+    public static List<Id> getTraineeIDs(Id batchID){
+        List<Id> traineeIDs = new List<Id>();
+        for (Training_Assignment__c t : [SELECT Contact__c FROM Training_Assignment__c WHERE Training__c = : batchID]){
+            traineeIDs.add(t.Contact__c);
+        }
+        return traineeIDs;
     }
 }//end of ReportsController class
