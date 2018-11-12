@@ -170,7 +170,12 @@
         var trainee = component.get("v.currentTrainee");
         var traineeId = trainee == null ? null : trainee.Id;
         //console.log("batchId: " + batchId + " week: " + week + " traineeId: " + traineeId);
-        reportFilterEvent.setParams({"batchId" : batchId, "week" : week, "traineeId" : traineeId});
+        
+        //TODO: future sprint
+        //until the functionality is implemented for week and trainee filtering we are setting
+        //week and trainee to null so that none of the reports try to query the apex controller
+        //for week or trainee filtering reports
+        reportFilterEvent.setParams({"batchId" : batchId, "week" : null, "traineeId" : null});
         reportFilterEvent.fire();
     }
 })

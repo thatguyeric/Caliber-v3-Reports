@@ -4,21 +4,21 @@
                   scripts="{!join(',', $Resource.jQuery, $Resource.bootstrapJS)}"/>
     <div class="container" style="width: 100%">
         <c:reportsPageHeader/>
-        <br/>
-        <div class="row">
+        
+     
             <c:CumulativeScoresBarChart/>
-        </div>
-        <br/>
-        <div class="row">
+        
+        
+        
             <c:BatchOverallQCTable/>
-        </div>
-        <br/>
-        <div class="row">
-            
-                <c:ReportTechSkillsRadar/>
-
-                <c:WeeklyProgressLineChart/>
-            
-        </div>
+        
+       
+        
+        
+        <c:ReportTechSkillsRadar/>
+        
+        <c:WeeklyProgressLineChart/>
+        
+        
     </div>
 </aura:application>

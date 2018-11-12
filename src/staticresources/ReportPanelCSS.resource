@@ -28,12 +28,16 @@
     color: #FFFFFF;
 }
 
+.card {
+    margin-bottom: 20px;
+}
+
 .col {
     padding: 0px;
 }
 
-.report-40 {
-    width: 40%;
+.report-43 {
+    width: 43%;
     float:left;
 }
 

@@ -78,7 +78,7 @@
         </div>
     </div>
     <!-- Report is only visible if filters apply to it -->
-    <div aura:id="reportPanel" class="card report-40">
+    <div aura:id="reportPanel" class="card report-43">
         <div class="card-header">
             <span>Technical Skills</span>
             <aura:if isTrue="{!v.shownTraineesOptions.length > 1}">

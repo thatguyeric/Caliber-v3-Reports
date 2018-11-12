@@ -1,9 +1,9 @@
 .THIS{
+    margin-bottom: 20px;
 }
 /*Aligns the combobox next to each other */
 .THIS .selectBatchCombobox {
     display: inline-block;
-   /*-- padding: 7px;  */    
 }
 
 div.THIS{
@@ -27,6 +27,7 @@ div.THIS{
 /*Sets the font for the selected combo box */
 .THIS .slds-input.slds-combobox__input{
     background: none;
+    color: #f26925;
     font-weight: bold;
     font-size: 15px;
 }
