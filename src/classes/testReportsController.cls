@@ -36,7 +36,7 @@ public class testReportsController {
         TestDataFactory.createData();
         Training__c batch = [SELECT Id, Caliber_Number_of_Weeks__c FROM Training__c LIMIT 1];
 		String jsonResult = ReportsController.getBatchOverallWeeklyProgressLine(batch.Id);
-        String expectedResult = '[{"grade":50.00,"week":1},{"grade":60.00,"week":2},{"grade":70.00,"week":3}]';
+        String expectedResult = '{"batch":[{"grade":50.00,"week":1},{"grade":60.00,"week":2},{"grade":70.00,"week":3}]}';
         system.assertEquals(expectedResult, jsonResult);
     }
     
@@ -133,4 +133,32 @@ public class testReportsController {
         system.assertEquals(null, actualTraining);
     }
 
+    @isTest
+    public static void testGetGrades(){
+        TestDataFactory.createData();
+        Contact trainee = [select id from Contact where Name = 'Daisy Duck' limit 1];
+        List<Caliber_Grade__c> traineeGrades = ReportsController.getGradesForTrainee(trainee.Id);
+        List<Caliber_Grade__c> expectedGrades = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
+                                             FROM Caliber_Grade__c
+                                             WHERE Contact__c = :trainee.Id];
+        system.assertEquals(expectedGrades, traineeGrades);
+        Integer weekNum = 5;
+        List<Caliber_Grade__c> traineeWeekGrades = ReportsController.getGradesForTraineeByWeek(trainee.Id, weekNum);
+        expectedGrades = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
+                                             FROM Caliber_Grade__c
+                                             WHERE Contact__c = :trainee.Id AND Caliber_Assessment__r.Week_Number__c = :weekNum];
+    	system.assertEquals(expectedGrades, traineeWeekGrades);
+        Id batchId = [select Training__r.Id from Training_Assignment__c where Contact__c = :trainee.Id].Training__c;
+        List<Caliber_Grade__c> batchWeekGrades = ReportsController.getGradesForBatchAndWeek(batchId, weekNum);
+        expectedGrades = [SELECT Id, Contact__c, Contact__r.FirstName, Contact__r.LastName, 
+                                             Score__c, Caliber_Assessment__r.Max_Points__c, Caliber_Assessment__r.Training_Id__c,
+                                             Caliber_Assessment__r.Week_Number__c
+                                             FROM Caliber_Grade__c
+                                             WHERE Caliber_Assessment__r.Training_Id__c = :batchId AND Caliber_Assessment__r.Week_Number__c = :weekNum];
+        system.assertEquals(expectedGrades, traineeWeekGrades);
+    }
 }
