@@ -36,7 +36,7 @@ public class testReportsController {
         TestDataFactory.createData();
         Training__c batch = [SELECT Id, Caliber_Number_of_Weeks__c FROM Training__c LIMIT 1];
 		String jsonResult = ReportsController.getBatchOverallWeeklyProgressLine(batch.Id);
-        String expectedResult = '[{"grade":50.00,"week":1},{"grade":60.00,"week":2},{"grade":70.00,"week":3}]';
+        String expectedResult = '{"batch":[{"grade":50.00,"week":1},{"grade":60.00,"week":2},{"grade":70.00,"week":3}]}';
         system.assertEquals(expectedResult, jsonResult);
     }
     
