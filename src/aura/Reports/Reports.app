@@ -4,20 +4,21 @@
                   scripts="{!join(',', $Resource.jQuery, $Resource.bootstrapJS)}"/>
     <div class="container" style="width: 100%">
         <c:reportsPageHeader/>
+        <br/>
         <div class="row">
-            <!-- TODO: add Cumulative Score Chart here -->
-            <c:CumulativeScoreTable/>
+            <c:CumulativeScoresBarChart/>
         </div>
+        <br/>
         <div class="row">
             <c:BatchOverallQCTable/>
         </div>
+        <br/>
         <div class="row">
             
                 <c:ReportTechSkillsRadar/>
-            </div>
-            <div class="col report-55">
-                <!-- TODO: add weekly progress chart here -->
-            </div>
+
+                <c:WeeklyProgressLineChart/>
+            
         </div>
-    
+    </div>
 </aura:application>

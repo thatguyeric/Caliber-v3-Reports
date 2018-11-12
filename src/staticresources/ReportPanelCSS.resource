@@ -33,18 +33,18 @@
 }
 
 .report-40 {
-    width: 40vw;
+    width: 40%;
     float:left;
 }
 
 .report-55 {
-    width: 55vw;
+    width: 55%;
     float:right;
 }
 
 
 .report-100 {
-    width: 100vw;
+    width: 100%;
 }
 
 @media screen and (max-width:1000px) {

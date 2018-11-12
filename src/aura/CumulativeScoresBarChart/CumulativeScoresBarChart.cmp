@@ -6,11 +6,12 @@
     <aura:attribute name = "trainee" type = "Id" />
     <aura:attribute name = "isVisible" type = "Boolean" default = "false"/>
     <aura:handler event = "c:ReportFilterChange" action = "{!c.cumulativeScoresBar}"/>
-    <aura:attribute name="errorMsg" type="String"/>    
+    <aura:attribute name="errorMsg" type="String"/>
+    <aura:attribute name="traineeData" type="List"/>
     <aura:if isTrue="{!not(empty(v.errorMsg))}">
         <div>{!v.errorMsg}</div>
     </aura:if>
-    <div aura:id = "reportPanel" class = "card">
+    <div aura:id = "reportPanel" class = "card report-100">
         <div class="card-header">
             <span>Cumulative Scores</span>       
         </div>
@@ -18,6 +19,7 @@
             <div class="chart-container">
                 <canvas aura:id="chart"/> 
             </div>
+            <c:CumulativeScoreTable traineeData="{!v.traineeData}"/>
         </div>
     </div>      
 </aura:component>

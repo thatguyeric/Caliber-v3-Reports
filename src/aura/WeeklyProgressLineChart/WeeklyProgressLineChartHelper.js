@@ -72,15 +72,20 @@
         //get labels and grades for chart
         var labels = [];
         var batchGrades = [];
+        var weeklyData = [];
         //store label, name, and grade values
         batchdata.forEach(function(name){
             var batchGrade = name.grade;
             var batchWeek = name.week;
+            weeklyData.push({
+                week: batchWeek,
+                grade: batchGrade
+            });
             labels.push(batchWeek);
             batchGrades.push(batchGrade);
         });
         
-        
+        component.set('v.weeklyData', weeklyData);
         var trainees = data.trainee;
         if(trainees){
             trainees.sort(comparebyWeek);

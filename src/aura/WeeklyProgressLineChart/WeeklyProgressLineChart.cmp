@@ -5,11 +5,12 @@
     <aura:attribute name = "week" type = "Integer" />
     <aura:attribute name = "trainee" type = "Id" />
     <aura:attribute name = "errorMsg" type = "String"/>
+    <aura:attribute name="weeklyData" type="List"/>
     <aura:handler event = "c:ReportFilterChange" action = "{!c.weeklyProgressChart}"/>
     <aura:if isTrue="{!not(empty(v.errorMsg))}">
         <div>{!v.errorMsg}</div>
     </aura:if>
-    <div aura:id = "reportPanel" class = "card">
+    <div aura:id = "reportPanel" class = "card report-55">
         <div class = "card-header">
             <span>Weekly Progress</span>
         </div>
@@ -17,6 +18,7 @@
             <div class="chart-container">
                 <canvas aura:id="chart"/>
             </div>
+            <c:WeeklyProgressTable weeklyData="{!v.weeklyData}"/>
         </div>
     </div> 
 </aura:component>

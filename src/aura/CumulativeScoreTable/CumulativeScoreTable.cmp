@@ -3,17 +3,15 @@
                   styles="{!join(',',
                           $Resource.ReportPanelCSS, 
                           $Resource.bootstrapCSS)}"
-                  scripts="{!join(',', 
+                  scripts="{!join(',',
                            $Resource.jQuery, $Resource.bootstrapJS)}"/>
-    <aura:attribute name="calGrade" type="Caliber_Grade__c[]"/>
-    <!--<aura:handler event="c:ReportFilterChange" action="{!c.handleReportFilterChange}"/>-->
-    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+    <aura:attribute name="traineeData" type="List"/>
     <div class="wrapper">
-            <aura:iteration items="{!v.calGrade}" var="cG">
-                <div class="list-group-item">
-                    <div style="float: left"><span style="font-family:Futura-Std-Bold">{!cG.Contact__r.LastName}, {!cG.Contact__r.FirstName}</span></div>
-                    <div style="float:right">{!cG.Score__c}</div>
-                </div>
-                </aura:iteration>
+        <aura:iteration items="{!v.traineeData}" var="data">
+            <div class="list-group-item">
+                <div style="float: left"><span style="font-family:Futura-Std-Bold">{!data.name}</span></div>
+                <div style="float:right">{!data.grade}</div>
+            </div>
+        </aura:iteration>
     </div>
 </aura:component>

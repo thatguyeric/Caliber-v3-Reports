@@ -3,5 +3,13 @@
                   styles="{!join(',',$Resource.revStyling, $Resource.bootstrapCSS)}"
                   scripts="{!join(',', 
                            $Resource.jQuery, $Resource.bootstrapJS)}"/>
-    
+    <aura:attribute name="weeklyData" type="List"/>
+    <div class="wrapper">
+        <aura:iteration items="{!v.weeklyData}" var="data">
+            <div class="list-group-item">
+                <div class="floatLeft"><span style="font-family:Futura-Std-Bold">{!data.name}</span></div>
+                <div class="floatRight">{!data.grade}</div>
+            </div>
+        </aura:iteration>
+    </div>
 </aura:component>

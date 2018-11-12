@@ -17,7 +17,7 @@
             if(state === "SUCCESS"){
                 component.set('v.errorMsg', null);
                 var stringdata = response.getReturnValue();
-                var data = JSON.parse(stringdata);      
+                var data = JSON.parse(stringdata);
                 helper.configureCumulativeScoresChart(component, helper, data);
             }else if(state === "INCOMPLETE"){
                 var errormsg = 'Incomplete server request.';
@@ -36,6 +36,7 @@
             component.set('v.errorMsg', 'Insufficient data'); 
         }else{
             var batch = data.trainees;
+            console.log('batch: ' + batch);
             
             batch.sort(function(a, b){
                 if(a.grade < b.grade){
@@ -53,13 +54,19 @@
             //create label and grade arrays
             var labels = [];
             var grades = [];
+            var traineeData = [];
             //store label and grade values in arrays
             batch.forEach(function(name){
                 var traineeGrade = name.grade;
                 var traineeName = name.name;
                 labels.push(traineeName);
                 grades.push(traineeGrade);
+                traineeData.push({
+                    name: traineeName,
+                    grade: traineeGrade
+                });
             });
+            component.set("v.traineeData", traineeData);
             
             //configure benchmark if valid
             var benchmarkValue = data.benchmark;
