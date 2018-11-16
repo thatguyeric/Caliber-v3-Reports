@@ -5,7 +5,7 @@
   * [Lightning Components and JavaScript Controllers/Helpers](#lightning-components-and-javascript-controllershelpers)
   * [JSON format JavaScript controllers receive from Apex controllers](#json-format-javascript-controllers-receive-from-apex-controllers)
 
-<hr/>
+<br/>
 
 The Reports team has completed the overall charts for filtering by batch. The next step for this project is implementing 
 the Quarter and Location filters and then creating the charts for week and trainee filters0. We have outlined what the JSON 
@@ -153,6 +153,44 @@ This component is used to display the QC grade for each trainee and overall batc
 #### OverallReportTechSkillsRadar Component:
 This component displays the technical skills of the batch overall and of trainees.  It dynamically updates when the report filters change.  When displaying overall data for a batch, the shown trainees can be changed.  The button for choosing the shown trainees is an icon from font awesome.  Data from the chart is retrieved from the Apex controller, parsed by the JavaScript controller, and rendered as a chart by Chart.js.  The table below the chart is a nested component.
 
+<i> ReportTechSkillsRadarController.js</i>
+
+> <b>handleReportFilterChange()</b> <br/>
+> This method is a handler for the custom event ReportFilterChange and it updates the report when the filters change.  It shows or hides the chart based on the filters, then calls the helper method doServerRequest(component, helper, batchId, week, traineeId)
+
+> <b>handleScriptsLoaded()</b> <br/>
+> This method is a handler for the event afterScriptsLoaded.  It calls the helper method doServerRequest(component, helper, batchId, week, traineeId) if the custom event ReportFilterChange fired before chart.js was done loading.
+
+> <b>onModalOpen()</b> <br/>
+> This method sets the checked values for the checkboxes in the modal.  It can be removed if lightning:checkboxGroup replaces the aura:iteration with lightning:input.
+
+> <b>onModalClose()</b> <br/>
+> This method updates the list of selected trainees from the checkboxes in the modal then updates the chart.
+
+> <b>test()</b> <br/>
+> this method can be used to test the component without the apex controller.
+
+<i> ReportTechSkillsRadarHelper.js</i>
+
+> <b>doServerRequest()</b> <br/>
+> This method sends a request to the apex controller for the chart data.  A different apex controller method is called based on the filters.  The callback function resets the shown trainees to the appropriate value based on the filters, stores the server response in an attribute, and creates the chart.
+
+> <b>createChart()</b> <br/>
+> This method creates the radar chart using the data from the server.  It calls the helper function populateTraineeList(component, serverResponseData).  It parses the server response data and creates the chart.js config object.  When filtering by a single trainee, the trainee is the first dataset, and for overall the batch data is the first dataset.  The chart config object sets the chart aspect ratio to 1:1 and sets the scale to 0 to 100.
+
+> <b>populateTraineeList()</b> <br/>
+> This method populates the list of trainees available to select for the chart.
+
+> <b>getChartJSDataset()</b> <br/>
+> This method transforms a dataset from the server into a dataset for chart.js.
+
+> <b>addColorsToChartJSDataset()</b> <br/>
+> This method adds color to a chart.js dataset.  The colorIndex parameter determines the color based on the chartColors attribute.  The first three colors are pre-defined revature colors and the colors are random for higher indexes.
+
+> <b>testServerRequest()</b> <br/>
+> This method can be used to test the component without the apex controller.  It generates data to act like the method doServerRequest().
+
+
 #### OverallCumulativeScoresBarChart Component:
 This component displays the cumulative grade for each student in a batch from highest to lowest. A benchmark is displayed when a batch but not a trainee or week is defined. Chart data is retrieved from an Apex controller, processed by the JavaScript controller, and rendered as a chart using Chart.js. 
 
@@ -205,13 +243,13 @@ This component holds the years, batches, weeks, and trainees filters for the rep
 > Sets the callback for the batchTrainees server side method and sets the batch parameter with the value of the currentBatch attribute. The allTrainees, currentTrainee, and currentTraineeName attributes are set inside the callback. The current trainee attributes default to all and null respectively. Then the fireReportFilterchange function is called.
 
 > <b>getSelectedTrainee()</b> <br/>
-> 
+> This function sets the callback for the getSelectedTrainee server side method. It collects a list of trainee Ids as well as the label of the selected trainee. These are set for the parameters: allTraineeIds and traineeName. The current trainee info is updated and the event is fired.
 
 > <b>setCurrentBatch()</b> <br/>
-> 
+> Sets the callback for the getSelectedBatch server side method and sets the batches and batchName parameters to the allBatches and batchLabel attributes. The current batch is set and functions are called to get the weeks and trainees for that batch.
 
 > <b>fireReportFilterChange()</b> <br/>
-> 
+> This function grabs the batch Id, trainee Id, and week number that have been chosen with the filters and passes them into the event parameters. Then the event is fired.
 
 
 
